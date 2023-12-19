@@ -33,7 +33,7 @@ router.post('/email',userController.verifyLoginOtp)
 router.get('/logout',auth.isLogin,userController.logOut)
 
 router.get('/shop',userController.shop)
-//
+
 router.get('/cart',userController.cart)
 
 router.get('/contact',userController.contact)
