@@ -297,6 +297,19 @@ const productDetails = async (req, res) => {
         console.log(error);
     }
 }
+
+const pagination = async (req,res)=>{
+    try {
+        const page = req.query.page 
+        const PrdctPerPage = 3
+        let prdct = []
+        
+        products.
+
+    } catch (error) {
+        
+    }
+}
 module.exports = {
     homePage,
     registerUser,

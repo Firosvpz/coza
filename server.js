@@ -26,7 +26,7 @@ app.use((req,res,next)=>{
     res.set('Cache-control','no-store,no-cache')   
     next()
 })
- 
+    
 // view engine 
 // app.set('view engine','ejs') 
 app.use(express.static(path.resolve(__dirname,'public')))

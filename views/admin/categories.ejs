@@ -143,8 +143,8 @@
                             <li class="dropdown-item user-details">
                                 <a href="javaScript:void();">
                                     <div class="media">
-                                        <div class="avatar"><img class="align-self-start mr-3"
-                                                src="/images/me.jpg" alt="user avatar"></div>
+                                        <div class="avatar"><img class="align-self-start mr-3" src="/images/me.jpg"
+                                                alt="user avatar"></div>
                                         <div class="media-body">
                                             <h6 class="mt-2 user-title">Muhammed Firos</h6>
                                             <p class="user-subtitle">admin@gmail.com</p>
@@ -203,10 +203,10 @@
                                                     </td>
                                                     <td>
                                                         <span id="status_<%=categories[i]._id%>">
-                                                            <% if(categories[i].isListed){%>
+                                                            <% if(categories[i].isListed){ %>
                                                                 <span
                                                                     class="badge rounded-pill alert-warning">List</span>
-                                                                <% } else {%>
+                                                                <% } else { %>
                                                                     <span
                                                                         class="badge rounded-pill alert-success">Unlist</span>
                                                                     <% } %>
@@ -226,11 +226,13 @@
 
 
                                                     <td>
-                                                        <button class="btn btn-sm rounded font-sm list-category bg-info"
-                                                            data-categ-id="<%=categories[i]._id%>">List</button>
+
                                                         <button
-                                                            class="btn btn-sm rounded font-sm unlist-category bg-success"
-                                                            data-categ-id="<%=categories[i]._id%>">Unlist</button>
+                                                            class="btn btn-sm rounded font-sm unlist-category toggle-product bg-success"
+                                                            data-categ-id="<%=categories[i]._id%>"
+                                                            data-action="<%= categories[i].isListed ? 'unlist' : 'list' %>">
+                                                            <%= categories[i].isListed ? 'Unlist' : 'List' %>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                                 <% } %>
@@ -249,8 +251,8 @@
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="deleteCategoryModalLabel">Confirm Deletion
                                                 </h5>
-                                                <button type="button" class="btn-close goBackBtn" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
+                                                <button type="button" class="btn-close goBackBtn"
+                                                    data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <p>Are you sure you want to delete this category?</p>
@@ -263,7 +265,7 @@
                                             </div>
                                         </div>
 
-                                    </div> 
+                                    </div>
                                 </div>
 
                             </div>
@@ -390,22 +392,34 @@
 
         //  list category
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.list-category').forEach(function (button) {
+            document.querySelectorAll('.toggle-product').forEach(function (button) {
                 button.addEventListener('click', function () {
                     const categId = this.getAttribute('data-categ-id');
-                    updateCategoryStatus(categId, 'list')
-                })
+                    const currentAction = this.getAttribute('data-action');
 
-            })
-            // unlist category
-            document.querySelectorAll('.unlist-category').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    const categId = this.getAttribute('data-categ-id');
-                    updateCategoryStatus(categId, 'unlist')
-                })
+                    // Simulated function call for updateCategoryStatus
+                    updateCategoryStatus(categId, currentAction);
 
-            })
-        })
+                    if (currentAction === 'list') {
+                        this.textContent = 'Unlist';
+                        this.setAttribute('data-action', 'unlist');
+                        // Update classes for visual change
+                        this.classList.remove('bg-success');
+                        this.classList.add('btn-outline-success');
+                    } else if (currentAction === 'unlist') {
+                        this.textContent = 'List';
+                        this.setAttribute('data-action', 'list');
+                        // Update classes for visual change
+                        this.classList.remove('btn-outline-success');
+                        this.classList.add('bg-success');
+                    }
+                });
+            });
+        });
+
+
+
+
 
 
 

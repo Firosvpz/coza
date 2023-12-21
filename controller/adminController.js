@@ -244,6 +244,7 @@ const loadAddProducts = async (req, res) => {
 // add products
 const addProducts = async (req, res) => {
     try {
+        console.log(req.body);
         const existProduct = await products.findOne({ name: req.body.productName })
         if (existProduct) {
             const categdata = await categories.find({isListed:true})
