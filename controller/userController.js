@@ -7,22 +7,27 @@ dotenv.config()
 const userOtp = require('../model/userOtpModel')
 const products = require('../model/productModel')
 const categories = require('../model/categoryModel')
+const { usersList } = require('./adminController')
+
 
 
 
 const homePage = async (req, res) => {
     try {
-        // console.log('home',req.session.user_id);
+        const userData = await User.findOne({ _id: req.session.user_id });
 
-        const userData = await User.findOne({ _id: req.session.user_id })
-        res.render('home', { user: userData })
-
-
+        if (userData) {
+            res.render('home', { user: userData });
+        } else {
+            // Handle case when user data is not found
+            res.render('home', { user: null }); // or handle differently as needed
+        }
     } catch (error) {
-
         console.log(error.message);
+        res.status(500).send('Internal Server Error');
     }
 }
+
 
 const registerUser = async (req, res) => {
     try {
@@ -165,9 +170,9 @@ const loadOtp = async (req, res) => {
 const verifyOtp = async (req, res) => {
     try {
         const email = req.body.email;
-        console.log('email:',email);
+        console.log('email:', email);
         const otp = `${req.body.one}${req.body.two}${req.body.three}${req.body.four}`;
-        
+
         console.log('otp:', otp);
         const user = await userOtp.findOne({ email: email })
         console.log("user:", user);
@@ -209,7 +214,7 @@ const verifyLoginOtp = async (req, res) => {
         const email = req.body.email
         // console.log('email',email);
         const user = await User.findOne({ email: email })
- 
+
         console.log('user:', user);
         if (!user) {
             res.status(400).send({ error: "email does not exist" })
@@ -249,10 +254,10 @@ const shop = async (req, res) => {
         if (categid) {
             data = await products.find({ isListed: true, category: categid })
         } else {
-            data = await products.find({isListed:true})
+            data = await products.find({ isListed: true })
         }
 
-      const categdata = await categories.find({isListed:true})
+        const categdata = await categories.find({ isListed: true })
 
         res.render('shop', { products: data, categories: categdata })
 
@@ -298,18 +303,53 @@ const productDetails = async (req, res) => {
     }
 }
 
-const pagination = async (req,res)=>{
-    try {
-        const page = req.query.page 
-        const PrdctPerPage = 3
-        let prdct = []
-        
-        products.
+const pagination = async (req, res) => {
+    const { page, limit } = req.query;
 
+    try {
+        const products = await products.find()
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit))
+            .exec();
+
+        res.json(products);
     } catch (error) {
-        
+        console.log(error);
+        res.status(500).json({ message: 'Error fetching products' });
+    }
+};
+
+const userProfile = async (req,res)=>{
+    try {
+        const id = req.query.userid
+        console.log('user',id);
+
+        const user = await User.findOne({_id:id}) 
+        res.render('profile',{user})
+    } catch (error) {
+        console.log(error);
     }
 }
+
+const editProfile = async (req,res) => {
+    try {
+        const userId = req.session.id
+        console.log('session:',userId);
+        const{name,mobileNumber}=req.body
+        
+        await User.findByIdAndUpdate({_id:userId},
+            {$set:{
+                name,
+                mobileNumber
+            }
+            })
+
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     homePage,
     registerUser,
@@ -327,6 +367,9 @@ module.exports = {
     cart,
     about,
     contact,
-    productDetails
+    productDetails,
+    pagination,
+    userProfile,
+    editProfile
 
 }
