@@ -13,7 +13,7 @@ const isLogin = async (req, res, next) => {
             next()
         } else {
             // if the user is not logged in,redirect to homepage
-            res.redirect('/')
+            res.redirect('/login')
         }
     } catch (error) {
         console.log(error.message);

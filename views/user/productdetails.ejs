@@ -230,15 +230,15 @@
 											<i class="fs-16 zmdi zmdi-minus"></i>
 										</div>
 
-										<input class="mtext-104 cl3 txt-center num-product" type="number"
-											name="num-product" value="1">
+										<input class="mtext-104 cl3 txt-center num-product" type="number" id="quantity"
+											name="quantity" value="1">
 
 										<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
 											<i class="fs-16 zmdi zmdi-plus"></i>
 										</div>
 									</div>
 
-									<button
+									<button onclick="addTocart('<%=products._id%>')"
 										class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
 										Add to cart
 									</button>
@@ -755,14 +755,14 @@
 											</div>
 
 											<input class="mtext-104 cl3 txt-center num-product" type="number"
-												name="num-product" value="1">
+												name="quantity" value="1">
 
 											<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
 												<i class="fs-16 zmdi zmdi-plus"></i>
 											</div>
 										</div>
 
-										<button
+										<button onclick=""
 											class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
 											Add to cart
 										</button>
@@ -876,12 +876,52 @@
 
 		/*---------------------------------------------*/
 
-		$('.js-addcart-detail').each(function () {
-			var nameProduct = $(this).parent().parent().parent().parent().find('.js-name-detail').html();
-			$(this).on('click', function () {
-				swal(nameProduct, "is added to cart !", "success");
+		// add to cart
+
+		function addTocart(productId) {
+			const quantity = document.getElementById('quantity').value;
+			const data = { productId: productId, quantity: quantity };
+
+			$.ajax({
+				method: 'POST',
+				url: 'cart', // Update the URL to match your endpoint
+				data: JSON.stringify(data),
+				contentType: 'application/json',
+				success: function (response) {
+					if (response.success) {
+						swal.fire({
+							position: "center",
+							icon: "success",
+							title: "Product added to cart",
+							showConfirmButton: false,
+							timer: 1500
+						});
+					} else {
+						console.log("Failed to add product to cart");
+					}
+				},
+				error: function (error) {
+					console.log("Error:", error);
+				}
 			});
-		});
+		}
+
+
+
+
+
+		// $('.js-addcart-detail').each(function () {
+		// 	var nameProduct = $(this).parent().parent().parent().parent().find('.js-name-detail').html();
+		// 	$(this).on('click', function () {
+		// 		swal({
+		// 			title: nameProduct,
+		// 			text: 'is added to cart !',
+		// 			icon: 'success',
+		// 			button: 'OK',
+		// 		});
+		// 	});
+		// });
+
 
 	</script>
 	<!--===============================================================================================-->

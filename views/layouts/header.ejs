@@ -84,7 +84,10 @@
 										<%=locals.user?user.username:"PROFILE"%>
 									</button>
 									<ul class="dropdown-menu bg-transparent ">
-										<li><a class="dropdown-item bg-dark text-white" href="">User profile</a></li>
+										
+											<a class="dropdown-item bg-dark text-white" href="/profile">User profile</a>
+									
+										
 										<!-- <li><a class="dropdown-item bg-dark text-white" href="/login"> -->
 											<%if(locals.user){%>
 												<a class="dropdown-item bg-dark text-white" href="/logout">Logout</a>

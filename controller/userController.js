@@ -2,6 +2,7 @@ const User = require('../model/userModel')
 const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 const dotenv = require('dotenv')
+const mongoose = require('mongoose')
 dotenv.config()
 
 const userOtp = require('../model/userOtpModel')
@@ -266,15 +267,6 @@ const shop = async (req, res) => {
     }
 }
 
-const cart = async (req, res) => {
-    try {
-        res.render('cart')
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 const contact = async (req, res) => {
     try {
         res.render('contact')
@@ -319,36 +311,45 @@ const pagination = async (req, res) => {
     }
 };
 
-const userProfile = async (req,res)=>{
+const userProfile = async (req, res) => {
     try {
-        const id = req.query.userid
-        console.log('user',id);
+        const id = req.session.user_id;
+        console.log('user', id);
 
-        const user = await User.findOne({_id:id}) 
-        res.render('profile',{user})
+        const user = await User.findOne({ _id: id });
+        res.render('profile', { user });
     } catch (error) {
         console.log(error);
     }
-}
+};
 
-const editProfile = async (req,res) => {
+const editProfile = async (req, res) => {
     try {
-        const userId = req.session.id
-        console.log('session:',userId);
-        const{name,mobileNumber}=req.body
+        const userId = req.session.user_id; // Assuming the correct session key is used to store the user ID
+        console.log('session:', userId);
         
-        await User.findByIdAndUpdate({_id:userId},
-            {$set:{
-                name,
-                mobileNumber
-            }
-            })
+        const { username, mobileNumber } = req.body;
+        
+        
+       
+        await User.findByIdAndUpdate(
+            userId,
+            {
+                $set: {
+                    username,
+                    mobileNumber
+                }
+            },
+            { new: true }
+        );
 
-
+        res.redirect('/profile');
     } catch (error) {
         console.log(error);
+        // Handle the error appropriately (e.g., send an error response)
     }
-}
+};
+
 
 module.exports = {
     homePage,
@@ -364,12 +365,11 @@ module.exports = {
     logOut,
     loadHome,
     shop,
-    cart,
     about,
     contact,
     productDetails,
     pagination,
-    userProfile,
+    userProfile, 
     editProfile
 
 }

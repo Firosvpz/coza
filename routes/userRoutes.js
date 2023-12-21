@@ -1,5 +1,6 @@
 const express =require('express')
 const userController=require('../controller/userController')
+const cartController = require('../controller/cartController')
 const auth = require('../middleware/auth')
 const router = express()
 
@@ -12,7 +13,7 @@ router.set('views','./views/user')
  
 router.get('/',auth.islogOut,userController.homePage);
 
-router.get('/home',auth.isLogin,userController.homePage);
+router.get('/home',userController.homePage);
 
 router.get('/login',auth.islogOut,userController.loginUser);
 
@@ -34,15 +35,21 @@ router.get('/logout',auth.isLogin,userController.logOut)
 
 router.get('/shop',userController.shop)
 
-router.get('/cart',userController.cart)
-
 router.get('/contact',userController.contact)
 
 router.get('/about',userController.about)
 
 router.get('/productdetails',userController.productDetails)
 
+router.get('/pagination',userController.pagination)
 
+router.get('/profile',auth.isLogin,userController.userProfile)
+
+router.post('/profile',userController.editProfile)
+ 
+router.get('/cart',auth.isLogin,cartController.loadCart)
+
+router.post('/cart',cartController.addtoCart)
 
 
 
