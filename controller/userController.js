@@ -251,6 +251,11 @@ const loadHome = async (req, res) => {
 
 const shop = async (req, res) => {
     try {
+        const id = req.session.user_id;
+        console.log('user', id);
+
+        const user = await User.findOne({ _id: id });
+
         const categid = req.query.id
         if (categid) {
             data = await products.find({ isListed: true, category: categid })
@@ -260,7 +265,7 @@ const shop = async (req, res) => {
 
         const categdata = await categories.find({ isListed: true })
 
-        res.render('shop', { products: data, categories: categdata })
+        res.render('shop', { products: data, categories: categdata, user })
 
     } catch (error) {
         console.log(error);
@@ -269,7 +274,12 @@ const shop = async (req, res) => {
 
 const contact = async (req, res) => {
     try {
-        res.render('contact')
+        const id = req.session.user_id;
+        console.log('user', id);
+
+        const user = await User.findOne({ _id: id });
+
+        res.render('contact', { user })
 
     } catch (error) {
         console.log(error);
@@ -278,7 +288,11 @@ const contact = async (req, res) => {
 
 const about = async (req, res) => {
     try {
-        res.render('about')
+        const id = req.session.user_id;
+        console.log('user', id);
+
+        const user = await User.findOne({ _id: id });
+        res.render('about', { user })
 
     } catch (error) {
         console.log(error);
@@ -287,9 +301,10 @@ const about = async (req, res) => {
 
 const productDetails = async (req, res) => {
     try {
+       
         const id = req.query.id
         const data = await products.findOne({ _id: id })
-        res.render('productdetails', { products: data })
+        res.render('productdetails', { products: data})
     } catch (error) {
         console.log(error);
     }
@@ -327,11 +342,11 @@ const editProfile = async (req, res) => {
     try {
         const userId = req.session.user_id; // Assuming the correct session key is used to store the user ID
         console.log('session:', userId);
-        
+
         const { username, mobileNumber } = req.body;
-        
-        
-       
+
+
+
         await User.findByIdAndUpdate(
             userId,
             {
@@ -369,7 +384,7 @@ module.exports = {
     contact,
     productDetails,
     pagination,
-    userProfile, 
+    userProfile,
     editProfile
 
 }

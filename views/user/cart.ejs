@@ -1,4 +1,107 @@
-<%- include('../layouts/header.ejs') -%>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Home 03</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="images/icons/favicon.png" />
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/linearicons-v1.0.0/icon-font.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/slick/slick.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/MagnificPopup/magnific-popup.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
+	<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<!--===============================================================================================-->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+</head>
+
+<body class="animsition">
+
+	<!-- Header -->
+	<header class="header-v3">
+		<!-- Header desktop -->
+		<div class="container-menu-desktop trans-03">
+			<div class="wrap-menu-desktop">
+				<nav class="limiter-menu-desktop p-l-45">
+
+					<!-- Logo desktop -->
+					<a href="/home" class="logo">
+						<img src="images/icons/logo-02.png" alt="IMG-LOGO">
+					</a>
+
+					<!-- Menu desktop -->
+					<div class="menu-desktop">
+						<ul class="main-menu n" >
+							<li>
+								<a href="/home" style="text-decoration: none;">Home</a>
+
+							</li>
+
+							<li>
+								<a href="/shop" style="text-decoration: none;">Shop</a>
+							</li>
+
+							<li class="label1" data-label1="">
+								<a href="/cart" style="text-decoration: none;">Cart</a>
+							</li>
+
+							<li>
+								<a href="/about" style="text-decoration: none;">About</a>
+							</li>
+
+							<li>
+								<a href="/contact" style="text-decoration: none;">Contact</a>
+							</li>
+                            <li>
+								<div class="dropdown">
+									<button class="btn btn-transparent text-white  btn-sm fw-bold" type="button"
+										data-bs-toggle="dropdown" aria-expanded="false">
+										<%=locals.user?user.username:"PROFILE"%>
+									</button>
+									<ul class="dropdown-menu bg-transparent ">
+										
+											<a class="dropdown-item bg-dark text-white" href="/profile">User profile</a>
+									
+										
+										<!-- <li><a class="dropdown-item bg-dark text-white" href="/login"> -->
+											<%if(locals.user){%>
+												<a class="dropdown-item bg-dark text-white" href="/logout">Logout</a>
+											<%}else{%>
+											    <a class="dropdown-item bg-dark text-white" href="/login">Login</a>
+											<%}%>
+										</a></li>
+										
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+                    
 </div>
 
 		
@@ -106,23 +209,25 @@
 				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
 					<div class="m-l-25 m-r--38 m-lr-0-xl">
 						<div class="wrap-table-shopping-cart">
+							
+							<% if(cart && cart.items && cart.items.length > 0) {%>
 							<table class="table-shopping-cart">
 								<tr class="table_head">
 									<th class="column-1">Product</th>
-									<th class="column-2"></th>
+									<th class="column-2">Name</th>
 									<th class="column-3">Price</th>
 									<th class="column-4">Quantity</th>
 									<th class="column-5">Total</th>
 								</tr>
-
+								
 								<tr class="table_row">
 									<td class="column-1">
-										<div class="how-itemcart1">
-											<img src="images/item-cart-04.jpg" alt="IMG">
+										<div class="how-itemcart">
+											<span class="text-dark"><%=cart.total_price%></span>
 										</div>
 									</td>
 									<td class="column-2"></td>
-									<td class="column-3">$ 36.00</td>
+									<td class="column-3"></td>
 									<td class="column-4">
 										<div class="wrap-num-product flex-w m-l-auto m-r-0">
 											<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
@@ -139,30 +244,9 @@
 									<td class="column-5">$ 36.00</td>
 								</tr>
 
-								<!-- <tr class="table_row">
-									<td class="column-1">
-										<div class="how-itemcart1">
-											<img src="images/item-cart-05.jpg" alt="IMG">
-										</div>
-									</td>
-									<td class="column-2">Lightweight Jacket</td>
-									<td class="column-3">$ 16.00</td>
-									<td class="column-4">
-										<div class="wrap-num-product flex-w m-l-auto m-r-0">
-											<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
-												<i class="fs-16 zmdi zmdi-minus"></i>
-											</div>
-
-											<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product2" value="1">
-
-											<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
-												<i class="fs-16 zmdi zmdi-plus"></i>
-											</div>
-										</div>
-									</td>
-									<td class="column-5">$ 16.00</td>
-								</tr> -->
+							
 							</table>
+							<% } %>
 						</div>
 
 						<div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
