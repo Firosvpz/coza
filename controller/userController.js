@@ -304,6 +304,7 @@ const productDetails = async (req, res) => {
        
         const id = req.query.id
         const data = await products.findOne({ _id: id })
+        
         res.render('productdetails', { products: data})
     } catch (error) {
         console.log(error);

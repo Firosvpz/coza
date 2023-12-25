@@ -335,12 +335,13 @@
 										</div>
 
 										<input class="mtext-104 cl3 txt-center num-product" type="number" id="quantity"
-											name="quantity" value="1">
+											name="quantity" value="1" max="<%=products.quantity%>">
 
 										<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
 											<i class="fs-16 zmdi zmdi-plus"></i>
 										</div>
 									</div>
+
 
 									<button onclick="addTocart('<%=products._id%>')"
 										class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
@@ -1016,12 +1017,55 @@
 			});
 		}
 
+		// max value
+
+		// JavaScript to handle quantity increment and decrement
+		document.querySelector('.btn-num-product-up').addEventListener('click', function () {
+			var quantityInput = document.getElementById('quantity');
+			var maxQuantity = parseInt(quantityInput.getAttribute('max'));
+			var currentQuantity = parseInt(quantityInput.value);
+
+			if (currentQuantity < maxQuantity) {
+				quantityInput.value = currentQuantity + 1;
+			}
+
+			// Disable plus button if the current quantity equals max quantity
+			if (parseInt(quantityInput.value) === maxQuantity) {
+				this.disabled = true;
+			}
+
+			// Enable the minus button regardless
+			document.querySelector('.btn-num-product-down').disabled = false;
+		});
+
+		document.querySelector('.btn-num-product-down').addEventListener('click', function () {
+			var quantityInput = document.getElementById('quantity');
+			var currentQuantity = parseInt(quantityInput.value);
+
+			if (currentQuantity > 1) {
+				quantityInput.value = currentQuantity - 1;
+			}
+
+			// Enable plus button if the current quantity is less than max quantity
+			var maxQuantity = parseInt(quantityInput.getAttribute('max'));
+			if (parseInt(quantityInput.value) < maxQuantity) {
+				document.querySelector('.btn-num-product-up').disabled = false;
+			}
+
+			// Disable the minus button if the quantity is 1
+			if (parseInt(quantityInput.value) === 1) {
+				this.disabled = true;
+			}
+		});
 
 
 
 
 
-		
+
+
+
+
 
 
 	</script>
