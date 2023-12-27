@@ -101,8 +101,34 @@ const addtoCart = async (req, res) => {
         res.status(500).json({ success: false, error: 'Error adding item to cart' });
     }
 };
+const deleteCartProduct = async (req,res)=>{
+    try {
+        const data=req.params.productId
+        console.log('id:',data);
+        const id=req.session.user_id
+        const userCart = await Cart.findOne({user_id:id})
+    
+        const deletedProduct = await Cart.updateOne(
+            {_id:userCart}, 
+            { $pull: { items: {product_id: data } } }
+        );
+
+        console.log('deleted product',deletedProduct); 
+
+        if (deletedProduct.nModified > 0) {
+            res.json({ success: true, message: 'Product deleted successfully' });
+        } else {
+            res.json({ success: false, message: 'Product not found or could not be deleted' });
+        }
+     
+
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 module.exports = {
     loadCart,
-    addtoCart
+    addtoCart,
+    deleteCartProduct
 }

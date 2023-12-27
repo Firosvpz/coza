@@ -228,10 +228,12 @@
                                                     <td>
                                                         <span id="status_<%=products[i]._id%>">
                                                             <% if(products[i].isListed) { %>
-                                                                <span class="badge rounded-pill alert-warning">List</span>
-                                                            <% } else { %>
-                                                                <span class="badge rounded-pill alert-success">Unlist</span>
-                                                            <% } %>
+                                                                <span
+                                                                    class="badge rounded-pill alert-warning">List</span>
+                                                                <% } else { %>
+                                                                    <span
+                                                                        class="badge rounded-pill alert-success">Unlist</span>
+                                                                    <% } %>
                                                         </span>
                                                     </td>
                                                     <td>
@@ -257,10 +259,11 @@
 
 
                                                             <a class="" href="">
-                                                                <button class="btn btn-sm font-sm toggle-product btn-outline-info"
+                                                                <button
+                                                                    class="btn btn-sm font-sm toggle-product btn-outline-info"
                                                                     data-categ-id="<%=products[i]._id%>"
                                                                     data-action="<%=products[i].isListed ? 'unlist' : 'list'%>">
-                                                                    <%=products[i].isListed ? 'Unlist' : 'List'%>
+                                                                    <%=products[i].isListed ? 'Unlist' : 'List' %>
                                                                 </button>
                                                             </a>
 
@@ -393,7 +396,7 @@
                 var searchText = $(this).val().toLowerCase();
 
                 // Loop through each table row
-                $("table tbody tr").each(function () {
+                $("table tbody tr ").each(function () {
                     var userName = $(this).find("td:eq(1)").text().toLowerCase(); // Get the user's name in lowercase
 
                     // If the user's name contains the search text, show the row; otherwise, hide it
@@ -407,31 +410,31 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.toggle-product').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const productId = this.getAttribute('data-categ-id');
-            const currentAction = this.getAttribute('data-action');
+            document.querySelectorAll('.toggle-product').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const productId = this.getAttribute('data-categ-id');
+                    const currentAction = this.getAttribute('data-action');
 
-            // Perform only the specified action
-            updateProductStatus(productId, currentAction);
+                    // Perform only the specified action
+                    updateProductStatus(productId, currentAction);
 
-            // Update button text or perform any other actions if needed
-            if (currentAction === 'list') {
-                this.textContent = 'Unlist';
-                this.setAttribute('data-action', 'unlist');
-                // Add or remove classes as necessary
-                this.classList.remove('btn-outline-info');
-                this.classList.add('btn-outline-info');
-            } else if (currentAction === 'unlist') {
-                this.textContent = 'List';
-                this.setAttribute('data-action', 'list');
-                // Add or remove classes as necessary
-                this.classList.remove('btn-outline-info');
-                this.classList.add('btn-outline-info');
-            }
+                    // Update button text or perform any other actions if needed
+                    if (currentAction === 'list') {
+                        this.textContent = 'Unlist';
+                        this.setAttribute('data-action', 'unlist');
+                        // Add or remove classes as necessary
+                        this.classList.remove('btn-outline-info');
+                        this.classList.add('btn-outline-info');
+                    } else if (currentAction === 'unlist') {
+                        this.textContent = 'List';
+                        this.setAttribute('data-action', 'list');
+                        // Add or remove classes as necessary
+                        this.classList.remove('btn-outline-info');
+                        this.classList.add('btn-outline-info');
+                    }
+                });
+            });
         });
-    });
-});
 
 
 

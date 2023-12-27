@@ -51,6 +51,8 @@ router.get('/cart',auth.isLogin,cartController.loadCart)
 
 router.post('/cart',cartController.addtoCart)
 
+router.delete('/deleteProduct/:productId',cartController.deleteCartProduct)
+
 
 
 

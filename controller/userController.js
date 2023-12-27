@@ -85,23 +85,27 @@ const verifyLogin = async (req, res) => {
     try {
         const { email, password } = req.body
         const user = await User.findOne({ email: email })
-        // console.log(user);
+        const data = await User.findOne({email:email,isBlocked:true})
+        console.log(data);
         if (!user) {
-            req.flash('message', 'incorrect email or password')
+            req.flash('message', 'User not found')
             res.redirect('/login')
         }
         const pswdMatch = await bcrypt.compare(password, user.password)
         if (!pswdMatch) {
-            req.flash('message', 'incorrect email or password')
+            req.flash('message', 'incorrect password')
+            res.redirect('/login')
+        }
+        if(data){
+            req.flash('message','cannot login because you are in blocklist')
             res.redirect('/login')
         }
         req.session.user_id = user._id
-        // console.log(req.body.user_id);
         res.redirect('/')
 
     } catch (error) {
         console.log(error);
-    }
+    } 
 
 }
 
@@ -262,6 +266,8 @@ const shop = async (req, res) => {
         } else {
             data = await products.find({ isListed: true })
         }
+        
+        
 
         const categdata = await categories.find({ isListed: true })
 
@@ -365,6 +371,7 @@ const editProfile = async (req, res) => {
         // Handle the error appropriately (e.g., send an error response)
     }
 };
+
 
 
 module.exports = {

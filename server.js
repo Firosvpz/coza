@@ -12,14 +12,14 @@ const PORT = process.env.PORT || 3000
 // middleware
 app.use(express.json())   
 app.use(express.urlencoded({extended:true}))    
-   
+     
 app.use(session({       
-    secret:'key',                                       
+    secret:'key',                                          
     saveUninitialized:false,       
     resave:false                               
 }))      
      
-app.use(flash())
+app.use(flash()) 
       
 // cache 
 app.use((req,res,next)=>{    
@@ -39,8 +39,6 @@ app.use('/',require('./routes/userRoutes'))
 app.use('/admin',require('./routes/adminRoutes'))
   
   
-
-       
  
 app.listen(PORT,()=>{
     console.log(`server is running on port http://localhost:${PORT}`);

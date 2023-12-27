@@ -70,7 +70,7 @@ adminRouter.post('/products/unlist/:id',adminController.unListProducts)
 
 adminRouter.get('/editproducts',auth.isAdminLogin,adminController.loadEditProducts)
 
-adminRouter.post('/editproducts',adminController.editProduct)
+adminRouter.post('/editproducts',upload,adminController.editProduct)
 
 adminRouter.put('/products/deleteimg',adminController.deleteImg)
 
