@@ -84,6 +84,12 @@
                         <i class="fa-brands fa-product-hunt"></i> <span>products</span>
                     </a>
                 </li>
+                <li>
+                    <a href="/admin/orders">
+                      <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
+                    </a>
+                </li>
+            
 
 
 
@@ -178,12 +184,12 @@
                                 <form method="post">
                                     <div class="mb-3">
                                       <label for="exampleInputEmail1" class="form-label">CATEGORY NAME</label>
-                                      <input type="text" class="form-control" id="exampleInputEmail1" name="categoryName" required >
+                                      <input type="text" class="form-control" id="exampleInputEmail1" name="categoryName"  value="<%=data.categoryName%>" required >
                                      
                                     </div>
                                     <div class="mb-3">
                                       <label for="exampleInputPassword1" class="form-label">Description</label>
-                                      <input type="text" class="form-control" id="exampleInputPassword1" name="description" required>
+                                      <input type="text" class="form-control" id="exampleInputPassword1" name="description" value="<%= data.description%>" required>
                                     </div>
                                    
                                    <a href="/admin/categories"><button type="submit" class="btn btn-primary" id="add">Add</button></a> 

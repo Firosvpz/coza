@@ -87,6 +87,12 @@
                         <i class="fa-brands fa-product-hunt"></i> <span>products</span>
                     </a>
                 </li>
+                <li>
+                    <a href="/admin/orders">
+                        <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
+                    </a>
+                </li>
+
 
 
             </ul>
@@ -254,21 +260,12 @@
                                                     </td>
                                                     <td>
                                                         <div class="btn-group">
-
-
-
-
-                                                            <a class="" href="">
-                                                                <button
-                                                                    class="btn btn-sm font-sm toggle-product btn-outline-info"
-                                                                    data-categ-id="<%=products[i]._id%>"
-                                                                    data-action="<%=products[i].isListed ? 'unlist' : 'list'%>">
-                                                                    <%=products[i].isListed ? 'Unlist' : 'List' %>
-                                                                </button>
-                                                            </a>
-
-
-
+                                                            <button
+                                                                class="btn btn-sm font-sm toggle-product btn-outline-info"
+                                                                data-categ-id="<%= products[i]._id %>"
+                                                                data-action="<%= products[i].isListed ? 'unlist' : 'list' %>">
+                                                                <%= products[i].isListed ? 'Unlist' : 'List' %>
+                                                            </button>
                                                         </div>
                                                     </td>
 
@@ -292,6 +289,27 @@
                     </div>
 
                 </div><!--End Row-->
+
+                <!-- Modal HTML -->
+                <div id="confirmationModal" class="modal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmation</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to proceed?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button id="confirmActionBtn" type="button" class="btn btn-primary">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
                 <!--start overlay-->
                 <div class="overlay toggle-menu"></div>
@@ -462,6 +480,11 @@
 
 
     </script>
+
+
+
+
+
 </body>
 
 

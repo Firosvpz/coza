@@ -85,6 +85,13 @@
                     </a>
                 </li>
 
+                <li>
+                    <a href="/admin/orders">
+                        <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
+                    </a>
+                </li>
+
+
 
 
             </ul>
@@ -174,68 +181,75 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="card-title text-center">ADD PRODUCTS</div>
-                                
-                                
+
+
                                 <hr>
-                                <form  method="post" enctype="multipart/form-data" >
+                                <form method="post" enctype="multipart/form-data" id="productForm">
                                     <div>
                                         <a href="/admin/addproducts"><button type="submit" class="btn btn-primary mb-3"
-                                            id="add">Add</button></a>
+                                                id="add">Add</button></a>
                                     </div>
                                     <div class="mb-3">
                                         <label for="exampleInputEmail1" class="form-label">PRODUCT NAME</label>
                                         <input type="text" class="form-control" id="exampleInputEmail1"
-                                            name="productName" required>
+                                            value="<%= data.productName%>" name="productName" required>
 
                                     </div>
                                     <div class="mb-3">
                                         <label for="exampleInputPassword1" class="form-label">Description</label>
                                         <input type="text" class="form-control" id="exampleInputPassword1"
-                                            name="description" required>
+                                            value="<%= data.description%>" name="description" required>
                                     </div>
+
                                     <div class="mb-3">
                                         <label for="exampleInputEmail1" class="form-label">Price</label>
-                                        <input type="number" class="form-control" id="exampleInputEmail1" name="price"
-                                            required>
+                                        <input type="number" class="form-control" id="priceInput" name="price"
+                                             value="<%= data.price%>" required>
 
                                     </div>
+
+
+
+
                                     <div class="mb-3">
                                         <label for="exampleInputPassword1" class="form-label">Quantity</label>
-                                        <input type="number" class="form-control" id="exampleInputPassword1"
-                                            name="quantity" required>
+                                        <input type="number" class="form-control" id="quantityInput"
+                                            value="<%= data.quantity%>" name="quantity"  required>
                                     </div>
-                                    
-                                    
-                                    
-                                   
-                                    <div class="mb-3 w-50">
-                                        <label for="exampleInputPassword1" >Image</label>
-                                        <div class="input-group col-xs-12">
-                                        <input class="form-control w-25" placeholder="upload image" type="file" id="exampleInputPassword1" name="images" multiple required>
-                                       
+
+
+
+
+                                    <div class="mb-3">
+                                        <label for="productImage" class="form-label mb-10  ">Product Image</label>
+                                        <span id="imagePreview" class="mt-2 "></span>
+
+                                        <input type="file" class="form-control bg-dark text-white" id="productImage"
+                                            name="images" multiple>
+
+                                                  
                                     </div>
-                                    </div>
-                                   
+
                                     <div class="mb-3 form-group">
-                                        <label for="exampleInputPassword1" >Category</label>
-                                        <select class="form-control w-50"  name="category" required>
-                                            <% categories.forEach( category => { %>
+                                        <label for="exampleInputPassword1">Category</label>
+                                        <select class="form-control w-50" name="category" required>
+                                            <% categories.forEach( category=> { %>
                                                 <option>
-                                                    <%=category.name %>
+                                                    <%=category.categoryName %>
                                                 </option>
                                                 <% }); %>
-                                            </select>
+                                        </select>
                                     </div>
-                                   
-                                   
-                                   
+
+
+
                                     <div class=" container ">
                                         <%if(typeof message !=="undefined" ) { %>
                                             <p class="text-danger "><%- message %></p>
                                             <% } %>
-                                        </div>
-                                    
-                                   
+                                    </div>
+
+
 
 
                                 </form>
@@ -243,71 +257,71 @@
                             </div>
                         </div>
                     </div>
-                    </div>
-                    </div>
-                    
-
-                </div><!--End Row-->
-
-                <!--start overlay-->
-                <div class="overlay toggle-menu"></div>
-                <!--end overlay-->
-
+                </div>
             </div>
-            <!-- End container-fluid-->
 
-        </div><!--End content-wrapper-->
-        <!--Start Back To Top Button-->
-        <a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i> </a>
-        <!--End Back To Top Button-->
 
-        <!--Start footer-->
-        <!-- <footer class="footer">
+        </div><!--End Row-->
+
+        <!--start overlay-->
+        <div class="overlay toggle-menu"></div>
+        <!--end overlay-->
+
+    </div>
+    <!-- End container-fluid-->
+
+    </div><!--End content-wrapper-->
+    <!--Start Back To Top Button-->
+    <a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i> </a>
+    <!--End Back To Top Button-->
+
+    <!--Start footer-->
+    <!-- <footer class="footer">
             <div class="container">
                 <div class="text-center">
                     Copyright © 2018 Dashtreme Admin
                 </div>
             </div>
         </footer> -->
-        <!--End footer-->
+    <!--End footer-->
 
-        <!--start color switcher-->
-        <div class="right-sidebar">
-            <div class="switcher-icon">
-                <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
-            </div>
-            <div class="right-sidebar-content">
-
-                <p class="mb-0">Gaussion Texture</p>
-                <hr>
-
-                <ul class="switcher">
-                    <li id="theme1"></li>
-                    <li id="theme2"></li>
-                    <li id="theme3"></li>
-                    <li id="theme4"></li>
-                    <li id="theme5"></li>
-                    <li id="theme6"></li>
-                </ul>
-
-                <p class="mb-0">Gradient Background</p>
-                <hr>
-
-                <ul class="switcher">
-                    <li id="theme7"></li>
-                    <li id="theme8"></li>
-                    <li id="theme9"></li>
-                    <li id="theme10"></li>
-                    <li id="theme11"></li>
-                    <li id="theme12"></li>
-                    <li id="theme13"></li>
-                    <li id="theme14"></li>
-                    <li id="theme15"></li>
-                </ul>
-
-            </div>
+    <!--start color switcher-->
+    <div class="right-sidebar">
+        <div class="switcher-icon">
+            <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
         </div>
-        <!--end color switcher-->
+        <div class="right-sidebar-content">
+
+            <p class="mb-0">Gaussion Texture</p>
+            <hr>
+
+            <ul class="switcher">
+                <li id="theme1"></li>
+                <li id="theme2"></li>
+                <li id="theme3"></li>
+                <li id="theme4"></li>
+                <li id="theme5"></li>
+                <li id="theme6"></li>
+            </ul>
+
+            <p class="mb-0">Gradient Background</p>
+            <hr>
+
+            <ul class="switcher">
+                <li id="theme7"></li>
+                <li id="theme8"></li>
+                <li id="theme9"></li>
+                <li id="theme10"></li>
+                <li id="theme11"></li>
+                <li id="theme12"></li>
+                <li id="theme13"></li>
+                <li id="theme14"></li>
+                <li id="theme15"></li>
+            </ul>
+
+        </div>
+    </div>
+    <!--end color switcher-->
 
     </div><!--End wrapper-->
 
@@ -342,7 +356,92 @@
         //     alert(" Successfully Added products")
         // })
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the file input element
+            const fileInput = document.getElementById('productImage');
 
+            // Get the image preview container
+            const imagePreviewContainer = document.getElementById('imagePreview');
+
+            // Add an event listener to the file input
+            fileInput.addEventListener('change', function () {
+                // Remove existing preview images
+                imagePreviewContainer.innerHTML = '';
+
+                // Loop through selected files and create image previews
+                for (const file of fileInput.files) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.className = 'img-sm img-thumbnail mr-2';
+                    img.alt = 'Image Preview';
+                    img.style.width = '80px';
+                    img.style.height = '80px';
+                    imagePreviewContainer.appendChild(img);
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('myForm').addEventListener('submit', function (event) {
+                const inputValue = parseFloat(document.getElementById('exampleInputEmail1').value);
+                const priceError = document.getElementById('priceError');
+
+                if (inputValue <= 1) {
+                    event.preventDefault(); // Prevent form submission
+                    priceError.innerHTML = 'Minimum price is 1'; // Display error message
+                } else {
+                    priceError.textContent = ''; // Clear previous error message if valid
+                }
+            });
+        });
+
+
+
+
+    </script>
+    <script>
+        document.getElementById('productForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevents the form from submitting by default
+
+            // Get the price input value
+            const priceInput = document.getElementById('priceInput');
+            const price = parseFloat(priceInput.value); // Convert to a floating-point number
+
+            // Validate the price
+            if (isNaN(price) || price <= 1) {
+                alert('Please enter a valid price greater than one.');
+                priceInput.focus(); // Focus back on the price input
+                return; // Stop further processing as validation failed
+            }
+
+            // If the price is valid, you can proceed with form submission or other actions
+            // For example, submit the form programmatically:
+            // event.target.submit(); // Uncomment this line to submit the form
+        });
+
+    </script>
+    <script>
+        document.getElementById('productForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevents the form from submitting by default
+
+            // Get the price input value
+            const priceInput = document.getElementById('quantityInput');
+            const price = parseFloat(priceInput.value); // Convert to a floating-point number
+
+            // Validate the price
+            if (isNaN(price) || price <= 1 ) {
+                alert('Please enter a valid quantity greater than one.');
+                priceInput.focus(); // Focus back on the price input
+                return; // Stop further processing as validation failed
+            }
+
+            // If the price is valid, you can proceed with form submission or other actions
+            // For example, submit the form programmatically:
+            // event.target.submit(); // Uncomment this line to submit the form
+        });
+    </script>
 
 
 </body>

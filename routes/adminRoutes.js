@@ -74,4 +74,6 @@ adminRouter.post('/editproducts',upload,adminController.editProduct)
 
 adminRouter.put('/products/deleteimg',adminController.deleteImg)
 
+adminRouter.get('/orders',adminController.loadOrders)
+
 module.exports=adminRouter   

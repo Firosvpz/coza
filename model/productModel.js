@@ -13,6 +13,10 @@ const productSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
+    discount:{
+        type:Number,
+        
+    },
     category:{
         type:String,
         required:true

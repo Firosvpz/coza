@@ -12,16 +12,16 @@ const PORT = process.env.PORT || 3000
 // middleware
 app.use(express.json())   
 app.use(express.urlencoded({extended:true}))    
-     
+        
 app.use(session({       
-    secret:'key',                                          
-    saveUninitialized:false,       
-    resave:false                               
-}))      
-     
+    secret:'key',                                            
+    saveUninitialized:false,         
+    resave:false                                   
+}))         
+         
 app.use(flash()) 
-      
-// cache 
+        
+// cache        
 app.use((req,res,next)=>{    
     res.set('Cache-control','no-store,no-cache')   
     next()
@@ -37,9 +37,9 @@ connectDB()
      
 app.use('/',require('./routes/userRoutes'))
 app.use('/admin',require('./routes/adminRoutes'))
-  
+    
   
  
 app.listen(PORT,()=>{
     console.log(`server is running on port http://localhost:${PORT}`);
-})     
+})         

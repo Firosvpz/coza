@@ -87,6 +87,12 @@
                         <i class="fa-brands fa-product-hunt"></i> <span>products</span>
                     </a>
                 </li>
+                <li>
+                    <a href="/admin/orders">
+                      <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
+                    </a>
+                </li>
+            
 
 
 
@@ -196,7 +202,7 @@
                                             <% for (let i=0;i < categories.length; i++) { %>
                                                 <tr>
                                                     <td class="pt-3">
-                                                        <%=categories[i].name%>
+                                                        <%=categories[i].categoryName%>
                                                     </td>
                                                     <td>
                                                         <%=categories[i].description%>
@@ -226,9 +232,7 @@
 
 
                                                     <td>
-
-                                                        <button
-                                                            class="btn btn-sm rounded font-sm unlist-category toggle-product bg-success"
+                                                        <button class="btn btn-sm rounded font-sm unlist-category toggle-product bg-success"
                                                             data-categ-id="<%=categories[i]._id%>"
                                                             data-action="<%= categories[i].isListed ? 'unlist' : 'list' %>">
                                                             <%= categories[i].isListed ? 'Unlist' : 'List' %>
@@ -488,35 +492,8 @@
             });
         });
 
-
-
-
-
-
-        // Assuming jQuery for AJAX, but you can use vanilla JavaScript fetch or other AJAX libraries
-        // $('.delete-category').on('click', function () {
-        //     const categoryId = $(this).data('category-id');
-
-        //     // Call the backend to delete the category via AJAX
-        //     $.ajax({
-        //         url: `/admin/categories/deletecategory/${categoryId}`,
-        //         method: 'POST',
-        //         success: function (response) {
-        //             if (response.success) {
-        //                 // Category deleted successfully
-        //                 console.log('Category deleted');
-        //             } else {
-        //                 console.error('Failed to delete category');
-        //             }
-        //         },
-        //         error: function (err) {
-        //             console.error('Error:', err);
-        //         }
-        //     });
-        // });
-
-
     </script>
+    
 
 
 </body>

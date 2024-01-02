@@ -986,36 +986,33 @@
 		// add to cart
 
 		function addTocart(productId) {
-			const quantity = document.getElementById('quantity').value;
-			const data = { productId: productId, quantity: quantity };
+    const quantity = document.getElementById('quantity').value;
+    const data = { productId: productId, quantity: quantity };
 
-			$.ajax({
-				method: 'POST',
-				url: 'cart', // Update the URL to match your endpoint
-				data: JSON.stringify(data),
-				contentType: 'application/json',
-				success: function (response) {
-					if (response.success) {
-						$('.js-addcart-detail').each(function () {
-							var nameProduct = $(this).parent().parent().parent().parent().find('.js-name-detail').html();
-							$(this).on('click', function () {
-								swal({
-									title: nameProduct,
-									text: 'is added to cart !',
-									icon: 'success',
-									button: 'OK',
-								});
-							});
-						});
-					} else {
-						console.log("Failed to add product to cart");
-					}
-				},
-				error: function (error) {
-					console.log("Error:", error);
-				}
-			});
-		}
+    $.ajax({
+        method: 'POST',
+        url: 'cart', // Update the URL to match your endpoint
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function (response) {
+            if (response.success) {
+                var nameProduct = $('.js-name-detail').html();
+                swal({
+                    title: nameProduct,
+                    text: 'is added to cart !',
+                    icon: 'success',
+                    button: 'OK',
+                });
+            } else {
+                console.log("Failed to add product to cart");
+            }
+        },
+        error: function (error) {
+            console.log("Error:", error);
+        }
+    });
+}
+
 
 		// max value
 
@@ -1026,7 +1023,7 @@
 			var currentQuantity = parseInt(quantityInput.value);
 
 			if (currentQuantity < maxQuantity) {
-				quantityInput.value = currentQuantity + 1;
+				quantityInput.value = currentQuantity;
 			}
 
 			// Disable plus button if the current quantity equals max quantity
@@ -1043,7 +1040,7 @@
 			var currentQuantity = parseInt(quantityInput.value);
 
 			if (currentQuantity > 1) {
-				quantityInput.value = currentQuantity - 1;
+				quantityInput.value = currentQuantity ;
 			}
 
 			// Enable plus button if the current quantity is less than max quantity
@@ -1057,18 +1054,43 @@
 				this.disabled = true;
 			}
 		});
-
-
-
-
-
-
-
-
-
-
-
 	</script>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		const slickGallery = document.querySelector('.slick3');
+		const productImages = slickGallery.querySelectorAll('.wrap-pic-w img');
+		let isZoomed = false;
+
+		productImages.forEach((img) => {
+			img.addEventListener('mouseover', function () {
+				// Apply zoom effect on mouseover
+				if (!isZoomed) {
+					img.style.transform = 'scale(2.3)';
+					img.style.transition = 'transform 0.3s ease'; // Optional: Add a transition for a smooth effect
+					isZoomed = true;
+				}
+			});
+
+			img.addEventListener('mousemove', function (e) {
+				if (isZoomed) {
+					const boundingBox = img.getBoundingClientRect();
+					const offsetX = (e.clientX - boundingBox.left) / boundingBox.width;
+					const offsetY = (e.clientY - boundingBox.top) / boundingBox.height;
+
+					// Move the image according to mouse movement
+					img.style.transformOrigin = `${offsetX * 100}% ${offsetY * 100}%`;
+				}
+			});
+
+			img.addEventListener('mouseleave', function () {
+				// Reset to normal size on mouseleave
+				img.style.transform = 'scale(1)';
+				isZoomed = false;
+			});
+		});
+	});
+    </script>
 	<!--===============================================================================================-->
 	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 	<script>

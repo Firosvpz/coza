@@ -1,12 +1,15 @@
 const User = require('../model/userModel')
 const categories = require('../model/categoryModel')
 const products = require('../model/productModel')
+const Order = require('../model/orderModel')
 const dotenv = require('dotenv')
 const { name } = require('ejs')
 const path = require('path')
 const sharp = require('sharp')
 const { fstat } = require('fs')
 const session = require('express-session')
+const moment = require('moment')
+
 
 
 
@@ -162,7 +165,7 @@ const unListCategory = async (req, res) => {
 // load add category
 const addCategory = async (req, res) => {
     try {
-        res.render('add-categ')
+        res.render('add-categ', { data: req.body })
     } catch (error) {
         console.log(error);
     }
@@ -172,16 +175,23 @@ const addCategory = async (req, res) => {
 const addCategoryItems = async (req, res) => {
     try {
 
-        const categoryExist = await categories.findOne({ name: req.body.categoryName });
+        // console.log(req.body);
 
-        if (categoryExist) {
-            res.render('add-categ', { message: "category already exist" })
+        const categoryNameRegex = new RegExp(`^${req.body.categoryName}$`, 'i');
+
+        const existingCategory = await categories.findOne({ categoryName: { $regex: categoryNameRegex } });
+
+
+        if (existingCategory && existingCategory._id.toString() !== req.body.id) {
+
+            // If a similar name exists for a different category, prevent the update
+            res.render('add-categ', { message: 'category already exist' ,data:req.body});
         } else {
 
             const { categoryName, description } = req.body
 
             const newCategory = new categories({
-                name: categoryName,
+                 categoryName,
                 description
 
             })
@@ -197,27 +207,43 @@ const addCategoryItems = async (req, res) => {
 // load edit-category
 const loadEditCategory = async (req, res) => {
     try {
-        const id = req.query.categoryid
-        const data = await categories.findOne({ _id: id })
-        res.render('edit-categ', { categories: data })
+
+        const id = req.query.categoryid;
+        const data = await categories.findOne({ _id: id });
+        res.render('edit-categ', { categories: data });
+
+
     } catch (error) {
-        console.log(error);
+        console.log(error);  
     }
 }
+
 
 // edit-category
 const editCategory = async (req, res) => {
     try {
-        // console.log('edit:',req.body.id);
-        await categories.findByIdAndUpdate({ _id: req.body.id }, { name: req.body.categoryName, description: req.body.description })
-        console.log(':', req.body.categoryName);
-        res.redirect('/admin/categories')
+        // Convert the input category name to a case-insensitive regex pattern
+        const categoryNameRegex = new RegExp(`^${req.body.categoryName}$`, 'i');
 
+        // Check for an existing category with a similar name (case-insensitive)
+        const existingCategory = await categories.findOne({ categoryName: { $regex: categoryNameRegex } });
 
+        if (existingCategory && existingCategory._id.toString() !== req.body.id) {
+
+            // If a similar name exists for a different category, prevent the update
+           req.flash("message","category already exist")
+           res.render('edit-categ',{categories:req.body})
+
+        } else {
+            // Update the category since the name doesn't exist or it's the same category being edited
+            await categories.findByIdAndUpdate({ _id: req.body.id }, { name: req.body.categoryName, description: req.body.description });
+            res.redirect('/admin/categories');
+        }
     } catch (error) {
         console.log(error);
     }
 }
+
 
 const deleteCategory = async (req, res) => {
     try {
@@ -248,7 +274,7 @@ const loadProducts = async (req, res) => {
 const loadAddProducts = async (req, res) => {
     try {
         const data = await categories.find({ isListed: true })
-        res.render('add-products', { categories: data })
+        res.render('add-products', { categories: data,data })
     } catch (error) {
         console.log(error);
     }
@@ -261,17 +287,16 @@ const addProducts = async (req, res) => {
         const existProduct = await products.findOne({ name: req.body.productName })
         if (existProduct) {
             const categdata = await categories.find({ isListed: true })
-            res.render('add-products', { message: "product already exist", categories: categdata })
+            return res.render('add-products', { message: "product already exist", categories: categdata, data: req.body })
 
         } else {
             const { productName, description, price, category, quantity, date } = req.body
 
             const filenames = []
 
-            const data = await categories.find({ isListed: true })
+            const data = await categories.find({ isListed: true })  
 
-            res.render('add-products', { categories: data })
-
+             
             if (req.files.length !== 4) {
                 return res.render('add-products', { message: '4 images needed', categories: data })
             }
@@ -282,19 +307,21 @@ const addProducts = async (req, res) => {
                 await sharp(req.files[i].path).resize(800, 1200, { fit: 'fill' }).toFile(imagesPath)
                 filenames.push(req.files[i].filename)
             }
+            let discount = parseInt(price)+ Math.floor(parseInt(price) + Math.random() * 1000);
             const newProduct = new products({
                 name: productName,
                 description,
-                price,
+                price,  
+                discount,
                 category,
-                images: filenames,
-                quantity,
+                images: filenames,  
+                quantity,  
                 date
-
+   
             })
 
             await newProduct.save()
-            res.redirect('/admin/products')
+            return res.redirect('/admin/products')
 
 
         }
@@ -345,7 +372,7 @@ const loadEditProducts = async (req, res) => {
         // console.log('categdata',categdata);
         res.render('edit-products', { products: data, categories: categdata })
     } catch (error) {
-        console.log(error); 
+        console.log(error);
     }
 }
 
@@ -356,7 +383,7 @@ const editProduct = async (req, res) => {
         // console.log('id:',id);
         const { productName, description, price, category, quantity } = req.body
         //  console.log('body:',productName);
-        const data = await products.findById(id) 
+        const data = await products.findById(id)
         // console.log('ndo:',data);
         const categdata = await categories.find({ isListed: true })
 
@@ -364,9 +391,9 @@ const editProduct = async (req, res) => {
         let imageData = [];
         if (req.files) {
             const existingImage = (await products.findById(id)).images.length;
-            
+
             if (existingImage + req.files.length !== 4) {
-                return res.render('edit-products', { message: 'only four images allowed',products, categories: categdata })
+                return res.render('edit-products', { message: 'only four images allowed', products, categories: categdata })
             }
             for (let i = 0; i < req.files.length; i++) {
                 // Resize path
@@ -410,6 +437,7 @@ const deleteImg = async (req, res) => {
     try {
         console.log(req.body);
         const { img, productid } = req.body
+        console.log(img);
         fs.unlink(path.join(__dirname, '../public/sharpImages', img), () => { });
         await products.updateOne(
             { _id: productid },
@@ -418,6 +446,19 @@ const deleteImg = async (req, res) => {
         res.send({ success: true })
     } catch (error) {
         res.status(500).send({ success: false, error: error.message })
+    }
+}
+
+// orders
+const loadOrders = async (req, res) => {
+    try {
+
+        const orders = await Order.find().populate('items.product_id').sort({ _id: 1 })
+
+        res.render('adminOrder', { orders, moment })
+
+    } catch (error) {
+        console.log(error);
     }
 }
 
@@ -454,5 +495,6 @@ module.exports = {
     unListProducts,
     loadEditProducts,
     editProduct,
-    deleteImg
+    deleteImg,
+    loadOrders
 }

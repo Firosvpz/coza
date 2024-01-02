@@ -36,7 +36,7 @@
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <!--===============================================================================================-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-		integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 
 <body class="animsition">
@@ -44,64 +44,55 @@
     <!-- Header -->
     <header class="header-v2">
         <!-- Header desktop -->
-        <div class="container-menu-desktop trans-03">
+        <div class="container-menu-desktop trans-03 ">
             <div class="wrap-menu-desktop">
                 <nav class="limiter-menu-desktop p-l-45">
 
                     <!-- Logo desktop -->
-                    <a href="#" class="logo">
+                    <a href="/home" class="logo">
                         <img src="images/icons/logo-01.png" alt="IMG-LOGO">
                     </a>
                     <!-- Menu desktop -->
                     <div class="menu-desktop">
-                        <ul class="main-menu">
+                        <ul class="main-menu ">
                             <li>
-                                <a href="/">Home</a>
+                                <a href="/" class="text-decoration-none">Home</a>
 
                             </li>
 
-                            <li class="active-menu">
-                                <a href="/shop">Shop</a>
+                            <li>
+                                <a href="/shop" class="text-decoration-none  fw-bold">Shop</a>
                             </li>
                             <li>
-                                <a href="/about">About</a>
+                                <a href="/about" class="text-decoration-none">About</a>
                             </li>
                             <li class="label1">
-                                <a href="/cart" style="text-decoration: none;">Cart</a>
+                                <a href="/cart" class="text-decoration-none">Cart</a>
                             </li>
 
                             <li>
-                                <a href="/contact">Contact</a>
+                                <a href="/contact" class="text-decoration-none">Contact</a>
+
                             </li>
+
 
                             <!-- Profile link -->
                             <li>
-								<div class="dropdown">
-									<button class="btn btn-transparent text-white  btn-sm fw-bold" type="button"
-										data-bs-toggle="dropdown" aria-expanded="false">
-										<%=locals.user?user.username:"PROFILE"%>
-									</button>
-									<ul class="dropdown-menu bg-transparent ">
-										
-											<a class="dropdown-item bg-dark text-white" href="/profile">User profile</a>
-									
-										
-										<!-- <li><a class="dropdown-item bg-dark text-white" href="/login"> -->
-											<%if(locals.user){%>
-												<a class="dropdown-item bg-dark text-white" href="/logout">Logout</a>
-											<%}else{%>
-											    <a class="dropdown-item bg-dark text-white" href="/login">Login</a>
-											<%}%>
-										</a></li>
+                                <div>
+                                    <button class="  fs-6 text-success fw-bold" type="text">
+                                        <%=locals.user?user.username:"PROFILE"%>
+                                    </button>
 
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                    </ul>
+                </nav>
             </div>
 
 
-            </nav>
-        </div>
-        </div>
+
+
 
     </header>
 
@@ -109,10 +100,11 @@
 
     <!-- Product -->
 
-    <div class="bg0 mt-23 p-b-140">
-        <div class="container">
-            <div class="flex-w flex-l-m filter-tope-group m-tb-5">
-                <a href="/shop"><button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter="*">
+    <div class="bg0 mt-23 p-b-140 ">
+        <div class="container ">
+            <div class="flex-w flex-l-m filter-tope-group m-tb-5 ms-5">
+                <a href="/shop"><button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 fw-bold text-dark ms-5"
+                        data-filter="*">
                         All Products
                     </button></a>
 
@@ -122,9 +114,10 @@
                         <div class="flex-w flex-l-m filter-tope-group m-tb-5">
 
 
-                            <a href="/shop?id=<%=categories[i].name%>"><button
-                                    class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".men">
-                                    <%=categories[i].name%>
+                            <a href="/shop?id=<%=categories[i].categoryName%>"><button
+                                    class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 fw-bold text-dark"
+                                    data-filter=".men">
+                                    <%=categories[i].categoryName%>
                                 </button></a>
 
 
@@ -165,49 +158,56 @@
                                         </div>
                                     </div>
 
-                                    
+
             </div>
 
 
             <!-- products -->
 
 
-            <div class="row isotope-grid">
+            <div class="row isotope-grid ms-5">
                 <% if(products.length> 0){ %>
                     <% for(let i=0;i<products.length;i++){ %>
 
-                        <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
+                        <div class="col-sm-6 col-md-4 col-lg-2 p-b-35 isotope-item women mb-5 ms-5 me-5 border rounded-3 "
+                            style="background-color: antiquewhite; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
                             <!-- Block2 -->
                             <div class="block2">
-                                <div class="block2-pic hov-img0">
-                                    <img src="/sharpimages/<%=products[i].images[0]%>" alt="IMG-PRODUCT">
+                                <div class="block2-pic hov-img0 p-4 ">
+                                    <img src="/sharpimages/<%=products[i].images[0]%>" alt="IMG-PRODUCT" height="100%"
+                                        style="background-color:rgba(28, 87, 100, 0.638); box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);"
+                                        width="100%" class="rounded-5  img-fluid ms-3">
 
                                     <a href="/productdetails?id=<%=products[i]._id%>"
-                                        class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 ">
+                                        class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 text-decoration-none">
                                         Quick View
                                     </a>
                                 </div>
 
                                 <div class="block2-txt flex-w flex-t p-t-14">
                                     <div class="block2-txt-child1 flex-col-l ">
-                                        <a  class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 product-name">
+                                        <a class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 product-name fs-2">
                                             <%= products[i].name %>
                                         </a>
 
 
-                                        <span class="stext-105 cl3">
-                                            ₹ <%=products[i].price%>
+                                        <span class="stext-105 cl3 fs-4 text-dark fw-bold">
+                                            ₹ <%=products[i].price%> <span class="stext-105 cl3 fs-6 text-danger"
+                                                    style="text-decoration: line-through;">
+                                                    ₹ <%=products[i].discount%>
+                                                </span>
                                         </span>
+
                                     </div>
 
-                                    <div class="block2-txt-child2 flex-r p-t-3">
+                                    <!-- <div class="block2-txt-child2 flex-r p-t-3">
                                         <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
                                             <img class="icon-heart1 dis-block trans-04"
                                                 src="images/icons/icon-heart-01.png" alt="ICON">
                                             <img class="icon-heart2 dis-block trans-04 ab-t-l"
                                                 src="images/icons/icon-heart-02.png" alt="ICON">
                                         </a>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -525,8 +525,8 @@
                                                 <i class="fs-16 zmdi zmdi-minus"></i>
                                             </div>
 
-                                            <input class="mtext-104 cl3 txt-center num-product" type="number"
-                                                name="" value="1">
+                                            <input class="mtext-104 cl3 txt-center num-product" type="number" name=""
+                                                value="1">
 
                                             <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
                                                 <i class="fs-16 zmdi zmdi-plus"></i>
@@ -694,69 +694,69 @@
 
         // pagination
         // Function to create pagination links
-const createPaginationLinks = (totalPages) => {
-    const paginationContainer = document.getElementById('paginationList');
-    paginationContainer.innerHTML = ''; // Clear existing content
+        const createPaginationLinks = (totalPages) => {
+            const paginationContainer = document.getElementById('paginationList');
+            paginationContainer.innerHTML = ''; // Clear existing content
 
-    // Create "Previous" link
-    const previousItem = document.createElement('li');
-    previousItem.classList.add('page-item');
-    const previousLink = document.createElement('a');
-    previousLink.classList.add('page-link');
-    previousLink.textContent = 'Previous';
-    previousLink.href = '#'; // Link to previous page
-    previousItem.appendChild(previousLink);
-    paginationContainer.appendChild(previousItem);
+            // Create "Previous" link
+            const previousItem = document.createElement('li');
+            previousItem.classList.add('page-item');
+            const previousLink = document.createElement('a');
+            previousLink.classList.add('page-link');
+            previousLink.textContent = 'Previous';
+            previousLink.href = '#'; // Link to previous page
+            previousItem.appendChild(previousLink);
+            paginationContainer.appendChild(previousItem);
 
-    // Loop to create page number links
-    for (let i = 1; i <= totalPages; i++) {
-        const listItem = document.createElement('li');
-        listItem.classList.add('page-item');
-        const link = document.createElement('a');
-        link.classList.add('page-link');
-        link.textContent = i;
-        link.href = '#'; // Link to page i
-        listItem.appendChild(link);
-        paginationContainer.appendChild(listItem);
-    }
+            // Loop to create page number links
+            for (let i = 1; i <= totalPages; i++) {
+                const listItem = document.createElement('li');
+                listItem.classList.add('page-item');
+                const link = document.createElement('a');
+                link.classList.add('page-link');
+                link.textContent = i;
+                link.href = '#'; // Link to page i
+                listItem.appendChild(link);
+                paginationContainer.appendChild(listItem);
+            }
 
-    // Create "Next" link
-    const nextItem = document.createElement('li');
-    nextItem.classList.add('page-item');
-    const nextLink = document.createElement('a');
-    nextLink.classList.add('page-link');
-    nextLink.textContent = 'Next';
-    nextLink.href = '#'; // Link to next page
-    nextItem.appendChild(nextLink);
-    paginationContainer.appendChild(nextItem);
-};
+            // Create "Next" link
+            const nextItem = document.createElement('li');
+            nextItem.classList.add('page-item');
+            const nextLink = document.createElement('a');
+            nextLink.classList.add('page-link');
+            nextLink.textContent = 'Next';
+            nextLink.href = '#'; // Link to next page
+            nextItem.appendChild(nextLink);
+            paginationContainer.appendChild(nextItem);
+        };
 
-// Function to fetch data for a specific page
-const fetchDataForPage = async (page, limit) => {
-    try {
-        const response = await fetch(`/pagination?page=${page}&limit=${limit}`);
-        const data = await response.json();
-        // Process data here (e.g., update UI with received data)
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-};
+        // Function to fetch data for a specific page
+        const fetchDataForPage = async (page, limit) => {
+            try {
+                const response = await fetch(`/pagination?page=${page}&limit=${limit}`);
+                const data = await response.json();
+                // Process data here (e.g., update UI with received data)
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
 
-// Event listener for pagination links
-const paginationContainer = document.getElementById('paginationList');
-paginationContainer.addEventListener('click', async (event) => {
-    event.preventDefault(); // Prevent default behavior of links
+        // Event listener for pagination links
+        const paginationContainer = document.getElementById('paginationList');
+        paginationContainer.addEventListener('click', async (event) => {
+            event.preventDefault(); // Prevent default behavior of links
 
-    if (event.target.tagName === 'A') {
-        const page = event.target.textContent;
-        const limit = 3;
-        fetchDataForPage(page, limit);
-    }
-});
+            if (event.target.tagName === 'A') {
+                const page = event.target.textContent;
+                const limit = 3;
+                fetchDataForPage(page, limit);
+            }
+        });
 
-// Assuming you have the total number of pages available
-const totalPages = 3;
-createPaginationLinks(totalPages);
+        // Assuming you have the total number of pages available
+        const totalPages = 3;
+        createPaginationLinks(totalPages);
 
 
 

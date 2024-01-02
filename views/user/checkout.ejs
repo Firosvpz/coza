@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Home 03</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="images/icons/favicon.png" />
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="fonts/linearicons-v1.0.0/icon-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/slick/slick.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/MagnificPopup/magnific-popup.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/util.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!--===============================================================================================-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        .op {
+            display: flex;
+
+            /* Use flexbox to arrange items */
+        }
+
+        .options label {
+            margin-right: 20px;
+            /* Add some spacing between the options */
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="submit"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+<body class="animsition">
+
+    <!-- Header -->
+    <header class="header-v3">
+        <!-- Header desktop -->
+        <div class="container-menu-desktop trans-03">
+            <div class="wrap-menu-desktop">
+                <nav class="limiter-menu-desktop p-l-45">
+
+                    <!-- Logo desktop -->
+                    <a href="/home" class="logo">
+                        <img src="images/icons/logo-02.png" alt="IMG-LOGO">
+                    </a>
+
+                    <!-- Menu desktop -->
+                    <div class="menu-desktop">
+                        <ul class="main-menu n">
+                            <li>
+                                <a href="/home" style="text-decoration: none;">Home</a>
+
+                            </li>
+
+                            <li>
+                                <a href="/shop" style="text-decoration: none;">Shop</a>
+                            </li>
+
+                            <li class="label1" data-label1="">
+                                <a href="/cart" style="text-decoration: none;">Cart</a>
+                            </li>
+
+                            <li>
+                                <a href="/about" style="text-decoration: none;">About</a>
+                            </li>
+
+                            <li>
+                                <a href="/contact" style="text-decoration: none;">Contact</a>
+                            </li>
+                            <li>
+                                <div class="dropdown">
+                                    <button class="btn btn-transparent text-white  btn-sm fw-bold" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <%=locals.user?user.username:"PROFILE"%>
+                                    </button>
+                                    <ul class="dropdown-menu bg-transparent ">
+
+                                        <a class="dropdown-item bg-dark text-white" href="/profile">User profile</a>
+
+
+                                        <!-- <li><a class="dropdown-item bg-dark text-white" href="/login"> -->
+                                        <%if(locals.user){%>
+                                            <a class="dropdown-item bg-dark text-white" href="/logout">Logout</a>
+                                            <%}else{%>
+                                                <a class="dropdown-item bg-dark text-white" href="/login">Login</a>
+                                                <%}%>
+                                                    </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                    </li>
+                    </ul>
+            </div>
+
+        </div>
+
+
+    </header>
+
+
+
+
+
+
+
+
+    <!-- Shoping Cart -->
+
+
+    <form class="bg0 p-t-75 p-b-85 ">
+        <div class="container mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-light p-3 rounded-3">
+                    <li class="breadcrumb-item">
+                        <a href="/home" class="text-decoration-none text-muted ">Home</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/shop" class="text-decoration-none text-muted">Shop</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/cart" class="text-decoration-none text-muted">Cart</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="/checkout" class="text-decoration-none text-dark fw-bold">Checkout</a>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-xl-9 m-lr-auto m-b-50">
+                    <div class="m-lr-25 m-r--38 m-lr-0-xl fw-bold"
+                        style="background-color: rgb(250, 249, 246); box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
+                        <div class="wrap-table-shopping-cart">
+                            <% if(cart && cart.items && cart.items.length> 0) { %>
+                                <table class="table-shopping-cart">
+                                    <!-- Table header -->
+                                    <tr class="table_head " style="background-color: rgba(13, 4, 17, 0.818);">
+                                        <th class="column-1 text-white">Item</th>
+                                        <th class="column-2 text-white">Name</th>
+                                        <th class="column-3 text-white">Price</th>
+                                        <th class="column-4 text-white">Quantity</th>
+                                        <th class="column-5 text-white">Total</th>
+
+                                    </tr>
+                                    <% cart.items.forEach(item=> { %>
+                                        <tr class="table_row">
+                                            <td class="column-1">
+                                                <div class="how-itemcart">
+                                                    <img src="/webimages/<%=item.product_id.images[0]%>" height="70%"
+                                                        width="70%"></img>
+                                                </div>
+                                            </td>
+                                            <td class="column-2" style="font-weight: bold;">
+                                                <%=item.product_id.name%>
+                                            </td>
+                                            <td class="column-3">₹ <%=item.product_id.price%>
+                                            </td>
+                                            <td class="column-4">
+                                                <div class="me-4">
+                                                    <p>
+                                                        <%=item.quantity%>
+                                                    </p>
+                                                </div>
+                                            </td>
+
+                                            <td class="column-5 ">₹ <%=item.total_price%>
+                                            </td>
+
+
+
+                                        </tr>
+                                        <% }); %>
+                                </table>
+                                <% } else { %>
+                                    <p>No items in the cart</p>
+                                    <% } %>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </form>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-xl-9 m-lr-auto m-b-50">
+                <input type="button" value="Add new address" class="btn btn-dark mb-3 ms-4" id="openModalButton">
+                <div class="m-lr-25 m-r--38 m-lr-0-xl"
+                    style="background-color: rgb(250, 249, 246); box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
+                    <div class="wrap-table-shopping-cart">
+                        <table class="table-shopping-cart">
+                            <!-- Table header -->
+                            <tr class="table_head ">
+                                <h3 class="p-3" style="letter-spacing:6px;">
+                                    SELECT ADDRESS
+                                </h3>
+
+
+                            </tr>
+                            <tr class="table_row">
+                                <td class="column-1">
+                                    <div class="options fw-bold">
+                                        <% user.address.forEach((address, index)=> { %>
+                                            <label for="option<%= index + 1 %>" class="op mb-3">
+                                                <input type="radio" id="option<%= index + 1 %>" name="options"
+                                                    value="<%= address.name %>,<%= address.houseName %>,<%= address.place %>,<%= address.phoneNo %>,<%= address.postCode %>"
+                                                    class="me-3" required>
+
+                                                <div class="address-details mt-3">
+                                                    <span>
+                                                        <%= address.name %>
+                                                    </span><br>
+                                                    <span>
+                                                        <%= address.houseName %>
+                                                    </span>&nbsp;&nbsp;
+                                                    <span>
+                                                        <%= address.place %>
+                                                    </span><br>
+                                                    <span>
+                                                        <%= address.phoneNo %>
+                                                    </span><br>
+                                                    <span>
+                                                        <%= address.postCode %>
+                                                    </span><br>
+                                                    <hr>
+                                                </div>
+                                            </label>
+                                            <% }) %>
+                                    </div>
+
+                                </td>
+
+
+
+
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="d-flex">
+        <div class="col-lg-4 col-xl-3 m-lr-right m-b-50 mt-5" style="margin-left: 270px;">
+            <!-- Cart totals and checkout summary -->
+            <div class="bor10 p-lr-20 p-t-10 p-b-40 m-l-20 m-r-0-sm fw-bold"
+                style="background-color:white; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
+                <!-- Cart totals section -->
+                <h4 class="mtext-109 cl2 p-b-30 text-dark " style="letter-spacing:6px;">
+                    Cart Total
+                </h4>
+                <div class="flex-w flex-t bor12 p-b-13">
+                    <div class="size-208">
+                        <span class="stext-110 cl2">
+                            Subtotal:
+                        </span>
+                    </div>
+
+                    <div class="size-209">
+                        <span class="mtext-110 cl2">
+                            ₹<%=subTotal%>
+                        </span>
+                    </div>
+                </div>
+                <br><br>
+                <div class="flex-w flex-t bor12 p-b-13">
+                    <div class="size-208">
+                        <span class="stext-110 cl2">
+                            Discount :
+                        </span>
+                    </div>
+
+                    <div class="size-209">
+                        <span class="mtext-110 cl2">
+                            ₹0
+                        </span>
+                    </div>
+                </div>
+                <br><br>
+                <div class="flex-w flex-t bor12 p-b-13">
+                    <div class="size-208">
+                        <span class="stext-110 cl2">
+                            Delivery :
+                        </span>
+                    </div>
+
+                    <div class="size-209">
+                        <span class="mtext-110 cl2">
+                            ₹0.00
+                        </span>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="flex-w flex-t bor12 p-b-13">
+                    <div class="size-208">
+                        <span class="stext-110 cl2">
+                            Total:
+                        </span>
+                    </div>
+
+                    <div class="size-209">
+                        <span class="mtext-110 cl2">
+                            ₹<%=subTotal%>
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4 col-xl-3 m-lr-right m-b-50 mt-5 " style="margin-left: 270px;">
+            <!-- Cart totals and checkout summary -->
+            <div class="bor10 p-lr-20 p-t-10 p-b-40 m-l-20 m-r-0-sm"
+                style="background-color:white; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
+                <!-- Cart totals section -->
+                <h4 class="mtext-109 cl2 p-b-30 text-dark " style="letter-spacing:6px;">
+                    PAYMENT METHOD
+                </h4>
+                <form>
+                    <div class="options fw-bold ">
+                        <label for="option1" class="op mb-3">
+                            <input type="radio" id="option1" name="paymentOptions" value="COD" class="me-3" required>
+                            Cash on Delivery
+                        </label>
+                        <label for="option2" class="op mb-3">
+                            <input type="radio" id="option2" name="paymentOptions" value="Razorpay" class="me-3">
+                            RazorPay
+                        </label>
+                        <label for="option3" class="op mb-3">
+                            <input type="radio" id="option3" name="paymentOptions" value="Wallet" class="me-3">
+                            Wallet
+                        </label>
+                    </div>
+                    <a href="#" id="placeOrderBtn">
+                        <input type="button" value="Place an Order" class="btn btn-dark mt-3">
+                    </a>
+
+                </form>
+
+
+
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal" id="newAddressModal">
+        <div class="modal-content" style="background-color: #f1efef;">
+            <span class="close text-danger mb-3">&times;</span>
+
+            <form id="newAddressForm">
+                <div class="form-group">
+                    <label for="street">Name:</label>
+                    <input type="text" id="street" name="name" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">House Name:</label>
+                    <input type="text" id="city" name="houseName" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="state">Phone Number:</label>
+                    <input type="text" id="state" name="phoneNumber" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="zip">Place:</label>
+                    <input type="text" id="zip" name="place" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="zip">PostCode:</label>
+                    <input type="number" id="zip" name="postCode" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="zip">State:</label>
+                    <input type="string" id="zip" name="state" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-dark">Add Address</button>
+            </form>
+        </div>
+    </div>
+
+
+
+
+    <!-- Footer -->
+    <footer class="bg3 p-t-75 p-b-32">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-lg-3 p-b-50">
+                    <h4 class="stext-301 cl0 p-b-30">
+                        Categories
+                    </h4>
+
+                    <ul>
+                        <li class="p-b-10">
+                            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                                Women
+                            </a>
+                        </li>
+
+                        <li class="p-b-10">
+                            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                                Men
+                            </a>
+                        </li>
+
+                        <li class="p-b-10">
+                            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                                Shoes
+                            </a>
+                        </li>
+
+                        <li class="p-b-10">
+                            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                                Watches
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-6 col-lg-3 p-b-50">
+                    <h4 class="stext-301 cl0 p-b-30">
+                        Help
+                    </h4>
+
+                    <ul>
+                        <li class="p-b-10">
+                            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                                Track Order
+                            </a>
+                        </li>
+
+                        <li class="p-b-10">
+                            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                                Returns
+                            </a>
+                        </li>
+
+                        <li class="p-b-10">
+                            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                                Shipping
+                            </a>
+                        </li>
+
+                        <li class="p-b-10">
+                            <a href="#" class="stext-107 cl7 hov-cl1 trans-04">
+                                FAQs
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-6 col-lg-3 p-b-50">
+                    <h4 class="stext-301 cl0 p-b-30">
+                        GET IN TOUCH
+                    </h4>
+
+                    <p class="stext-107 cl7 size-201">
+                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
+                        on (+1) 96 716 6879
+                    </p>
+
+                    <div class="p-t-27">
+                        <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+                            <i class="fa fa-facebook"></i>
+                        </a>
+
+                        <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+                            <i class="fa fa-instagram"></i>
+                        </a>
+
+                        <a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
+                            <i class="fa fa-pinterest-p"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-lg-3 p-b-50">
+                    <h4 class="stext-301 cl0 p-b-30">
+                        Newsletter
+                    </h4>
+
+                    <form>
+                        <div class="wrap-input1 w-full p-b-4">
+                            <input class="input1 bg-none plh1 stext-107 cl7" type="text" name="email"
+                                placeholder="email@example.com">
+                            <div class="focus-input1 trans-04"></div>
+                        </div>
+
+                        <div class="p-t-18">
+                            <button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
+                                Subscribe
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="p-t-40">
+                <div class="flex-c-m flex-w p-b-18">
+                    <a href="#" class="m-all-1">
+                        <img src="images/icons/icon-pay-01.png" alt="ICON-PAY">
+                    </a>
+
+                    <a href="#" class="m-all-1">
+                        <img src="images/icons/icon-pay-02.png" alt="ICON-PAY">
+                    </a>
+
+                    <a href="#" class="m-all-1">
+                        <img src="images/icons/icon-pay-03.png" alt="ICON-PAY">
+                    </a>
+
+                    <a href="#" class="m-all-1">
+                        <img src="images/icons/icon-pay-04.png" alt="ICON-PAY">
+                    </a>
+
+                    <a href="#" class="m-all-1">
+                        <img src="images/icons/icon-pay-05.png" alt="ICON-PAY">
+                    </a>
+                </div>
+
+                <p class="stext-107 cl6 txt-center">
+                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    Copyright &copy;
+                    <script>document.write(new Date().getFullYear());</script> All rights reserved | Made with <i
+                        class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com"
+                        target="_blank">Colorlib</a> &amp; distributed by <a href="https://themewagon.com"
+                        target="_blank">ThemeWagon</a>
+                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Back to top -->
+    <div class="btn-back-to-top" id="myBtn">
+        <span class="symbol-btn-back-to-top">
+            <i class="zmdi zmdi-chevron-up"></i>
+        </span>
+    </div>
+
+    <!--===============================================================================================-->
+    <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/bootstrap/js/popper.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/select2/select2.min.js"></script>
+    <script>
+        $(".js-select2").each(function () {
+            $(this).select2({
+                minimumResultsForSearch: 20,
+                dropdownParent: $(this).next('.dropDownSelect2')
+            });
+        })
+    </script>
+    <!--===============================================================================================-->
+    <script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+
+    <script>
+        $('.js-pscroll').each(function () {
+            $(this).css('position', 'relative');
+            $(this).css('overflow', 'hidden');
+            var ps = new PerfectScrollbar(this, {
+                wheelSpeed: 1,
+                scrollingThreshold: 1000,
+                wheelPropagation: false,
+            });
+
+            $(window).on('resize', function () {
+                ps.update();
+            })
+        });
+    </script>
+    <script>
+        // Get the input element
+        const inputField = document.querySelector('.num-product');
+
+        // Get the plus button element
+        const plusButton = document.querySelector('.btn-num-product-up');
+
+        // Event listener for input change
+        inputField.addEventListener('change', function () {
+            const currentValue = parseInt(inputField.value);
+            const maxValue = parseInt(inputField.getAttribute('max'));
+
+            // Check if the current value equals the maximum value
+            if (currentValue === maxValue) {
+                // Hide the plus button
+                plusButton.style.display = 'none';
+            } else {
+                // Show the plus button if it was hidden
+                plusButton.style.display = 'block';
+            }
+        });
+
+    </script>
+    <!--===============================================================================================-->
+    <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <!-- SweetAlert CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+
+        // Get the modal
+        const modal = document.querySelector('.modal');
+
+        // Get the button that opens the modal
+        const addButton = document.getElementById('openModalButton');
+
+        // Get the <span> element that closes the modal
+        const closeBtn = document.querySelector('.close');
+
+        // When the user clicks the button, open the modal
+        addButton.onclick = function () {
+            modal.style.display = 'block';
+        };
+
+        // When the user clicks on <span> (x), close the modal
+        closeBtn.onclick = function () {
+            modal.style.display = 'none';
+        };
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        // Handle form submission
+        const addressForm = document.getElementById('newAddressForm');
+
+        addressForm.addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+            // Here, you can handle the form data, e.g., send it to the server or perform validation
+            // After processing, you can close the modal or display a success message
+            modal.style.display = 'none'; // Close modal after submission
+        });
+
+    </script>
+    <script>
+        // add address
+
+        $(document).ready(function () {
+            $("#newAddressForm").submit(function (event) {
+                event.preventDefault();
+
+                // Serialize form data
+                const formData = $(this).serialize();
+
+                // AJAX to send form data to the server
+                $.ajax({
+                    type: "POST",
+                    url: "/addAddress",
+                    data: formData,
+                    success: function (response) {
+                        // Hide the modal on success
+                        $('#newAddressModal').modal('hide');
+
+                        // Assume 'response' contains the newly added address data
+                        // Append the new address to the list
+                        const newAddressHTML = `<label for="optionX" class="op mb-3"> ... </label>`; // Create HTML for new address
+                        $('.options').append(newAddressHTML); // Append the new address HTML to the existing list
+                    },
+
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+
+
+    </script>
+    <script>
+        // order placing
+        async function placeOrder() {
+            const selectedAddress = document.querySelector('input[name="options"]:checked');
+            const selectedPayment = document.querySelector('input[name="paymentOptions"]:checked');
+
+            if (!selectedAddress || !selectedPayment) {
+                let errorMessage = '';
+
+                if (!selectedAddress) {
+                    errorMessage = 'Please select an address!';
+                }
+
+                if (!selectedPayment) {
+                    errorMessage = 'Please select a payment method!';
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: errorMessage,
+                });
+            } else {
+
+                // Prepare data for the AJAX request
+                const orderData = {
+                    address: selectedAddress.value,
+                    paymentMethod: selectedPayment.value,
+                };
+
+                // Perform AJAX request using fetch
+                $.ajax({
+                    type: "POST",
+                    url: '/placeOrder',
+                    data: {
+                        orderData
+                    },
+                    success: function (response) {
+                        // Handle the success response here
+                        if (response.success == true) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Your order has been placed successfully!',
+                                timer: 2000
+                            })
+                            const param = response.params;
+                            setTimeout(() => {
+                                window.location.href = '/orderpage/' + param; // Redirect to order page
+                            }, 2000); // Same duration as the timer
+                        } else {
+                            // Error handling if order placement fails
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: data.message || 'Failed to place your order. Please try again!',
+                            });
+                        }
+                        // Log the response or perform actions based on the response
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle errors here
+                        console.error(error);
+                    }
+                });
+
+
+
+
+            }
+        }
+
+        document.querySelector('#placeOrderBtn').addEventListener('click', placeOrder);
+
+    </script>
+
+
+
+</body>
+
+</html>

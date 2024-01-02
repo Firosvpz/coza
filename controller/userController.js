@@ -85,7 +85,7 @@ const verifyLogin = async (req, res) => {
     try {
         const { email, password } = req.body
         const user = await User.findOne({ email: email })
-        const data = await User.findOne({email:email,isBlocked:true})
+        const data = await User.findOne({ email: email, isBlocked: true })
         console.log(data);
         if (!user) {
             req.flash('message', 'User not found')
@@ -96,8 +96,8 @@ const verifyLogin = async (req, res) => {
             req.flash('message', 'incorrect password')
             res.redirect('/login')
         }
-        if(data){
-            req.flash('message','cannot login because you are in blocklist')
+        if (data) {
+            req.flash('message', 'cannot login because you are in blocklist')
             res.redirect('/login')
         }
         req.session.user_id = user._id
@@ -105,7 +105,7 @@ const verifyLogin = async (req, res) => {
 
     } catch (error) {
         console.log(error);
-    } 
+    }
 
 }
 
@@ -217,7 +217,7 @@ const loginOtp = async (req, res) => {
 const verifyLoginOtp = async (req, res) => {
     try {
         const email = req.body.email
-        // console.log('email',email);
+       
         const user = await User.findOne({ email: email })
 
         console.log('user:', user);
@@ -256,7 +256,7 @@ const loadHome = async (req, res) => {
 const shop = async (req, res) => {
     try {
         const id = req.session.user_id;
-        console.log('user', id);
+
 
         const user = await User.findOne({ _id: id });
 
@@ -266,8 +266,8 @@ const shop = async (req, res) => {
         } else {
             data = await products.find({ isListed: true })
         }
-        
-        
+
+
 
         const categdata = await categories.find({ isListed: true })
 
@@ -307,11 +307,11 @@ const about = async (req, res) => {
 
 const productDetails = async (req, res) => {
     try {
-       
+
         const id = req.query.id
         const data = await products.findOne({ _id: id })
-        
-        res.render('productdetails', { products: data})
+
+        res.render('productdetails', { products: data })
     } catch (error) {
         console.log(error);
     }
@@ -372,7 +372,62 @@ const editProfile = async (req, res) => {
     }
 };
 
+const profileUser = async (req, res) => {
+    try {
+        const id = req.session.user_id;
 
+
+        const user = await User.findOne({ _id: id });
+        res.render('userprofile', { user })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const loadPassword=async(req,res)=>{
+    try {
+        const user=req.session.user_id;
+        res.render('password',{user:user})
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+const changePassword=async(req,res)=>{
+    try {
+      const  {currentPassword,newPassword,confirmPassword}=req.body;
+      console.log(req.body);
+      const userId=req.session.user_id
+      const user=await User.findOne({_id:userId})
+      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+      if(passwordMatch)
+      {
+        if(newPassword==confirmPassword)
+        {
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            await User.findByIdAndUpdate(userId, { $set: { password: hashedPassword } });
+            res.redirect('/userprofile')
+        }
+        else{
+            return res.status(401).json({ error: "passwords do not match" });
+        }
+      }else{
+        return res.status(401).json({ error: "Invalid old password" });
+      }
+    } catch (error) {
+        console.log();
+    }
+}
+
+const editEmail = async (req,res)=>{
+    try {
+        const email = req.body.email
+        
+    } catch (error) {
+        
+    }
+}
 
 module.exports = {
     homePage,
@@ -393,6 +448,9 @@ module.exports = {
     productDetails,
     pagination,
     userProfile,
-    editProfile
+    editProfile,
+    profileUser,
+    loadPassword,
+    changePassword
 
 }

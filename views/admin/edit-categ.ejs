@@ -84,6 +84,12 @@
                         <i class="fa-brands fa-product-hunt"></i> <span>products</span>
                     </a>
                 </li>
+                <li>
+                    <a href="/admin/orders">
+                      <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
+                    </a>
+                </li>
+            
 
 
 
@@ -180,7 +186,7 @@
                                         <label for="exampleInputEmail1" class="form-label">CATEGORY NAME</label>
                                         <input type="hidden" name="id" value="<%=categories._id%>">
                                         <input type="text" class="form-control" id="exampleInputEmail1"
-                                            name="categoryName" value="<%=categories.name%>" required>
+                                            name="categoryName" value="<%=categories.categoryName%>" required>
 
                                     </div>
                                     <div class="mb-3">
@@ -190,12 +196,11 @@
                                     </div>
 
                                     <button type="submit" class="btn btn-primary" id="add">save</button>
-                                    <div class=" container ">
-                                        <%if(typeof message !=="undefined" ) { %>
-                                            <p class="text-danger "><%- message %></p>
-                                            <% } %>
-                                        </div>
-
+                                    <% if( messages.message ) { %>
+                                        <p style="color: red;">
+                                            <%=messages.message %>
+                                        </p>
+                                        <%}%>
                                 </form>
 
                             </div>
@@ -212,19 +217,11 @@
             <!-- End container-fluid-->
 
         </div><!--End content-wrapper-->
+        
         <!--Start Back To Top Button-->
         <a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i> </a>
         <!--End Back To Top Button-->
-
-        <!--Start footer-->
-        <!-- <footer class="footer">
-            <div class="container">
-                <div class="text-center">
-                    Copyright © 2018 Dashtreme Admin
-                </div>
-            </div>
-        </footer> -->
-        <!--End footer-->
+\
 
         <!--start color switcher-->
         <div class="right-sidebar">
@@ -289,6 +286,8 @@
 
     <!-- Include DataTables -->
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    
 
     <script>
         // const addButton = document.getElementById('add')
