@@ -89,10 +89,10 @@
                 </li>
                 <li>
                     <a href="/admin/orders">
-                      <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
+                        <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
                     </a>
                 </li>
-            
+
 
 
 
@@ -232,7 +232,8 @@
 
 
                                                     <td>
-                                                        <button class="btn btn-sm rounded font-sm unlist-category toggle-product bg-success"
+                                                        <button
+                                                            class="btn btn-sm rounded font-sm unlist-category toggle-product bg-success"
                                                             data-categ-id="<%=categories[i]._id%>"
                                                             data-action="<%= categories[i].isListed ? 'unlist' : 'list' %>">
                                                             <%= categories[i].isListed ? 'Unlist' : 'List' %>
@@ -371,6 +372,10 @@
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
 
+    <!-- Latest version of SweetAlert CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
     <script>
 
@@ -401,22 +406,40 @@
                     const categId = this.getAttribute('data-categ-id');
                     const currentAction = this.getAttribute('data-action');
 
-                    // Simulated function call for updateCategoryStatus
-                    updateCategoryStatus(categId, currentAction);
+                    // Display confirmation dialog before executing the action
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: `Do you want to ${currentAction === 'list' ? 'list' : 'unlist'} this category?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, proceed!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Proceed with the action if confirmed
+                            updateCategoryStatus(categId, currentAction);
 
-                    if (currentAction === 'list') {
-                        this.textContent = 'Unlist';
-                        this.setAttribute('data-action', 'unlist');
-                        // Update classes for visual change
-                        this.classList.remove('bg-success');
-                        this.classList.add('btn-outline-success');
-                    } else if (currentAction === 'unlist') {
-                        this.textContent = 'List';
-                        this.setAttribute('data-action', 'list');
-                        // Update classes for visual change
-                        this.classList.remove('btn-outline-success');
-                        this.classList.add('bg-success');
-                    }
+                            // Update button text and classes for visual change
+                            if (currentAction === 'list') {
+                                this.textContent = 'Unlist';
+                                this.setAttribute('data-action', 'unlist');
+                                this.classList.remove('bg-success');
+                                this.classList.add('btn-outline-success');
+                            } else if (currentAction === 'unlist') {
+                                this.textContent = 'List';
+                                this.setAttribute('data-action', 'list');
+                                this.classList.remove('btn-outline-success');
+                                this.classList.add('bg-success');
+                            }
+                            // Show success message
+                            Swal.fire(
+                                'Updated!',
+                                'Category has been updated.',
+                                'success'
+                            );
+                        }
+                    });
                 });
             });
         });
@@ -493,7 +516,7 @@
         });
 
     </script>
-    
+
 
 
 </body>

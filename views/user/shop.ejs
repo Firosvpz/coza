@@ -37,6 +37,36 @@
     <!--===============================================================================================-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .page-link {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 0 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        .page-link:hover {
+            background-color: #f0f0f0;
+        }
+
+        .page-link.active {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+    </style>
+
 </head>
 
 <body class="animsition">
@@ -78,12 +108,26 @@
 
                             <!-- Profile link -->
                             <li>
-                                <div>
-                                    <button class="  fs-6 text-success fw-bold" type="text">
-                                        <%=locals.user?user.username:"PROFILE"%>
-                                    </button>
-
-                                </div>
+                                <div class="dropdown">
+									<button class=" text-dark  btn-sm fw-bold" type="button"
+										data-bs-toggle="dropdown" aria-expanded="false">
+										<%=locals.user?user.username:"PROFILE"%>
+									</button>
+									<ul class="dropdown-menu bg-transparent ">
+										
+											<li> <a class="dropdown-item bg-dark text-white" href="/userprofile">User profile</a>
+									
+										
+										<!-- <li><a class="dropdown-item bg-dark text-white" href="/login"> -->
+											<%if(locals.user){%>
+												<a class="dropdown-item bg-dark text-white" href="/logout">Logout</a>
+											<%}else{%>
+											    <a class="dropdown-item bg-dark text-white" href="/login">Login</a>
+											<%}%>
+										</li>
+										
+									</ul>
+								</div>
                             </li>
                         </ul>
                     </div>
@@ -98,154 +142,130 @@
 
 
 
-    <!-- Product -->
-
-    <div class="bg0 mt-23 p-b-140 ">
-        <div class="container ">
-            <div class="flex-w flex-l-m filter-tope-group m-tb-5 ms-5">
-                <a href="/shop"><button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 fw-bold text-dark ms-5"
-                        data-filter="*">
-                        All Products
-                    </button></a>
-
-                <% if(categories.length> 0) { %>
-
-                    <% for (let i=0;i < categories.length; i++) { %>
-                        <div class="flex-w flex-l-m filter-tope-group m-tb-5">
-
-
-                            <a href="/shop?id=<%=categories[i].categoryName%>"><button
-                                    class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 fw-bold text-dark"
-                                    data-filter=".men">
-                                    <%=categories[i].categoryName%>
-                                </button></a>
-
-
-                        </div>
-                        <% } %>
-                            <% } else { %>
-
-
-                                <% } %>
-
-                                    <div class="flex-w flex-c-m m-tb-10" style="margin-left: 710px;">
-                                        <!-- <div
-                                            class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
-                                            <i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
-                                            <i
-                                                class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-                                            Filter
-                                        </div> -->
-
-                                        <div
-                                            class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
-                                            <i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
-                                            <i
-                                                class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-                                            Search
-                                        </div>
-                                    </div>
-
-                                    <!-- Search product -->
-                                    <div class="dis-none panel-search w-full p-t-10 p-b-15">
-                                        <div class="bor8 dis-flex p-l-15">
-                                            <button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-                                                <i class="zmdi zmdi-search"></i>
-                                            </button>
-
-                                            <input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text"
-                                                id="name-search" name="search-product" placeholder="Search">
-                                        </div>
-                                    </div>
-
-
+    <!-- categories -->
+    <div class="container">
+    <div class="flex-w flex-sb-m p-b-52">
+        <div class="flex-w flex-l-m filter-tope-group m-tb-10">
+            
+            <a href="/shop">
+                <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
+                    All Products
+                </button>
+            </a>
+    
+            <% if(categories.length > 0) { %>
+                <% for (let i=0; i < categories.length; i++) { %>
+                    <a href="/shop?categoryId=<%=categories[i].categoryName%>">
+                        <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5">
+                            <%=categories[i].categoryName%>
+                        </button>
+                    </a>
+                <% } %>
+            <% } %>
+            <div class="form-group d-flex ">
+                <label for="priceSort" class=" fw-bold mt-3" style="white-space: nowrap;">Sort by Price:</label>
+                <select name="priceSort" id="priceSort" class="form-control border-dark w-50 ms-3 mt-2">
+                    <option value="">Default</option>
+                    <option value="asc">Low to High</option>
+                    <option value="desc">High to Low</option>
+                </select>
             </div>
+
+           
+            
+            
+        </div>
+        <div class="container-fluid">
+            <div class="row justify-content-end">
+              <div class="col-md-4">
+                <form action="#" class="search-form">
+                  <div class="form-group">
+                    <span class="icon ion-ios-search"></span>
+                    <input type="text" class="form-control border-dark" id="searchInput" placeholder="Search for a product" autocomplete="off">
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+       
+    </div>
+    
+</div>
+
+
+    
+
+
+
+    
+           
 
 
             <!-- products -->
-
-
-            <div class="row isotope-grid ms-5">
-                <% if(products.length> 0){ %>
-                    <% for(let i=0;i<products.length;i++){ %>
-
-                        <div class="col-sm-6 col-md-4 col-lg-2 p-b-35 isotope-item women mb-5 ms-5 me-5 border rounded-3 "
-                            style="background-color: antiquewhite; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
+            <div class="container">
+            <div class="row isotope-grid" id="product-listing">
+                <% if(products.length> 0) { %>
+                    <% products.forEach(product=> { %>
+                        <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
                             <!-- Block2 -->
                             <div class="block2">
-                                <div class="block2-pic hov-img0 p-4 ">
-                                    <img src="/sharpimages/<%=products[i].images[0]%>" alt="IMG-PRODUCT" height="100%"
-                                        style="background-color:rgba(28, 87, 100, 0.638); box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);"
-                                        width="100%" class="rounded-5  img-fluid ms-3">
+                                <div class="block2-pic hov-img0 label-new" data-label="New">
+                                    <img src="/sharpimages/<%= product.images[0] %>" alt="IMG-PRODUCT">
 
-                                    <a href="/productdetails?id=<%=products[i]._id%>"
-                                        class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 text-decoration-none">
+                                    <a href="/productdetails?id=<%= product._id %>"
+                                        class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
                                         Quick View
                                     </a>
+
                                 </div>
 
                                 <div class="block2-txt flex-w flex-t p-t-14">
                                     <div class="block2-txt-child1 flex-col-l ">
-                                        <a class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 product-name fs-2">
-                                            <%= products[i].name %>
-                                        </a>
+                                        <p class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                            <%= product.name %>
+                                        </p>
 
-
-                                        <span class="stext-105 cl3 fs-4 text-dark fw-bold">
-                                            ₹ <%=products[i].price%> <span class="stext-105 cl3 fs-6 text-danger"
-                                                    style="text-decoration: line-through;">
-                                                    ₹ <%=products[i].discount%>
-                                                </span>
+                                        <span class="stext-105 cl3">
+                                            $<%= product.price %>
                                         </span>
-
                                     </div>
 
-                                    <!-- <div class="block2-txt-child2 flex-r p-t-3">
-                                        <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-                                            <img class="icon-heart1 dis-block trans-04"
-                                                src="images/icons/icon-heart-01.png" alt="ICON">
-                                            <img class="icon-heart2 dis-block trans-04 ab-t-l"
-                                                src="images/icons/icon-heart-02.png" alt="ICON">
-                                        </a>
-                                    </div> -->
                                 </div>
                             </div>
                         </div>
-
-                        <% }%>
-
-                            <%}else{%>
-                                <div>
-                                    <h1>There are no products</h1>
-                                </div>
+                        <% }) %>
+                            <% } else { %>
+                                <h3>No products available</h3>
                                 <% } %>
-
-
-                                              
             </div>
+        </div>
+
+
+
+
+
+
+
             <!-- <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center" id="paginationList">
                     Pagination items will be dynamically added here -->
             <!-- </ul> -->
             <!-- </nav> -->
 
-            <nav aria-label="Page navigation example ">
-                <ul class="pagination justify-content-center" id="paginationList">
-                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                </ul>
-            </nav>
-            <!-- Load more -->
-            <div class="flex-c-m flex-w w-full p-t-45">
-                <a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-                    Load More
-                </a>
+
+            <div class="pagination mb-3">
+                <% for (let i=1; i <=totalPages; i++) { %>
+                    <a href="#" class="page-link" data-page="<%= i %>">
+                        <%= i %>
+                    </a>
+                    <% } %>
             </div>
+
+
         </div>
     </div>
+
+
 
 
     <!-- Footer -->
@@ -408,170 +428,7 @@
     </div>
 
     <!-- Modal1 -->
-    <div class="wrap-modal1 js-modal1 p-t-60 p-b-20">
-        <div class="overlay-modal1 js-hide-modal1"></div>
 
-        <div class="container">
-            <div class="bg0 p-t-60 p-b-30 p-lr-15-lg how-pos3-parent">
-                <button class="how-pos3 hov3 trans-04 js-hide-modal1">
-                    <img src="images/icons/icon-close.png" alt="CLOSE">
-                </button>
-
-                <div class="row">
-                    <div class="col-md-6 col-lg-7 p-b-30">
-                        <div class="p-l-25 p-r-30 p-lr-0-lg">
-                            <div class="wrap-slick3 flex-sb flex-w">
-                                <div class="wrap-slick3-dots"></div>
-                                <div class="wrap-slick3-arrows flex-sb-m flex-w"></div>
-
-                                <div class="slick3 gallery-lb">
-                                    <div class="item-slick3" data-thumb="images/product-detail-01.jpg">
-                                        <div class="wrap-pic-w pos-relative">
-                                            <img src="images/product-detail-01.jpg" alt="IMG-PRODUCT">
-
-                                            <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
-                                                href="images/product-detail-01.jpg">
-                                                <i class="fa fa-expand"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <div class="item-slick3" data-thumb="images/product-detail-02.jpg">
-                                        <div class="wrap-pic-w pos-relative">
-                                            <img src="images/product-detail-02.jpg" alt="IMG-PRODUCT">
-
-                                            <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
-                                                href="images/product-detail-02.jpg">
-                                                <i class="fa fa-expand"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    <div class="item-slick3" data-thumb="images/product-detail-03.jpg">
-                                        <div class="wrap-pic-w pos-relative">
-                                            <img src="images/product-detail-03.jpg" alt="IMG-PRODUCT">
-
-                                            <a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04"
-                                                href="images/product-detail-03.jpg">
-                                                <i class="fa fa-expand"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6 col-lg-5 p-b-30">
-                        <div class="p-r-50 p-t-5 p-lr-0-lg">
-                            <h4 class="mtext-105 cl2 js-name-detail p-b-14">
-                                Lightweight Jacket
-                            </h4>
-
-                            <span class="mtext-106 cl2">
-                                $58.79
-                            </span>
-
-                            <p class="stext-102 cl3 p-t-23">
-                                Nulla eget sem vitae eros pharetra viverra. Nam vitae luctus ligula. Mauris consequat
-                                ornare feugiat.
-                            </p>
-
-                            <!--  -->
-                            <div class="p-t-33">
-                                <div class="flex-w flex-r-m p-b-10">
-                                    <div class="size-203 flex-c-m respon6">
-                                        Size
-                                    </div>
-
-                                    <div class="size-204 respon6-next">
-                                        <div class="rs1-select2 bor8 bg0">
-                                            <select class="js-select2" name="time">
-                                                <option>Choose an option</option>
-                                                <option>Size S</option>
-                                                <option>Size M</option>
-                                                <option>Size L</option>
-                                                <option>Size XL</option>
-                                            </select>
-                                            <div class="dropDownSelect2"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="flex-w flex-r-m p-b-10">
-                                    <div class="size-203 flex-c-m respon6">
-                                        Color
-                                    </div>
-
-                                    <div class="size-204 respon6-next">
-                                        <div class="rs1-select2 bor8 bg0">
-                                            <select class="js-select2" name="time">
-                                                <option>Choose an option</option>
-                                                <option>Red</option>
-                                                <option>Blue</option>
-                                                <option>White</option>
-                                                <option>Grey</option>
-                                            </select>
-                                            <div class="dropDownSelect2"></div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="flex-w flex-r-m p-b-10">
-                                    <div class="size-204 flex-w flex-m respon6-next">
-                                        <div class="wrap-num-product flex-w m-r-20 m-tb-10">
-                                            <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
-                                                <i class="fs-16 zmdi zmdi-minus"></i>
-                                            </div>
-
-                                            <input class="mtext-104 cl3 txt-center num-product" type="number" name=""
-                                                value="1">
-
-                                            <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
-                                                <i class="fs-16 zmdi zmdi-plus"></i>
-                                            </div>
-                                        </div>
-
-                                        <button
-                                            class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04 js-addcart-detail">
-                                            Add to cart
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!--  -->
-                            <div class="flex-w flex-m p-l-100 p-t-40 respon7">
-                                <div class="flex-m bor9 p-r-10 m-r-11">
-                                    <a href="#"
-                                        class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100"
-                                        data-tooltip="Add to Wishlist">
-                                        <i class="zmdi zmdi-favorite"></i>
-                                    </a>
-                                </div>
-
-                                <a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
-                                    data-tooltip="Facebook">
-                                    <i class="fa fa-facebook"></i>
-                                </a>
-
-                                <a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
-                                    data-tooltip="Twitter">
-                                    <i class="fa fa-twitter"></i>
-                                </a>
-
-                                <a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
-                                    data-tooltip="Google Plus">
-                                    <i class="fa fa-google-plus"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!--===============================================================================================-->
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
@@ -582,14 +439,7 @@
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <!--===============================================================================================-->
     <script src="vendor/select2/select2.min.js"></script>
-    <script>
-        $(".js-select2").each(function () {
-            $(this).select2({
-                minimumResultsForSearch: 20,
-                dropdownParent: $(this).next('.dropDownSelect2')
-            });
-        })
-    </script>
+
     <!--===============================================================================================-->
     <script src="vendor/daterangepicker/moment.min.js"></script>
     <script src="vendor/daterangepicker/daterangepicker.js"></script>
@@ -619,149 +469,201 @@
     <script src="vendor/isotope/isotope.pkgd.min.js"></script>
     <!--===============================================================================================-->
     <script src="vendor/sweetalert/sweetalert.min.js"></script>
-    <script>
-        $('.js-addwish-b2, .js-addwish-detail').on('click', function (e) {
-            e.preventDefault();
-        });
 
-        $('.js-addwish-b2').each(function () {
-            var nameProduct = $(this).parent().parent().find('.js-name-b2').html();
-            $(this).on('click', function () {
-                swal(nameProduct, "is added to wishlist !", "success");
-
-                $(this).addClass('js-addedwish-b2');
-                $(this).off('click');
-            });
-        });
-
-        $('.js-addwish-detail').each(function () {
-            var nameProduct = $(this).parent().parent().parent().find('.js-name-detail').html();
-
-            $(this).on('click', function () {
-                swal(nameProduct, "is added to wishlist !", "success");
-
-                $(this).addClass('js-addedwish-detail');
-                $(this).off('click');
-            });
-        });
-
-        /*---------------------------------------------*/
-
-        $('.js-addcart-detail').each(function () {
-            var nameProduct = $(this).parent().parent().parent().parent().find('.js-name-detail').html();
-            $(this).on('click', function () {
-                swal(nameProduct, "is added to cart !", "success");
-            });
-        });
-
-    </script>
     <!--===============================================================================================-->
     <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script>
-        $('.js-pscroll').each(function () {
-            $(this).css('position', 'relative');
-            $(this).css('overflow', 'hidden');
-            var ps = new PerfectScrollbar(this, {
-                wheelSpeed: 1,
-                scrollingThreshold: 1000,
-                wheelPropagation: false,
-            });
-
-            $(window).on('resize', function () {
-                ps.update();
-            })
-        });
-
-        // Search jquery
-        $(document).ready(function () {
-            // When the user types in the search box
-            $("#name-search").on("keyup", function () {
-                var searchText = $(this).val().toLowerCase();
-
-                // Loop through each product name
-                $(".product-name").each(function () {
-                    var productName = $(this).text().toLowerCase(); // Get the product name in lowercase
-
-                    // If the product name contains the search text, show the product; otherwise, hide it
-                    if (productName.includes(searchText)) {
-                        $(this).closest('.isotope-item').show();
-                    } else {
-                        $(this).closest('.isotope-item').hide();
-                    }
-                });
-            });
-        });
-
         // pagination
         // Function to create pagination links
-        const createPaginationLinks = (totalPages) => {
-            const paginationContainer = document.getElementById('paginationList');
-            paginationContainer.innerHTML = ''; // Clear existing content
+        // Event handler for pagination links
+        // Function to handle pagination click
+        $(document).ready(function () {
+            var searchTerm;
+            var selectedCategory;
+            var currentPage = 1; // Initialize the current page
+            console.log('sdfsdfsd');
 
-            // Create "Previous" link
-            const previousItem = document.createElement('li');
-            previousItem.classList.add('page-item');
-            const previousLink = document.createElement('a');
-            previousLink.classList.add('page-link');
-            previousLink.textContent = 'Previous';
-            previousLink.href = '#'; // Link to previous page
-            previousItem.appendChild(previousLink);
-            paginationContainer.appendChild(previousItem);
 
-            // Loop to create page number links
-            for (let i = 1; i <= totalPages; i++) {
-                const listItem = document.createElement('li');
-                listItem.classList.add('page-item');
-                const link = document.createElement('a');
-                link.classList.add('page-link');
-                link.textContent = i;
-                link.href = '#'; // Link to page i
-                listItem.appendChild(link);
-                paginationContainer.appendChild(listItem);
+            function sendFilterRequest(data, successCallback) {
+                console.log('data:', data);
+                $.ajax({
+                    url: '/shop/filter',
+                    method: 'GET',
+                    data: data,
+                    success: function (response) {
+                        console.log('response:', response);
+
+                        // Clear pagination and product listing elements
+                        // $('.pagination').empty();
+                        $('#product-listing').empty();
+
+                        // Check if the response was successful and data exists
+                        if (response.success && response.data && response.data.length > 0) {
+                            // Loop through each product in the response and create product cards
+                            response.data.forEach(product => {
+                                var productCard = `
+                              
+              
+                               <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 ">
+                            <!-- Block2 -->
+                               <div class="block2">
+                                <div class="block2-pic hov-img0 label-new" data-label="New">
+                                    <img src="/sharpimages/${product.images[0]}" alt="IMG-PRODUCT">
+
+                                    <a href="/productdetails?id=${product._id}"
+                                        class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
+                                        Quick View
+                                    </a>
+                                </div>
+
+                                <div class="block2-txt flex-w flex-t p-t-14">
+                                    <div class="block2-txt-child1 flex-col-l ">
+                                        <p 
+                                            class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                            ${product.name}
+                                        </p>
+
+                                        <span class="stext-105 cl3">
+                                            $${product.price}
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                   `;
+
+                                // Append the product card to the product listing
+                                $('#product-listing').append(productCard);
+                            });
+                        } else {
+                            // If no products available, display a message
+                            $('#product-listing').html('<h3>No products available</h3>');
+                        }
+
+                        // Call the success callback if provided
+                        if (successCallback && typeof successCallback === 'function') {
+                            successCallback(response);
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error:', error);
+                    }
+                });
             }
 
-            // Create "Next" link
-            const nextItem = document.createElement('li');
-            nextItem.classList.add('page-item');
-            const nextLink = document.createElement('a');
-            nextLink.classList.add('page-link');
-            nextLink.textContent = 'Next';
-            nextLink.href = '#'; // Link to next page
-            nextItem.appendChild(nextLink);
-            paginationContainer.appendChild(nextItem);
-        };
 
-        // Function to fetch data for a specific page
-        const fetchDataForPage = async (page, limit) => {
-            try {
-                const response = await fetch(`/pagination?page=${page}&limit=${limit}`);
-                const data = await response.json();
-                // Process data here (e.g., update UI with received data)
-            } catch (error) {
-                console.error('Error fetching data:', error);
+
+            function performSearch(pageNumber) {
+                console.log('pageNOO:::', pageNumber);
+                var data = {
+                    search: searchTerm,
+                    category: selectedCategory,
+                    page: pageNumber, // Update the page parameter
+                    //   priceFrom: $('#priceFrom').val(), // Add the price filters
+                    //   priceTo: $('#priceTo').val(),
+                    priceSort: $('#priceSort').val()
+                };
+                sendFilterRequest(data);
             }
-        };
 
-        // Event listener for pagination links
-        const paginationContainer = document.getElementById('paginationList');
-        paginationContainer.addEventListener('click', async (event) => {
-            event.preventDefault(); // Prevent default behavior of links
+            // Live search as the user types
+            $('#searchInput').on('input', function () {
+                searchTerm = $(this).val().trim();
+                selectedCategory = getSelectedCategory();
+                currentPage = 1; // Reset current page when searching
+                performSearch();
+            });
 
-            if (event.target.tagName === 'A') {
-                const page = event.target.textContent;
-                const limit = 3;
-                fetchDataForPage(page, limit);
+            // Helper function to get selected category
+            function getSelectedCategory() {
+                var selectedCategoryElement = $('.categories.panel li.selected-category a');
+                return selectedCategoryElement.length > 0
+                    ? selectedCategoryElement.attr('href').split('=')[1]
+                    : undefined;
             }
+
+            // Event handler for category filter
+            $('.categories.panel li a').on('click', function (e) {
+                e.preventDefault();
+                $('.categories.panel li').removeClass('selected-category');
+                $(this).parent('li').addClass('selected-category');
+                var category = $(this).attr('href').split('=')[1];
+                $('#priceFrom').val('');
+                $('#priceTo').val('');
+                currentPage = 1; // Reset current page when changing category
+                var data = { category: category };
+                sendFilterRequest(data);
+            });
+
+            // Event handler for sorting option change
+            $('#priceSort').change(function () {
+                var selectedSortOption = $(this).val();
+                // var selectedCategory = getSelectedCategory();
+                var formData = '&priceSort=' + selectedSortOption;
+                // formData += selectedCategory ? '&category=' + selectedCategory : '';
+                // var priceSliderData = $('#priceSlider').data("ionRangeSlider").result;
+                // formData += '&priceFrom=' + priceSliderData.from;
+                // formData += '&priceTo=' + priceSliderData.to;
+
+
+                currentPage = 1;
+                var data = formData;
+                sendFilterRequest(data);
+            });
+
+           
+
+            // Event handler for pagination links
+            $(document).on('click', '.pagination a.page-link', function (e) {
+                e.preventDefault();
+                var currentPage = $(this).data('page');
+                selectedCategory = getSelectedCategory();
+                performSearch(currentPage);
+
+
+                // Scroll to the top of the page
+                $('html body').animate({ scrollTop: 0 }, 'slow');
+            });
         });
 
-        // Assuming you have the total number of pages available
-        const totalPages = 3;
-        createPaginationLinks(totalPages);
+
+
+             $('#filterForm').submit(function (e) {
+                e.preventDefault();
+
+                // Serialize the form data
+                var formData = $(this).serialize();
+
+                // Get the price range values from the slider
+                var priceSliderData = $('#priceSlider').data("ionRangeSlider").result;
+                console.log('1:', priceSliderData.from);
+                console.log('2:', priceSliderData.to);
+                formData += '&priceFrom=' + priceSliderData.from;
+                formData += '&priceTo=' + priceSliderData.to;
+
+                // Get the selected category
+                var selectedCategory = getSelectedCategory();
+                formData += selectedCategory ? '&category=' + selectedCategory : '';
+
+                var selectedPriceSort = $('#priceSort').val();
+                formData += '&priceSort=' + selectedPriceSort;
+
+                // Reset current page when applying filters
+                currentPage = 1;
+
+                // Send the filter request
+                var data = formData;
+                sendFilterRequest(data);
+              });
+
 
 
 
 
     </script>
+    
+
     <!--===============================================================================================-->
     <script src="js/main.js"></script>
 

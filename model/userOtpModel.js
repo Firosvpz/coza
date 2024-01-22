@@ -11,14 +11,14 @@ const otpValidation= new mongoose.Schema({
     type:Date,
     default:Date.now()
   },
-  expiresAt:{
+  expiresAt:{       
     type:Date
   }
 },{
     timestaps:true
 })
 
-otpValidation.index({createdAt:1},{expireAfterSeconds:100})
+otpValidation.index({createdAt:1},{expireAfterSeconds:60})
 
 
 module.exports=mongoose.model('userotp',otpValidation)

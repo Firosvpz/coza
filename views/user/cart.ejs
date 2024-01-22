@@ -221,7 +221,7 @@
 </div>
 
 		
-		<div class="container">
+		<div class="container" id="reloadDiv">
 			<div class="row">
 				<div class="col-lg-8 col-xl-9 m-lr-auto m-b-50">
 					<div class="m-lr-25 m-r--38 m-lr-0-xl mt-3 me-3" style="background-color: rgba(248, 242, 234, 0.8); box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
@@ -251,20 +251,23 @@
 											<td class="column-3">₹ <%=item.product_id.price%>
 											</td>
 											<td class="column-4">
-												<div class="wrap-num-product flex-w m-l-auto m-r-0">
-													<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
-														<i class="fs-16 zmdi zmdi-minus"></i>
-													</div>
+                                                <div class="wrap-num-product flex-w m-l-auto m-r-0">
+                                                    <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
+                                                        onclick="increaseQuantity('<%=cart._id%>','<%=item.product_id._id%>',-1)">
+                                                        <i class="fs-16 zmdi zmdi-minus"></i>
+                                                    </div>
 
-													<input class="mtext-104 cl3 txt-center num-product" type="number"
-														name="num-product1" value="<%=item.quantity%>"
-														max="<%=item.product_id.quantity%>">
+                                                    <input class="mtext-104 cl3 txt-center num-product" type="text"
+                                                        name="quantity" min="1" max="100" value="<%= item.quantity%>"
+                                                        readonly>
 
-													<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
-														<i class="fs-16 zmdi zmdi-plus"></i>
-													</div>
-												</div>
-											</td>
+                                                    <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m"
+                                                        onclick="increaseQuantity('<%=cart._id%>','<%=item.product_id._id%>',1)">
+                                                        <i class="fs-16 zmdi zmdi-plus"></i>
+                                                    </div>
+                                                </div>
+                                            </td>
+											
 
 											<td class="column-5 ">₹ <%=item.total_price%>
 											</td>
@@ -514,6 +517,7 @@
 	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
 	<!--===============================================================================================-->
 	<script src="vendor/select2/select2.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 	<script>
 		$(".js-select2").each(function () {
 			$(this).select2({
@@ -583,6 +587,41 @@
 		});
 
 	</script>
+
+<script>
+	function increaseQuantity(cartId, productId, count) {
+		$.ajax({
+			url: '/changeQuantity',
+			method: 'post',
+			data: {
+				cartId: cartId,
+				productId: productId,
+				count: count
+			},
+			success: (response) => {
+				if (response.success) {
+					$('#reloadDiv').load('/cart #reloadDiv')
+				} else {
+					Swal.fire({
+						title: 'Error',
+						icon: 'error',
+						text: response.message,
+						timer: 3000
+					})
+				}
+			},
+			error: (error) => [
+				Swal.fire({
+					title: 'Error',
+					icon: 'error',
+					text: error.message,
+					timer: 2000
+				})
+			]
+		})
+    }
+    </script>
+
 	<!--===============================================================================================-->
 	<script src="js/main.js"></script>
 

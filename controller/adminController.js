@@ -6,10 +6,10 @@ const dotenv = require('dotenv')
 const { name } = require('ejs')
 const path = require('path')
 const sharp = require('sharp')
-const { fstat } = require('fs')
 const session = require('express-session')
 const moment = require('moment')
 
+const fs = require('fs')
 
 
 
@@ -19,7 +19,7 @@ const adminLogin = async (req, res) => {
     try {
         res.render('adminlogin')
     } catch (error) {
-        console.log(error);
+        console.log(error); 
     }
 }
 
@@ -216,7 +216,7 @@ const loadEditCategory = async (req, res) => {
     } catch (error) {
         console.log(error);  
     }
-}
+}  
 
 
 // edit-category
@@ -438,7 +438,9 @@ const deleteImg = async (req, res) => {
         console.log(req.body);
         const { img, productid } = req.body
         console.log(img);
-        fs.unlink(path.join(__dirname, '../public/sharpImages', img), () => { });
+       fs.unlink(path.join(__dirname, '../public/sharpimages', img), () => { });
+       
+
         await products.updateOne(
             { _id: productid },
             { $pull: { images: img } }
@@ -452,15 +454,117 @@ const deleteImg = async (req, res) => {
 // orders
 const loadOrders = async (req, res) => {
     try {
+        const page = parseInt(req.query.page) || 1;  // Get the page number from the query parameter, default to 1 if not provided
+        const pageSize = 5;  // Set the number of orders to display per page
 
-        const orders = await Order.find().populate('items.product_id').sort({ _id: 1 })
+        // Default sort order based on the ordered date in descending order
+        const defaultSortOrder = -1;
 
-        res.render('adminOrder', { orders, moment })
+        // Determine the sort order based on the query parameter or use the default
+        const sortOrder = req.query.sortOrder === 'asc' ? 1 : defaultSortOrder;
 
+        const totalOrders = await Order.countDocuments();  // Get the total number of orders
+
+        const orders = await Order.find()
+            .populate('items.product_id')
+            .sort({ date: sortOrder, _id: defaultSortOrder })  // Sort by date in the specified order, then by _id in the default order
+            .skip((page - 1) * pageSize)  // Skip records based on pagination
+            .limit(pageSize);  // Limit the number of records per page
+
+        res.render('adminOrder', { orders, moment, totalOrders, currentPage: page, pageSize, sortOrder });
     } catch (error) {
         console.log(error);
     }
-}
+};
+
+const viewOrderPage = async (req, res) => {
+    try {   
+        const itemId = req.query.itemId;
+        const orderId = req.query.orderId;
+        console.log('itemId:',itemId);
+        console.log('orderId',orderId);
+
+        const mainOrder = await Order.findOne({ _id: orderId }).populate('user_id').populate({
+            path: "items.product_id",
+        });
+
+        if (!mainOrder) {
+            // Handle case where no order is found with the provided orderId
+            return res.status(404).send('Order not found');
+        }
+
+        const orderItem = mainOrder.items.find(item => item._id.toString() === itemId);
+
+        res.render('orderDetails', { order: mainOrder, item: orderItem, moment });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+const updateOrderStatus = async (req, res) => {
+    const { orderId, itemId, newStatus } = req.body;
+    console.log('hjh:',req.body);
+  
+    let update = { 'items.$.ordered_status': newStatus };
+  
+    try {
+      const order = await Order.findById(orderId);
+      console.log('order:',order);
+      const item = order.items.find((item) => item._id.toString() === itemId);
+  
+      console.log('item:',item);
+
+      
+      if (item) {
+          console.log('orderpayment:',order.payment);
+        // If payment is RazorPay and status is 'cancelled' or 'returned'
+        if ((order.payment == 'razorPay') && (newStatus === 'cancelled' || newStatus === 'returned') || newStatus === 'returned' ) {
+          // Update user's wallet and wallet history
+          console.log('okayyy');
+         
+  
+          const product = await products.findById(item.product_id);
+        
+          if (product) {
+            // Increase the product quantity by the ordered quantity
+            const newStockQuantity = product.quantity + item.quantity;
+            await products.findByIdAndUpdate(item.product_id, { quantity: newStockQuantity });
+          }
+  
+        }
+  
+        // If status is 'cancelled' or 'returned', update product stock quantity
+        if (newStatus === 'cancelled') {
+          const product = await products.findById(item.product_id);
+          console.log('mot okay');
+          if (product) {
+            // Increase the product quantity by the ordered quantity
+            const newStockQuantity = product.quantity + item.quantity;
+            await products.findByIdAndUpdate(item.product_id, { quantity: newStockQuantity });
+          }
+        }
+      }
+  
+      const updatedOrder = await Order.findOneAndUpdate(
+        { _id: orderId, 'items._id': itemId },
+        { $set: update },
+        { new: true }
+      );
+  
+      res.json({ success: true, updatedOrder });
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+  };
+
+
+  
+  
+
+
+
 
 //logout 
 
@@ -496,5 +600,8 @@ module.exports = {
     loadEditProducts,
     editProduct,
     deleteImg,
-    loadOrders
+    loadOrders,
+    viewOrderPage,
+    updateOrderStatus,
+  
 }

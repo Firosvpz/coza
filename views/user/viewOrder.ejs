@@ -212,64 +212,176 @@
             </nav>
         </div>
 
+        <%
+        function getStatusText(status) {
+            switch (status) {
+                case 'cancelled':
+                    return 'Cancelled';
+                case 'request_cancellation':
+                    return 'Cancellation Requested';
+                case 'request_return':
+                    return 'Return Requested';
+                case 'returned':
+                    return 'Returned';
+                case 'delivered':
+                    return 'Delivered';
+                case 'shipped':
+                    return 'Shipped'; // Add a case for "shipped"
+                case 'placed':
+                    return 'Placed'; // Add a case for "placed"
+                default:
+                    console.log('Unknown Status:', status);
+                    return 'Unknown';
+            }
+        }
+        %>
+        
+        <%
+        function getProgressBarWidth(status) {
+            let width;
+            switch (status) {
+                case 'cancelled':
+                    width = '25%';
+                    break;
+                case 'request_cancellation':
+                case 'request_return':
+                    width = '50%';
+                    break;
+                case 'returned':
+                    width = '75%';
+                    break;
+                case 'delivered':
+                    width = '100%';
+                    break;
+                case 'out_for_delivery':
+                case 'shipped':
+                    width = '50%';
+                    break;
+                case 'placed':
+                    width = '25%';
+                    break;
+                default:
+                    width = '0%';
+                    console.log('Unknown Status:', status);
+                    break;
+            }
+            console.log('Status:', status, 'Width:', width);
+            return width;
+        }
+        %>
+        
+                <div class="container w-75 rounded">
 
-        <div class="container w-50 ">
+                    <% if (order && order.items && order.items.length> 0) { %>
+                        <% order.items.forEach((item, index)=> { %>
+                            <div class="order-details p-4">
 
-            <% if (order && order.items && order.items.length> 0) { %>
-                <% order.items.forEach((item, index)=> { %>
-                    <div class="order-details p-4"
-                        style="background-color: rgba(13, 4, 17, 0.1); padding: 15px; margin-bottom: 15px; border-radius: 5px;">
-                        <div class="fs-4"><strong># Order ID:</strong> <b>
-                                <%= order.order_id %> <a href="/orderlist"><input type="button"
-                                            class="btn btn-md btn-outline-danger bagde rounded-pill ms-5" value="< back"></a>
+                                <div class="d-flex flex-wrap">
 
+                                    <img src="/webimages/<%= item.product_id.images[1] %>"
+                                        class="img-fluid me-2 mb-2 rounded-5" width="20%" height="20%"
+                                        alt="image not display">
 
-                            </b></div>
+                                    <div>
+                                        <p class="display-4 fw-bold text-center text-success">
+                                            <%= item.product_id.name%>
+                                        </p>
+                                        <table class="table ">
+                                            <tr>
+                                                <th>Total</th>
+                                                <td>₹ <%= item.total_price %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Delivery Address</th>
+                                                <td><%= order.delivery_address %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Order Date</th>
+                                                <td><%= moment(order.date).format('DD/MM/YYYY') %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Payment Method</th>
+                                                <td><%= order.payment %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Expected Delivery</th>
+                                                <td><%= order.expected_delivery %></td>
+                                            </tr>
+                                        </table>
+                                        
+                                    </div>
 
-                        <hr>
+                                </div>
 
-                        <div class="d-flex flex-wrap">
-                            <% order.items.forEach((item)=> { %>
-                                <img src="/webimages/<%= item.product_id.images[1] %>" class="img-fluid me-2 mb-2"  
-                                    width="20%" height="20%" alt="image not display">
-                                <div>
-                                    <p>
-                                        <%= item.product_id.name%>
+                                <!-- Now you can use getStatusText and getProgressBarWidth in your template -->
+                                <div class="progress mt-3 ">
+                                    <div class="progress-bar bg-danger" role="progressbar" 
+                                        style="width: <%= getProgressBarWidth(item.ordered_status) %>; text-align: end;">
+                                        <%= getProgressBarWidth(item.ordered_status) %>
+                                    </div>
+                                </div>
+                                
+
+                                <!-- Display status under the progress bar -->
+                                <div class="mt-2 text-end text-danger">
+                                    <p><strong>Status:</strong>
+                                        <%= getStatusText(item.ordered_status) %>
                                     </p>
                                 </div>
-                                <% }) %>
+                                
 
-                        </div>
+                                <div class="item-actions mt-2">
+                                    <% if (!['request_cancellation', 'cancelled' , 'request_return' , 'returned'
+                                        ].includes(item.ordered_status)) { %>
+                                        <% if (item.ordered_status==='delivered' ) { %>
+                                            <% const currentDate=new Date(); %>
+                                                <% const returnPolicyDays=7; %>
 
-                        <div><strong>Total Amount:</strong>&nbsp;&nbsp;&nbsp; <b>₹ <%= item.total_price %>
-                            </b></div>
-                        <div><strong>Delivery Address:</strong>&nbsp;&nbsp;&nbsp;<b>
-                                <%= order.delivery_address %>
-                            </b></div>
-                        <div><strong>Order Date :</strong>&nbsp;&nbsp;&nbsp; <b>
-                                <%= moment(order.date).format('DD/MM/YYYY') %>
-                            </b></div>
-                        <div><strong>Payment Method:</strong> &nbsp;&nbsp;&nbsp; <b>
-                                <%= order.payment %>
-                            </b></div>
-                        <div><strong>Expected Delivery:</strong>&nbsp;&nbsp;&nbsp;<b>
-                                <%= order.expected_delivery %>
-                            </b></div>
+                                                    <!-- Calculate the return expiry date based on the current date -->
+                                                    <% const returnExpiryDate=new Date(order.date); %>
+                                                        <% console.log('gunda', returnExpiryDate) %>
+                                                            <% returnExpiryDate.setDate(returnExpiryDate.getDate() +
+                                                                returnPolicyDays); %>
 
+                                                                <% if (currentDate <=returnExpiryDate) { %>
+                                                                    <button
+                                                                        class="cancel-btn return-btn btn btn-outline-danger"
+                                                                        onclick="returnOrder('<%= order._id %>','<%= item._id %>',event)">Return
+                                                                        Item</button>
+                                                                    <p class="text-muted mt-3" id="return-text">Please
+                                                                        note
+                                                                        that
+                                                                        order returns are only possible within <%=
+                                                                            returnPolicyDays %> days from the delivery
+                                                                            date.
+                                                                    </p>
+                                                                    <% } else { %>
+                                                                        <p class="text-muted mt-3">Return expired</p>
+                                                                        <% } %>
 
+                                                                            <% } else { %>
+                                                                                <button
+                                                                                    class="cancel-btn btn btn-outline-danger"
+                                                                                    onclick="cancelOrder('<%= order._id %>','<%= item._id %>',event)">Cancel
+                                                                                    Item</button>
+                                                                                <% } %>
+                                                                                    <% } %>
+                                </div>
 
+                            </div>
+                            <% }) %>
+                                <% } else { %>
+                                    <div class="no-items">No items found in the order.</div>
+                                    <!-- If the order or items are null or empty, show a message or handle as needed -->
+                                    <% } %>
+                </div>
 
-                        <!-- You can include more details if needed -->
-                    </div>
-                    <% }) %>
-                        <% } else { %>
-                            <div class="no-items">No items found in the order.</div>
-                            <!-- If the order or items are null or empty, show a message or handle as needed -->
-                            <% } %>
-        </div>
 
 
     </form>
+
+
+
 
 
 
@@ -352,7 +464,8 @@
                     </h4>
 
                     <p class="stext-107 cl7 size-201">
-                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
+                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call
+                        us
                         on (+1) 96 716 6879
                     </p>
 
@@ -459,42 +572,104 @@
     <!--===============================================================================================-->
     <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 
+
+
     <script>
-        $('.js-pscroll').each(function () {
-            $(this).css('position', 'relative');
-            $(this).css('overflow', 'hidden');
-            var ps = new PerfectScrollbar(this, {
-                wheelSpeed: 1,
-                scrollingThreshold: 1000,
-                wheelPropagation: false,
+
+        function cancelOrder(orderId, itemId, event) {
+            event.preventDefault()
+            // console.log('order', orderId);
+            // console.log('item', itemId);
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Please provide a reason for the cancellation:',
+                input: 'text',
+                showCancelButton: true,
+                confirmButtonText: 'Cancel Order',
+                cancelButtonText: 'Close',
+                preConfirm: (reason) => {
+                    return fetch('/cancel-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            orderId,
+                            itemId,
+                            reason: reason,
+                        }),
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to cancel order');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(`Request failed: ${error}`);
+                        });
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Order Cancellation requested!',
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+
+                        // Redirect to /orders after clicking OK on the success message
+                        window.location.href = '/vieworders?orderId=<%= order._id %>';
+                    });
+                }
             });
+        }
 
-            $(window).on('resize', function () {
-                ps.update();
-            })
-        });
-    </script>
-    <script>
-        // Get the input element
-        const inputField = document.querySelector('.num-product');
 
-        // Get the plus button element
-        const plusButton = document.querySelector('.btn-num-product-up');
+        function returnOrder(orderId, itemId, event) {
+            event.preventDefault()
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Please provide a reason for returning the item :',
+                input: 'text',
+                showCancelButton: true,
+                confirmButtonText: 'Return Order',
+                cancelButtonText: 'Close',
+                preConfirm: (returnReason) => {
+                    return fetch('/cancel-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            orderId,
+                            itemId,
+                            returnReason: returnReason,
+                        }),
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to cancel order');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(`Request failed: ${error}`);
+                        });
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Order return requested!',
+                        icon: 'success',
+                        showCancelButton: false,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        // Redirect to /orders after clicking OK on the success message
+                        window.location.href = '/vieworders?orderId=<%= order._id %>';
+                    });
+                }
+            });
+        }
 
-        // Event listener for input change
-        inputField.addEventListener('change', function () {
-            const currentValue = parseInt(inputField.value);
-            const maxValue = parseInt(inputField.getAttribute('max'));
-
-            // Check if the current value equals the maximum value
-            if (currentValue === maxValue) {
-                // Hide the plus button
-                plusButton.style.display = 'none';
-            } else {
-                // Show the plus button if it was hidden
-                plusButton.style.display = 'block';
-            }
-        });
 
     </script>
     <!--===============================================================================================-->
@@ -504,6 +679,7 @@
         crossorigin="anonymous"></script>
     <!-- SweetAlert CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 
 

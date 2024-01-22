@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
             houseName:String,
             phoneNo:String,
             place:String,
-            postcode:Number,
+            postCode:Number,
             state:String
         }
     ]

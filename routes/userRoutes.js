@@ -36,45 +36,67 @@ router.get('/logout',auth.isLogin,userController.logOut)
 
 router.get('/shop',userController.shop)
 
+router.get('/shop/filter',userController.shop)
+
 router.get('/contact',userController.contact)
 
 router.get('/about',userController.about)
 
 router.get('/productdetails',userController.productDetails)
 
-router.get('/pagination',userController.pagination)
-
-router.get('/userprofile',userController.profileUser)
+router.get('/userprofile',auth.isLogin,userController.profileUser)
 
 router.get('/profile',auth.isLogin,userController.userProfile)
 
 router.post('/profile',userController.editProfile)
  
-router.get('/cart',auth.isLogin,cartController.loadCart)
+router.get('/cart',auth.checkBlocked,auth.isLogin,cartController.loadCart)
 
 router.post('/cart',cartController.addtoCart)
 
 router.delete('/deleteProduct/:productId',cartController.deleteCartProduct)
 
-router.get('/checkout',cartController.checkout)
+router.get('/checkout',auth.isLogin,cartController.checkout)
 
 router.post('/addAddress',cartController.addAddress)
 
-router.get('/orderpage/:id',orderController.orderPage)
+router.get('/orderpage/:id',auth.isLogin,orderController.orderPage)
 
 router.post('/placeOrder',orderController.placeOrder)
 
-router.get('/orderlist',orderController.orderList)
+router.get('/orderlist',auth.isLogin,orderController.orderList)
 
-router.get('/address',orderController.loadProfileAddress)
+router.get('/address',auth.isLogin,orderController.loadProfileAddress)
 
-router.post('/deleteAddress/',orderController.deleteAddress)
+router.get('/vieworders',auth.isLogin,orderController.viewOrder)
 
-router.get('/vieworders',orderController.viewOrder)
-
-router.get('/changepassword',userController.loadPassword)
+router.get('/changepassword',auth.isLogin,userController.loadPassword)
 
 router.post('/changepassword',userController.changePassword)
+
+router.post('/changeQuantity',cartController.postChangeQuantity)
+
+router.post('/cancel-order',userController.cancelOrder);
+
+router.get('/resendOtp',userController.resendOtp)
+
+router.get('/changemail', userController.changeMail);
+
+router.post('/changemail', userController.sendOtpForEmailChange);
+
+router.get('/verifyEmailChange', userController.verifyEmailChange);
+
+router.post('/verifyEmailChange', userController.verifyEmailChangeOTP);
+
+router.get('/mailchange', userController.mailChangeOtp);
+
+router.post('/editAddress',userController.editAddress);
+
+router.post('/delete-address',userController.deleteAddress)
+
+
+   
+
 
 
 

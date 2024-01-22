@@ -42,6 +42,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <style>
         .op {
             display: flex;
@@ -215,8 +217,8 @@
 
 
     </form>
-    <div class="container w-75">
-        <div class="row">
+    <div class="container w-100" id="reloadDiv">
+        <div class="row" id="reloadArea">
             <div class="col-lg-8 col-xl-9 m-lr-auto m-b-50">
                 <input type="button" value="Add new address" class="btn btn-success mb-3 ms-4" id="openModalButton">
                 <div class="m-lr-25 m-r--38 m-lr-0-xl"
@@ -255,15 +257,23 @@
                                                     </span><br>
                                                     <hr>
                                                 </div>
-                                                
-                                                <div class=" d-flex justify-content-end">
-                                                  <a href=""> <i class="fa-solid fa-trash text-danger mt-2"></i></a> 
-                                                    
+
+
+                                                <div class="">
+                                                    <button class="btn btn-sm mb-2 btn-primary"
+                                                        onclick="openCustomModal('<%= address._id %>', 
+                                                    '&nbsp;<%= address.name %>',
+                                                     '&nbsp;<%= address.houseName %>','&nbsp;<%= address.place %>',
+                                                         '&nbsp;<%= address.phoneNo %>', '&nbsp;<%= address.state %>')">
+                                                        Edit
+                                                    </button>
+
+                                                    <button class="btn btn-sm btn-danger mb-2"
+                                                        onclick="removeAddress('<%=address._id%>')">
+                                                        Delete
+                                                    </button>
+
                                                 </div>
-                                                <div class=" d-flex justify-content-end">
-                                                    <a href=""> <i class="fa-solid fa-pen-to-square text-primary mt-2 ms-2"></i></a> 
-                                                      
-                                                  </div>
                                             </label>
                                             <% }) %>
 
@@ -285,7 +295,7 @@
         </div>
     </div>
 
-
+    <!-- new address modal -->
     <div class="modal" id="newAddressModal">
         <div class="modal-content" style="background-color: #f1efef;">
             <span class="close text-danger mb-3">&times;</span>
@@ -310,10 +320,7 @@
                     <label for="zip">Place:</label>
                     <input type="text" id="zip" name="place" class="form-control" required>
                 </div>
-                <div class="form-group">
-                    <label for="zip">PostCode:</label>
-                    <input type="number" id="zip" name="postCode" class="form-control" required>
-                </div>
+
                 <div class="form-group">
                     <label for="zip">State:</label>
                     <input type="string" id="zip" name="state" class="form-control" required>
@@ -323,6 +330,56 @@
             </form>
         </div>
     </div>
+
+
+    <!-- edit adress modal -->
+    <div class="modal" id="editAddressModal" style="display: none">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit Address</h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        &times;
+                    </button>
+                </div>
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <form id="addressForm" method="post">
+                        <div class="form-group">
+                            <label for="nameInput">Name:</label>
+                            <input type="hidden" id="id" name="id" class="form-control" required />
+                            <input type="text" id="editnameInput" name="name" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="houseNameInput">House Name:</label>
+                            <input type="text" id="edithouseNameInput" name="houseName" class="form-control" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="phoneInput">Phone Number:</label>
+                            <input type="tel" id="editphoneInput" name="phone" class="form-control" required />
+
+                            <div class="form-group">
+                                <label for="stateInput">State:</label>
+                                <input type="text" id="editstateInput" name="state" class="form-control" required />
+                            </div>
+                            <button type="button" class="btn btn-outline-danger"
+                                onclick="editAddress(document.getElementById('id').value)">
+                                Update
+                            </button>
+                            <button type="button" class="btn btn-outline-primary close-button">
+                                Close
+                            </button>
+                    </form>
+                </div>
+            </div>
+             
+        </div>
+          
+    </div>
+
+
+
 
 
 
@@ -401,7 +458,8 @@
                     </h4>
 
                     <p class="stext-107 cl7 size-201">
-                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us
+                        Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call
+                        us
                         on (+1) 96 716 6879
                     </p>
 
@@ -486,6 +544,8 @@
         </span>
     </div>
 
+
+
     <!--===============================================================================================-->
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
     <!--===============================================================================================-->
@@ -508,6 +568,18 @@
     <!--===============================================================================================-->
     <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
+
+
+
     <script>
         $('.js-pscroll').each(function () {
             $(this).css('position', 'relative');
@@ -523,29 +595,7 @@
             })
         });
     </script>
-    <script>
-        // Get the input element
-        const inputField = document.querySelector('.num-product');
 
-        // Get the plus button element
-        const plusButton = document.querySelector('.btn-num-product-up');
-
-        // Event listener for input change
-        inputField.addEventListener('change', function () {
-            const currentValue = parseInt(inputField.value);
-            const maxValue = parseInt(inputField.getAttribute('max'));
-
-            // Check if the current value equals the maximum value
-            if (currentValue === maxValue) {
-                // Hide the plus button
-                plusButton.style.display = 'none';
-            } else {
-                // Show the plus button if it was hidden
-                plusButton.style.display = 'block';
-            }
-        });
-
-    </script>
     <!--===============================================================================================-->
     <script src="js/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
@@ -593,6 +643,7 @@
         });
 
     </script>
+
     <script>
         // add address
 
@@ -610,6 +661,9 @@
                     data: formData,
                     success: function (response) {
                         // Hide the modal on success
+                        if (response.success) {
+                            $('#reloadDiv').load('/address #reloadDiv')
+                        }
                         $('#newAddressModal').modal('hide');
                     },
                     error: function (error) {
@@ -620,6 +674,89 @@
         });
 
 
+
+
+
+
+
+
+
+    </script>
+
+    <!-- edit address -->
+    <script>
+        function openCustomModal(
+            id,
+            name,
+            housename,
+            place,
+            phone,
+            state
+        ) {
+            console.log(
+                "rvgfgbfs",
+                id,
+                name,
+                housename,
+                place,
+                phone,
+                state
+            );
+            document.getElementById("id").value = id;
+            document.getElementById("editnameInput").value = name;
+            document.getElementById("edithouseNameInput").value = housename;
+            document.getElementById("editphoneInput").value = phone
+            document.getElementById("editstateInput").value = state;
+            const modal = document.getElementById("editAddressModal");
+            modal.style.display = "block";
+            const closeButton = modal.querySelector(".close-button");
+            if (closeButton) {
+                closeButton.addEventListener("click", function () {
+                    modal.style.display = "none";
+                });
+            }
+        }
+    </script>
+    <!-- edit adress -->
+    <script>
+        function editAddress(addressid) {
+            const id = document.getElementById("id").value;
+            const name = document.getElementById("editnameInput").value;
+            const house = document.getElementById("edithouseNameInput").value;
+            const phone = document.getElementById("editphoneInput").value;
+            const state = document.getElementById("editstateInput").value;
+            const modal = document.getElementById("customModal");
+            const data = {
+                id: id,
+                name: name,
+                house: house,
+                phone: phone,
+                state: state,
+            };
+            $.ajax({
+                method: "POST",
+                url: "/editAddress",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                success: function (response) {
+                    if (response.edited === true) {
+                        Swal.fire({
+                            icon: "success",
+                            text: "Successfully updated",
+                        }).then(() => {
+                            $("#reloadArea").load("/address #reloadArea");
+                        });
+
+                        modal.style.display = "none";
+                    } else {
+
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                },
+            });
+        }
     </script>
     <script>
         // order placing
@@ -693,14 +830,35 @@
             }
         }
 
-
-
-
-
-
-
     </script>
-    
+    <!-- Remove address -->
+    <script>
+        function removeAddress(Addid) {
+            const data = {
+                Addid: Addid,
+            };
+            $.ajax({
+                method: "POST",
+                url: "/delete-address",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                success: function (response) {
+                    if (response.deleted === true) {
+                        Swal.fire({
+                            icon: "success",
+                            text: "address deleted",
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                    }
+                },
+                error: function (error) {
+                    console.error(error);
+                },
+            });
+        }
+    </script>
 
 
 

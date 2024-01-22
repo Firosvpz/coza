@@ -89,10 +89,10 @@
                 </li>
                 <li>
                     <a href="/admin/orders">
-                      <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
+                        <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
                     </a>
                 </li>
-            
+
 
 
             </ul>
@@ -178,129 +178,168 @@
             <div class="container-fluid">
                 <div class="row mt-3">
                     <div class="col-lg">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="text-center text-danger fw-bold fs-3">ORDERS LIST</div>
-                                <hr>
-                                <div class="table-responsive  rounded-4 " >
-                                    <table class="table table-striped">
-                                        <thead class="text-white">
-                                            <tr>
-                                                <th>ORDER ID</th>
-                                                <th>ITEMS</th>
-                                                <th>CUSTOMER</th>
-                                                <th>TOTAL PRICE</th>
-                                                <th>ORDER DATE</th>
-                                                <th>PAYMENT METHOD</th>
-                                                <th>STATUS</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="text-white">
-                                            <% if(orders.length> 0) { %>
-                                                <% for (let i=0; i < orders.length; i++) { %>
-                                                    <tr class="bg-transparent"> <!-- Set the background color -->
-                                                        <td>
-                                                            <%= orders[i].order_id %>
-                                                        </td>
-                                                        <td>
-                                                            <div class="d-flex flex-wrap">
-                                                                <% orders[i].items.forEach((item)=> { %>
-                                                                    <img src="/webimages/<%= item.product_id.images[1] %>"
-                                                                        class="img-fluid me-2 mb-2" width="50px"
-                                                                        height="50px" alt="image not display">
-                                                                    <p>
-                                                                        <%= item.product_id.name%>
-                                                                    </p>
-                                                                    <% }) %>
+                        <div class="text-center text-danger fw-bold fs-3">ORDERS LIST</div>
+                        <hr>
 
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <%= orders[i].user_name %>
-                                                        </td>
-                                                        <td>
-                                                            <%= orders[i].total_amount %>
-                                                        </td>
-                                                        <td>
-                                                            <%= moment(orders[i].date).format('DD/MM/YYYY') %>
-                                                        </td>
-                                                        <td>
-                                                            <%= orders[i].payment %>
-                                                        </td>
-                                                        <td>
-                                                            <%= orders[i].status %>
-                                                        </td>
+                        <div class="table-responsive rounded-4">
+                            <table class="table table-dark table-striped">
+                                <thead class="text-white">
+                                    <tr>
+                                        <th>ORDER ID</th>
+                                        <th>ITEMS</th>
+                                        <th>ORDER DATE</th>
+                                        <th>STATUS</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-white ">
+                                    <% if(orders.length> 0) { %>
+                                        <% orders.forEach((order)=> { %>
+                                            <tr>
+                                                <td>
+                                                    <%= order.order_id %>
+                                                </td>
+                                                <td>
+                                                    <% order.items.forEach((item, index)=> { %>
+                                                        <div class="d-flex flex-wrap mb-4">
+                                                            <p>
+                                                                <%= item.product_id.name %>
+                                                            </p>
+                                                        </div>
+                                                        <% }) %>
+                                                </td>
+                                               
+                                                <td>
+                                                    <%= moment(order.date).format('DD/MM/YYYY') %>
+                                                </td>
+                                               
+                                                <td>
+                                                    <% order.items.forEach((item, index)=> { %>
+                                                        <select class="form-select statusSelector w-50 bg-transparent text-white mb-3" name="statusSelector"
+                                                            onchange="updateOrderStatus(this.value, '<%= order._id %>', '<%= item._id %>')">
+                                                            <!-- Populate status options -->
+                                                            <option value="placed" <%=item.ordered_status==='placed'
+                                                                ? 'selected' : '' %>>Placed</option>
+                                                            <option value="shipped" <%=item.ordered_status==='shipped'
+                                                                ? 'selected' : '' %>>Shipped</option>
+                                                            <option value="out_for_delivery"
+                                                                <%=item.ordered_status==='out_for_delivery' ? 'selected'
+                                                                : '' %>>Out for Delivery</option>
+                                                            <option value="delivered"
+                                                                <%=item.ordered_status==='delivered' ? 'selected' : ''
+                                                                %>>Delivered</option>
+                                                            <option value="request_return"
+                                                                <%=item.ordered_status==='request_return' ? 'selected'
+                                                                : '' %>>Request Return</option>
+                                                            <option value="returned" <%=item.ordered_status==='returned'
+                                                                ? 'selected' : '' %>>Returned</option>
+                                                            <option value="request_cancellation"
+                                                                <%=item.ordered_status==='request_cancellation'
+                                                                ? 'selected' : '' %>>Request Cancellation</option>
+                                                            <option value="cancelled"
+                                                                <%=item.ordered_status==='cancelled' ? 'selected' : ''
+                                                                %>>Cancelled</option>
+                                                        </select>
+
+                                                        <% }) %>
+                                                </td>
+
+                                                <td>
+                                                    <% order.items.forEach((item, index)=> { %>
+                                                        <a
+                                                            href="/admin/view?orderId=<%= order._id %>&itemId=<%= item._id %>">
+                                                            <input type="button" class="btn btn-outline-white mb-3"
+                                                                value="view details">
+                                                        </a>
+                                                        
+                                                        <% if (index < order.items.length - 1) { %>
+                                                            <br /> <!-- Add a line break between items -->
+                                                            <% } %>
+                                                                <% }) %>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                                <% } else { %>
+                                                    <tr>
+                                                        <td colspan="8">No orders found.</td>
                                                     </tr>
                                                     <% } %>
-                                                        <% } else { %>
-                                                            <tr>
-                                                                <td colspan="7">No orders found.</td>
-                                                            </tr>
-                                                            <% } %>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-center">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        <% if(totalOrders> pageSize) { %>
+                                            <% const totalPages=Math.ceil(totalOrders / pageSize); %>
+                                                <% for(let i=1; i <=totalPages; i++) { %>
+                                                    <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                                        <a class="page-link" href="?page=<%= i %>">
+                                                            <%= i %>
+                                                        </a>
+                                                    </li>
+                                                    <% } %>
+                                                        <% } %>
+                                    </ul>
+                                </nav>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-      
 
-        <!--End content-wrapper-->
-        <!--Start Back To Top Button-->
-        <a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i> </a>
-        <!--End Back To Top Button-->
+    </div>
+    </div>
 
-        <!--Start footer-->
-        <footer class="footer">
-            <div class="container">
-                <div class="text-center">
-                    Copyright © 2018 Dashtreme Admin
-                </div>
-            </div>
-        </footer>
-        <!--End footer-->
 
-        <!--start color switcher-->
-        <div class="right-sidebar">
-            <div class="switcher-icon">
-                <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
-            </div>
-            <div class="right-sidebar-content">
+    <!--End content-wrapper-->
+    <!--Start Back To Top Button-->
+    <a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i> </a>
+    <!--End Back To Top Button-->
 
-                <p class="mb-0">Gaussion Texture</p>
-                <hr>
+    <!--Start footer-->
 
-                <ul class="switcher">
-                    <li id="theme1"></li>
-                    <li id="theme2"></li>
-                    <li id="theme3"></li>
-                    <li id="theme4"></li>
-                    <li id="theme5"></li>
-                    <li id="theme6"></li>
-                </ul>
+    <!--End footer-->
 
-                <p class="mb-0">Gradient Background</p>
-                <hr>
-
-                <ul class="switcher">
-                    <li id="theme7"></li>
-                    <li id="theme8"></li>
-                    <li id="theme9"></li>
-                    <li id="theme10"></li>
-                    <li id="theme11"></li>
-                    <li id="theme12"></li>
-                    <li id="theme13"></li>
-                    <li id="theme14"></li>
-                    <li id="theme15"></li>
-                </ul>
-
-            </div>
+    <!--start color switcher-->
+    <div class="right-sidebar">
+        <div class="switcher-icon">
+            <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
         </div>
-        <!--end color switcher-->
+        <div class="right-sidebar-content">
+
+            <p class="mb-0">Gaussion Texture</p>
+            <hr>
+
+            <ul class="switcher">
+                <li id="theme1"></li>
+                <li id="theme2"></li>
+                <li id="theme3"></li>
+                <li id="theme4"></li>
+                <li id="theme5"></li>
+                <li id="theme6"></li>
+            </ul>
+
+            <p class="mb-0">Gradient Background</p>
+            <hr>
+
+            <ul class="switcher">
+                <li id="theme7"></li>
+                <li id="theme8"></li>
+                <li id="theme9"></li>
+                <li id="theme10"></li>
+                <li id="theme11"></li>
+                <li id="theme12"></li>
+                <li id="theme13"></li>
+                <li id="theme14"></li>
+                <li id="theme15"></li>
+            </ul>
+
+        </div>
+    </div>
+    <!--end color switcher-->
 
     </div><!--End wrapper-->
 
@@ -409,6 +448,35 @@
                 })
         }
 
+
+    </script>
+
+    <script>
+
+
+        function updateOrderStatus(newStatus, orderId, itemId) {
+
+            // Send a request to update the order status
+            fetch('/admin/update-order-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    orderId: orderId,
+                    itemId: itemId, // Add itemId to the request
+                    newStatus: newStatus,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    // Optionally update the UI or perform additional actions
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
 
     </script>
 </body>

@@ -403,6 +403,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
+    <!-- Latest version of SweetAlert CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
 
     <script>
@@ -433,27 +436,37 @@
                     const productId = this.getAttribute('data-categ-id');
                     const currentAction = this.getAttribute('data-action');
 
-                    // Perform only the specified action
-                    updateProductStatus(productId, currentAction);
-
-                    // Update button text or perform any other actions if needed
-                    if (currentAction === 'list') {
-                        this.textContent = 'Unlist';
-                        this.setAttribute('data-action', 'unlist');
-                        // Add or remove classes as necessary
-                        this.classList.remove('btn-outline-info');
-                        this.classList.add('btn-outline-info');
-                    } else if (currentAction === 'unlist') {
-                        this.textContent = 'List';
-                        this.setAttribute('data-action', 'list');
-                        // Add or remove classes as necessary
-                        this.classList.remove('btn-outline-info');
-                        this.classList.add('btn-outline-info');
-                    }
+                    // Prompt a confirmation dialog
+                    Swal.fire({
+                        title: 'Confirm',
+                        text: `Are you sure you want to ${currentAction === 'list' ? 'list' : 'unlist'} this product?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // If confirmed, perform the action
+                            updateProductStatus(productId, currentAction);
+                            // Update button text or perform any other actions if needed
+                            if (currentAction === 'list') {
+                                this.textContent = 'Unlist';
+                                this.setAttribute('data-action', 'unlist');
+                                // Add or remove classes as necessary
+                                this.classList.remove('btn-outline-info');
+                                this.classList.add('btn-outline-info');
+                            } else if (currentAction === 'unlist') {
+                                this.textContent = 'List';
+                                this.setAttribute('data-action', 'list');
+                                // Add or remove classes as necessary
+                                this.classList.remove('btn-outline-info');
+                                this.classList.add('btn-outline-info');
+                            }
+                        }
+                    });
                 });
             });
         });
-
 
 
 

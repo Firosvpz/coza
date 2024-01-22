@@ -140,15 +140,15 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
-                            <span class="user-profile"><img src="assets/images/me.jpg" class="img-circle"
+                            <span class="user-profile"><img src="/images/me.jpg" class="img-circle"
                                     alt="user avatar"></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li class="dropdown-item user-details">
                                 <a href="javaScript:void();">
                                     <div class="media">
-                                        <div class="avatar"><img class="align-self-start mr-3"
-                                                src="assets/images/me.jpg" alt="user avatar"></div>
+                                        <div class="avatar"><img class="align-self-start mr-3" src="/images/me.jpg"
+                                                alt="user avatar"></div>
                                         <div class="media-body">
                                             <h6 class="mt-2 user-title">Muhammed Firos</h6>
                                             <p class="user-subtitle">admin@gmail.com</p>
@@ -184,7 +184,7 @@
 
 
                                 <hr>
-                                <form method="post" enctype="multipart/form-data" id="productForm">
+                                <form method="post" enctype="multipart/form-data" id="productForm" action="/admin/addproducts">
                                     <div>
                                         <a href="/admin/addproducts"><button type="submit" class="btn btn-primary mb-3"
                                                 id="add">Add</button></a>
@@ -204,7 +204,7 @@
                                     <div class="mb-3">
                                         <label for="exampleInputEmail1" class="form-label">Price</label>
                                         <input type="number" class="form-control" id="priceInput" name="price"
-                                             value="<%= data.price%>" required>
+                                            value="<%= data.price%>" required>
 
                                     </div>
 
@@ -214,7 +214,7 @@
                                     <div class="mb-3">
                                         <label for="exampleInputPassword1" class="form-label">Quantity</label>
                                         <input type="number" class="form-control" id="quantityInput"
-                                            value="<%= data.quantity%>" name="quantity"  required>
+                                            value="<%= data.quantity%>" name="quantity" required>
                                     </div>
 
 
@@ -227,7 +227,7 @@
                                         <input type="file" class="form-control bg-dark text-white" id="productImage"
                                             name="images" multiple>
 
-                                                  
+                                       
                                     </div>
 
                                     <div class="mb-3 form-group">
@@ -382,65 +382,38 @@
             });
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.getElementById('myForm').addEventListener('submit', function (event) {
-                const inputValue = parseFloat(document.getElementById('exampleInputEmail1').value);
-                const priceError = document.getElementById('priceError');
-
-                if (inputValue <= 1) {
-                    event.preventDefault(); // Prevent form submission
-                    priceError.innerHTML = 'Minimum price is 1'; // Display error message
-                } else {
-                    priceError.textContent = ''; // Clear previous error message if valid
-                }
-            });
-        });
-
-
-
-
-    </script>
+   
+   
     <script>
         document.getElementById('productForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevents the form from submitting by default
+    event.preventDefault(); // Prevents the form from submitting by default
 
-            // Get the price input value
-            const priceInput = document.getElementById('priceInput');
-            const price = parseFloat(priceInput.value); // Convert to a floating-point number
+    // Get the price input value
+    const priceInput = document.getElementById('priceInput');
+    const price = parseFloat(priceInput.value); // Convert to a floating-point number
 
-            // Validate the price
-            if (isNaN(price) || price <= 1) {
-                alert('Please enter a valid price greater than one.');
-                priceInput.focus(); // Focus back on the price input
-                return; // Stop further processing as validation failed
-            }
+    // Validate the price
+    if (isNaN(price) || price <= 0) {
+        alert('Please enter a valid price greater than one.');
+        priceInput.focus(); // Focus back on the price input
+        return; // Stop further processing as validation failed
+    }
 
-            // If the price is valid, you can proceed with form submission or other actions
-            // For example, submit the form programmatically:
-            // event.target.submit(); // Uncomment this line to submit the form
-        });
+    // Get the quantity input value
+    const quantityInput = document.getElementById('quantityInput');
+    const quantity = parseFloat(quantityInput.value); // Convert to a floating-point number
 
-    </script>
-    <script>
-        document.getElementById('productForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevents the form from submitting by default
+    // Validate the quantity
+    if (isNaN(quantity) || quantity <= 0) {
+        alert('Please enter a valid quantity greater than one.');
+        quantityInput.focus(); // Focus back on the quantity input
+        return; // Stop further processing as validation failed
+    }
 
-            // Get the price input value
-            const priceInput = document.getElementById('quantityInput');
-            const price = parseFloat(priceInput.value); // Convert to a floating-point number
+    // If both price and quantity are valid, you can proceed with form submission
+    event.target.submit(); // Submit the form
+});
 
-            // Validate the price
-            if (isNaN(price) || price <= 1 ) {
-                alert('Please enter a valid quantity greater than one.');
-                priceInput.focus(); // Focus back on the price input
-                return; // Stop further processing as validation failed
-            }
-
-            // If the price is valid, you can proceed with form submission or other actions
-            // For example, submit the form programmatically:
-            // event.target.submit(); // Uncomment this line to submit the form
-        });
     </script>
 
 

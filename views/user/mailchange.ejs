@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/animate/animate.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/css-hamburgers/hamburgers.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/animsition/css/animsition.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/select2/select2.min.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/vendor/daterangepicker/daterangepicker.css">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/login/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/login/css/util.css">
+    <!--===============================================================================================-->
+</head>
+
+<body>
+
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100">
+                <div class="login100-form-title" style="background-image: url(images/bg-01.jpg);">
+                    <span class="login100-form-title-1">
+                        Enter Otp
+                    </span>
+                </div>
+
+                <form class="container mt-4" method="post" action="">
+                    <div class="form-group row justify-content-center">
+
+                        <input type="hidden" name="email" value="<%= locals.email %>">
+                        
+                        <input class="form-control col-2 mr-2" type="text" name="one" maxlength="1" required>
+                        <input class="form-control col-2 mr-2" type="text" name="two" maxlength="1" required>
+                        <input class="form-control col-2 mr-2" type="text" name="three" maxlength="1" required>
+                        <input class="form-control col-2" type="text" name="four" maxlength="1" required>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-dark" type="submit">Verify OTP</button>
+                        <a href="/resendOtp?email=<%= locals.email %>" class="btn btn-secondary ml-2" id="resendOtpBtn" style="display: none;">Resend OTP</a>
+                    </div>
+                    
+                    <div id="otpTimer" class="text-center mt-3">
+                        Timer: <span id="timer">00:00</span>
+                    </div>
+                    
+                    <!-- ... Rest of your form ... -->
+
+                    <div class="container mt-3">
+                        <% if(typeof message !=="undefined" ) { %>
+                            <p class="text-danger"><%- message %></p>
+                            <% } %>
+                    </div>
+                </form>
+
+
+            </div>
+        </div>
+    </div>
+</body>
+    <!--===============================================================================================-->
+    <script src="/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/bootstrap/js/popper.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/select2/select2.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/daterangepicker/moment.min.js"></script>
+    <script src="/vendor/daterangepicker/daterangepicker.js"></script>
+    <!--===============================================================================================-->
+    <script src="/vendor/countdowntime/countdowntime.js"></script>
+    <!--===============================================================================================-->
+    <script src="/login/js/main.js"></script>
+    <script>
+        // In your script or JavaScript file
+
+      // Function to initialize the timer on page load or when OTP page is rendered
+function initializeTimer() {
+    const duration = 60; // Set the timer duration in seconds (2 minutes in this case)
+    const display = document.querySelector('#timer');
+    const resendBtn = document.querySelector('#resendOtpBtn');
+
+    let timer = duration;
+    const intervalId = setInterval(function () {
+        let minutes = parseInt(timer / 60, 10);
+        let seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            clearInterval(intervalId);
+            display.textContent = "00:00";
+            resendBtn.style.display = 'inline'; // Show the Resend OTP button when the timer expires
+        }
+    }, 1000);
+}
+
+// Call the initializeTimer function when the OTP page is loaded or rendered
+window.onload = function () {
+    initializeTimer();
+};
+
+    </script>
+
+</body>
+
+</html>

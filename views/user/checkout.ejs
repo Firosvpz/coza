@@ -272,7 +272,7 @@
         </div>
 
     </form>
-    <div class="container">
+    <div class="container" id="reloadDiv">
         <div class="row">
             <div class="col-lg-8 col-xl-9 m-lr-auto m-b-50">
                 <input type="button" value="Add new address" class="btn btn-dark mb-3 ms-4" id="openModalButton">
@@ -763,7 +763,10 @@
                     url: "/addAddress",
                     data: formData,
                     success: function (response) {
-                        // Hide the modal on success
+                        
+                        if (response.success) {
+						$('#reloadDiv').load('/checkout #reloadDiv')
+					}		
                         $('#newAddressModal').modal('hide');
 
                         // Assume 'response' contains the newly added address data
@@ -819,6 +822,7 @@
                         orderData
                     },
                     success: function (response) {
+                        
                         // Handle the success response here
                         if (response.success == true) {
                             Swal.fire({

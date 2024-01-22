@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,19 +48,25 @@
                         <input class="form-control col-2 mr-2" type="text" name="three" maxlength="1" required>
                         <input class="form-control col-2" type="text" name="four" maxlength="1" required>
                     </div>
-                
                     <div class="text-center mt-3">
                         <button class="btn btn-dark" type="submit">Verify OTP</button>
+                        <a href="/resendOtp?email=<%= locals.email %>" class="btn btn-secondary ml-2" id="resendOtpBtn" style="display: none;">Resend OTP</a>
                     </div>
-                
+                    
+                    <div id="otpTimer" class="text-center mt-3">
+                        Timer: <span id="timer">00:00</span>
+                    </div>
+                    
+                    <!-- ... Rest of your form ... -->
+
                     <div class="container mt-3">
                         <% if(typeof message !=="undefined" ) { %>
                             <p class="text-danger"><%- message %></p>
-                        <% } %>
+                            <% } %>
                     </div>
                 </form>
-                
-                
+
+
             </div>
         </div>
     </div>
@@ -84,6 +87,39 @@
     <script src="/vendor/countdowntime/countdowntime.js"></script>
     <!--===============================================================================================-->
     <script src="/login/js/main.js"></script>
+    <script>
+        // In your script or JavaScript file
+
+      // Function to initialize the timer on page load or when OTP page is rendered
+function initializeTimer() {
+    const duration = 60; // Set the timer duration in seconds (2 minutes in this case)
+    const display = document.querySelector('#timer');
+    const resendBtn = document.querySelector('#resendOtpBtn');
+
+    let timer = duration;
+    const intervalId = setInterval(function () {
+        let minutes = parseInt(timer / 60, 10);
+        let seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            clearInterval(intervalId);
+            display.textContent = "00:00";
+            resendBtn.style.display = 'inline'; // Show the Resend OTP button when the timer expires
+        }
+    }, 1000);
+}
+
+// Call the initializeTimer function when the OTP page is loaded or rendered
+window.onload = function () {
+    initializeTimer();
+};
+
+    </script>
 
 </body>
 

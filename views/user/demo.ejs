@@ -1,167 +1,64 @@
-const loadCart = async (req, res) => {
-	try {
-	  const userId = req.session.userId;
-	  
-	  if (!userId) {
-		res.redirect('/login');
-	  } else {
-		// Fetch cart details
-		const cartDetails = await Cart.findOne({ user_id: userId }).populate({path:'items.product_id'});
-		const userData = await User.findOne({ _id: userId });
-  
-		let originalAmts = 0; 
-  
-		if (cartDetails) {
-			cartDetails.items.forEach((cartItem) => {
-			let itemPrice = cartItem.price;  // Adjust the property based on your data model
-			originalAmts += itemPrice * cartItem.quantity;
-		  });
-		}
-  
-		res.render('cart', { user: userData, cartDetails, subTotal: originalAmts });
-	  }
-	} catch (error) {
-	  console.log(error.message);
-	  res.status(500).json({ success: false, message: 'Internal server error.'});
-  }
-  };
-  
-  
-  
-  
-  const addToCart = async (req, res) => {
-	try {
-		const { productId, quantity } = req.body;
-		const { userId } = req.session;
-  
-		if (!userId) {
-			res.redirect('/login');
-		} else {
-			const product = await Products.findOne({ _id: productId })
-  
-			const cart = await Cart.findOne({ user_id: userId });
-  
-			if (cart) {
-				const existProduct = cart.items.find((x) => x.product_id.toString() === productId);
-  
-				if (existProduct) {
-					// Update existing product in the cart
-					await Cart.findOneAndUpdate(
-						{ user_id: userId, 'items.product_id': productId },
-						{
-							$inc: {
-								'items.$.quantity': quantity,
-								'items.$.total_price': quantity * existProduct.price
-							}
-						}
-					);
-				} else {
-					// Add new product to the cart
-					await Cart.findOneAndUpdate(
-						{ user_id: userId },
-						{
-							$push: {
-								items: {
-									product_id: productId,
-									quantity: quantity,
-									price: product.price,
-									total_price: quantity * product.price
-								}
-							}
-						}
-					);
-				}
-			} else {
-				// Create a new cart and add the product
-				const newCart = new Cart({
-					user_id: userId,
-					items: [{
-						product_id: productId,
-						quantity: quantity,
-						price: product.price,
-						total_price: quantity * product.price
-					}]
-				});
-  
-				await newCart.save();
-			}
-  
-			res.json({ success: true });
-		}
-	} catch (error) {
-	   console.log(error.message);
-	}
-  };
-  
-  
-  const postChangeQuantity = async (req, res) => {
-	try {
-	  const userId = req.session.userId;
-	  const productId = req.body.productId;
-	  const count = req.body.count;
-  
-  
-	  const cart = await Cart.findOne({ user_id: req.session.userId });
-	  if (!cart) {
-		return res.json({ success: false, message: 'Cart not found.' });
-	  }
-  
-	  
-	  const cartProduct = cart.items.find((item) => item.product_id.toString() === productId);
-	  if (!cartProduct) {
-		return res.json({ success: false, message: 'Product not found in the cart.' });
-	  }
-  
-	  
-	  const product = await Products.findById(productId);
-	  if (!product) {
-		console.log('Product not found in the database.');
-		return res.json({ success: false, message: 'Product not found in the database.' });
-	  }
-  
-  
-  
-	  if (count == 1) {
-	   
-		if (cartProduct.quantity < 10 && cartProduct.quantity < product.stockQuantity) {
-			await Cart.updateOne(
-				{ user_id: userId, 'items.product_id': productId },
-				{ 
-					$inc: { 
-						'items.$.quantity': 1,
-						'items.$.total_price': product.price 
-					} 
-				}
-			);
-			return res.json({ success: true });
-		} else {
-			const maxAllowedQuantity = Math.min(10, product.stockQuantity);
-			return res.json({
-				success: false,
-				message: The maximum quantity available for this product is ${maxAllowedQuantity}. Please adjust your quantity.,
-			});
-		}
-	} else if (count == -1) { 
-		// Decrease quantity logic
-		if (cartProduct.quantity > 1) {
-			await Cart.updateOne(
-				{ user_id: userId, 'items.product_id': productId },
-				{ 
-					$inc: { 
-						'items.$.quantity': -1,
-						'items.$.total_price': -product.price 
-					} 
-				}
-			);  
-			return res.json({ success: true });
-		} else {
-			return res.json({ success: false, message: 'Quantity cannot be less than 1.' });
-		}
-	}
-	
-	} catch (error) {
-	  console.log(error.message);
-	  res.status(500).json({ success: false, message: 'Internal server error.'});
-  }
-  };
-  
+<div class="card-body">
+    <form action="" method="post">
+        <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="hidden" class="form-control mb-1" name="id" value="<%=user._id%>">
+            <input type="text" class="form-control mb-1" name="username"
+                value="<%=user.username%>">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" value="<%=user.email%>"
+                readonly>
+            <button class="btn btn-sm btn-outline-danger rounded-pill badge mt-1"><a href="/changemail?email=<%=user.email%>">edit </a><i
+                    class="fa-solid fa-pen-to-square text-danger"></i></button>
+
+        </div>
+        <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="text" class="form-control mb-1" name="mobileNumber"
+                value="<%=user.mobileNumber%>">
+
+        </div>
+        <div class="form-group">
+
+            <a class="list-group-item list-group-item-action form-control w-25 text-center "
+                href="/changepassword">Change Password?</a>
+        </div>
+        <div class="text-right mt-3">
+            <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
+
+        </div>
+    </form>
+</div>
+
+
+router.post('/profile',userController.editProfile)
+
+
+const editProfile = async (req, res) => {
+    try {
+        const userId = req.session.user_id; // Assuming the correct session key is used to store the user ID
+        console.log('session:', userId);
+
+        const { username, mobileNumber } = req.body;
+
+
+
+        await User.findByIdAndUpdate(
+            userId,
+            {
+                $set: {
+                    username,
+                    mobileNumber
+                }
+            },
+            { new: true }
+        );
+
+        res.redirect('/profile');
+    } catch (error) {
+        console.log(error);
+        // Handle the error appropriately (e.g., send an error response)
+    }
+};

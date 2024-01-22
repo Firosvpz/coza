@@ -74,6 +74,10 @@ adminRouter.post('/editproducts',upload,adminController.editProduct)
 
 adminRouter.put('/products/deleteimg',adminController.deleteImg)
 
-adminRouter.get('/orders',adminController.loadOrders)
+adminRouter.get('/orders',auth.isAdminLogin,adminController.loadOrders)
+
+adminRouter.get('/view',auth.isAdminLogin,adminController.viewOrderPage)
+
+adminRouter.post("/update-order-status", adminController.updateOrderStatus);
 
 module.exports=adminRouter   
