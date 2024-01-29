@@ -297,8 +297,8 @@
 								<div class="input-group col-md-2  mb-3 ">
 									<% if(products.quantity> 0){ %>
 										
-										<input type="text" id="quantity" name="quantity"
-											class="quantity form-control text-center input-number fw-bold" value="1" min="1" max="10" readonly> 
+										<input type="hidden" id="quantity" name="quantity"
+											class="quantity form-control text-center input-number fw-bold " value="1" min="1" max="10" readonly> 
 										
 										<% }else{ %>
 											<p style="color: red;">Out of Stock</p>

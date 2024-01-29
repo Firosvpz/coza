@@ -39,6 +39,8 @@
     <!--===============================================================================================-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+
     <style>
         .op {
             display: flex;
@@ -272,6 +274,16 @@
         </div>
 
     </form>
+
+    <!-- coupen -->
+    <div class="row justify-content-center   mb-5">
+        <button class="btn btn-outline-danger" style="width: fit-content;" id="couponButton"
+            onclick="openCouponModal()">Check
+            Available Coupons</button>
+    </div>
+
+
+
     <div class="container" id="reloadDiv">
         <div class="row">
             <div class="col-lg-8 col-xl-9 m-lr-auto m-b-50">
@@ -298,6 +310,7 @@
                                                     class="me-3" required>
 
                                                 <div class="address-details mt-3">
+                                                    <input type="hidden" id="total" value="<%= subTotal  %>">
                                                     <span>
                                                         <%= address.name %>
                                                     </span><br>
@@ -351,7 +364,7 @@
 
                     <div class="size-209">
                         <span class="mtext-110 cl2">
-                            ₹<%=subTotal%>
+                            ₹<%=subTotal %>
                         </span>
                     </div>
                 </div>
@@ -365,7 +378,7 @@
 
                     <div class="size-209">
                         <span class="mtext-110 cl2">
-                            ₹0
+                            ₹<%=discountAmount%>
                         </span>
                     </div>
                 </div>
@@ -393,8 +406,8 @@
                     </div>
 
                     <div class="size-209">
-                        <span class="mtext-110 cl2">
-                            ₹<%=subTotal%>
+                        <span id="totalAmount" class="mtext-110 cl2">
+                            <%=subTotal - (discountAmount)%>
                         </span>
                     </div>
                 </div>
@@ -414,17 +427,20 @@
                 <form>
                     <div class="options fw-bold ">
                         <label for="option1" class="op mb-3">
-                            <input type="radio" id="option1" name="paymentOptions" value="COD" class="me-3" required>
+                            <input type="radio" id="option1" name="paymentOptions" value="COD" class="me-3">
                             Cash on Delivery
                         </label>
                         <label for="option2" class="op mb-3">
-                            <input type="radio" id="option2" name="paymentOptions" value="Razorpay" class="me-3">
+                            <input type="radio" id="rzp-button1" name="paymentOptions" value="razorPay" class="me-3">
                             RazorPay
                         </label>
+
                         <label for="option3" class="op mb-3">
                             <input type="radio" id="option3" name="paymentOptions" value="Wallet" class="me-3">
                             Wallet
                         </label>
+                        <label style=" color :rgb(87, 87, 87);">[Balance :<span style="color: rgb(122, 122, 122);">
+                                ₹<%=user.wallet.toFixed(2) %></span> ]</label>
                     </div>
                     <a href="#" id="placeOrderBtn">
                         <input type="button" value="Place an Order" class="btn btn-dark mt-3">
@@ -475,6 +491,96 @@
 
                 <button type="submit" class="btn btn-dark">Add Address</button>
             </form>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <!-- Modal to display coupon details -->
+    <div class="modal" id="couponModal" aria-labelledby="couponModalLabel">
+        <div class="modal-dialog ">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="height: 360px; overflow-y: scroll; overflow-x: hidden;">
+                    <% if(coupons.length> 0) { %>
+                        <% coupons.forEach(coupon=> { %>
+                            <div class="card mb-3 d-flex flex-column align-items-center">
+                                <div class="card-body bg-danger border rounded-3 text-white ">
+                                    <h5 class="card-title text-center" id="couponCode">
+                                        <%= coupon.couponCode %>
+                                    </h5>
+                                    <p class="card-text text-center" id="couponDescription" style="font-size: smaller;">
+                                        <%= coupon.couponDescription %>
+                                    </p>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <% if(subTotal>= coupon.minAmount) { %>
+                                                <% if(coupon.minAmount> 0) { %>
+                                                    <p class="card-text text-left" id="minAmount"
+                                                        style="font-size: small;">
+                                                        Shop for ₹<%= coupon.minAmount %> & Save ₹<%=
+                                                                coupon.discountAmount %> <br></p>
+                                                    <% }else{ %>
+                                                        <p class="card-text text-left" id="minAmount"
+                                                            style="font-size: small;">Save ₹<%= coupon.discountAmount %>
+                                                                <br></p>
+                                                        <% } %>
+
+
+                                                            <% } else { %>
+                                                                <p class="card-text text-left"
+                                                                    style="font-size: small; color: #ccc;">Shop for ₹<%=
+                                                                        coupon.minAmount %> & Save ₹<%=
+                                                                            coupon.discountAmount %> <br>(Not
+                                                                            applicable)
+                                                                </p>
+                                                                <% } %>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <!-- Center the image using Bootstrap utility classes -->
+                                            <img src="" alt="" width="60px" class="mx-auto d-block">
+                                        </div>
+                                        <div class="col-md-4 d-flex flex-column justify-content-between">
+                                            <% if(subTotal>= coupon.minAmount) { %>
+                                                <p class="card-text text-right mb-0" style="font-size: small;">
+                                                    <%= coupon.Availability %> claims left
+                                                </p>
+                                                <button type="button"
+                                                    class="btn btn-dark mx-auto d-block mt-2 apply-coupon-btn"
+                                                    data-coupon-code="<%= coupon.couponCode %>"
+                                                    style="font-size: small;">Apply Coupon</button>
+
+                                                <% } else { %>
+                                                    <p class="card-text text-right mb-0"
+                                                        style="font-size: small; color: #ccc;">
+                                                        <%= coupon.Availability %> claims left
+                                                    </p>
+                                                    <!-- <button type="button" class="btn btn-secondary mx-auto d-block mt-2" style="font-size: small;" disabled>Apply Coupon</button> -->
+                                                    <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }) %>
+
+                                <% } else { %>
+                                    <div class="card mb-3" style="background-color: rgb(215, 215, 215);">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-center" id="couponCode">No coupons found</h6>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -639,6 +745,12 @@
             <i class="zmdi zmdi-chevron-up"></i>
         </span>
     </div>
+    <!-- Bootstrap CSS and JS CDN links -->
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 
     <!--===============================================================================================-->
     <script src="vendor/jquery/jquery-3.2.1.min.js"></script>
@@ -661,6 +773,11 @@
     <script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
     <!--===============================================================================================-->
     <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+
+    <!-- razorpay -->
+
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
         $('.js-pscroll').each(function () {
@@ -763,10 +880,10 @@
                     url: "/addAddress",
                     data: formData,
                     success: function (response) {
-                        
+
                         if (response.success) {
-						$('#reloadDiv').load('/checkout #reloadDiv')
-					}		
+                            $('#reloadDiv').load('/checkout #reloadDiv')
+                        }
                         $('#newAddressModal').modal('hide');
 
                         // Assume 'response' contains the newly added address data
@@ -790,6 +907,16 @@
             const selectedAddress = document.querySelector('input[name="options"]:checked');
             const selectedPayment = document.querySelector('input[name="paymentOptions"]:checked');
 
+
+            // Retrieve the selected coupon code
+            const selectedCouponButton = document.querySelector('.apply-coupon-btn.active');
+            const couponCode = selectedCouponButton ? selectedCouponButton.dataset.couponCode : null;
+
+            // Get the value of totalAmount
+            const totalAmountElement = document.getElementById('totalAmount');
+            const CouponDiscTotal = totalAmountElement ? totalAmountElement.textContent.trim() : '0';
+
+
             if (!selectedAddress || !selectedPayment) {
                 let errorMessage = '';
 
@@ -809,20 +936,28 @@
             } else {
 
                 // Prepare data for the AJAX request
+                const total = document.getElementById('total');
                 const orderData = {
                     address: selectedAddress.value,
                     paymentMethod: selectedPayment.value,
+                    subTotal: total.value,
+                    CouponDiscTotal: CouponDiscTotal
                 };
-
+                
+                console.log('total',total);
+              
                 // Perform AJAX request using fetch
                 $.ajax({
                     type: "POST",
                     url: '/placeOrder',
                     data: {
-                        orderData
+                        orderData,
+                        couponCode: couponCode,
+                      
                     },
+                    
                     success: function (response) {
-                        
+
                         // Handle the success response here
                         if (response.success == true) {
                             Swal.fire({
@@ -832,10 +967,21 @@
                                 timer: 2000
                             })
                             const param = response.params;
+
                             setTimeout(() => {
                                 window.location.href = '/orderpage/' + param; // Redirect to order page
-                            }, 2000); // Same duration as the timer
-                        } else {
+                            }, 2000);
+                        } // Same duration as the timer
+                        else if (response.walletFailed == true) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Insufficient Balance',
+                                text: 'Please select another payment option .'
+                            });
+                        }
+
+                        else {
+                            razorpayPayment(response.order);
                             // Error handling if order placement fails
                             Swal.fire({
                                 icon: 'error',
@@ -843,6 +989,7 @@
                                 text: data.message || 'Failed to place your order. Please try again!',
                             });
                         }
+
                         // Log the response or perform actions based on the response
                     },
                     error: function (xhr, status, error) {
@@ -858,6 +1005,177 @@
         }
 
         document.querySelector('#placeOrderBtn').addEventListener('click', placeOrder);
+
+        function razorpayPayment(order) {
+            var options = {
+                "key": "rzp_test_WIydJhMLrPqZTw", // Enter the Key ID generated from the Dashboard
+                "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000
+                "currency": "INR",
+                "name": "CozaStore", //your business name
+                "description": "Test Transaction",
+                "image": "/public/images/banner-04.jpg",
+                "order_id": order.id,
+                "handler": function (response) {
+                    verifyPayment(response, order)
+                },
+                "prefill": {
+                    "name": name, //your customer's name
+                    "email": "gaurav.kumar@example.com",
+                    "contact": "9000090000"
+                },
+                "notes": {
+                    "address": "Razorpay Corporate Office"
+                },
+                "theme": {
+                    "color": "#3399cc"
+                }
+
+            };
+
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        }
+
+        function verifyPayment(payment, order) {
+            console.log('verifyPAyment::', payment, order);
+            $.ajax({
+                url: '/verify-payment',
+                method: 'post',
+                data: {
+                    payment,
+                    order
+                },
+                success: (response) => {
+                    if (response.success == true) {
+                        const param = response.params
+                        console.log('iamparam' + param);
+                        const url = '/orderpage/' + param
+                        window.location.href = url;
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment has failed',
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                    }
+                }
+            })
+        }
+
+    </script>
+
+
+    <!-- script coupen -->
+    <script>
+        function openCouponModal() {
+            // Show the modal
+            $('#couponModal').modal('show');
+        }
+
+
+        // Add this script to your page or include it in your JavaScript file
+        document.addEventListener("DOMContentLoaded", function () {
+            // Add event listener to all elements with class 'apply-coupon-btn'
+            const applyCouponButtons = document.querySelectorAll(".apply-coupon-btn");
+
+            applyCouponButtons.forEach(function (button) {
+                button.addEventListener("click", function (event) {
+                    // Prevent the default button click behavior
+                    event.preventDefault();
+
+                    // Get the coupon code from the 'data-coupon-code' attribute
+                    const couponCode = button.getAttribute("data-coupon-code");
+                    console.log('c', couponCode);
+
+                    // Call the applyCoupon function with the coupon code
+                    applyCoupon(couponCode);
+                });
+            });
+        });
+
+        // Modify the applyCoupon function to accept the coupon code as a parameter
+        async function applyCoupon(couponCode) {
+            // Your existing code for applying the coupon
+
+            const cartTotalElement = document.getElementById('total');
+            console.log('total', cartTotalElement)
+
+            // Check if the element exists before accessing its value
+            if (cartTotalElement) {
+                const cartTotal = cartTotalElement.value;
+
+                console.log('val', cartTotal);
+                console.log('couponcode', couponCode);
+
+                try {
+                    const response = await $.ajax({
+                        url: '/applyCoupon',
+                        type: 'POST',
+                        data: {
+                            couponCode: couponCode,
+                            cartTotal: cartTotal
+                        }
+                    });
+
+                    // Your existing code for handling the response
+                    // ...
+                    const { discountAmount, discountedTotal, minAmount } = response;
+
+                    if (response.couponApplied == true) {
+
+
+
+                        // Update other payment details as needed
+                        // For example, you might want to update the total amount payable
+                        Swal.fire({
+                            text: "Coupon added successfully",
+                            icon: "success",
+                            customClass: {
+                                container: 'your-container-class',
+                                title: 'your-title-class',
+                                content: 'your-content-class',
+                                confirmButton: 'your-confirm-button-class',
+                            },
+                            didClose: () => {
+                                // Reload the page after the Swal is closed
+                                location.reload();
+                            }
+                        });
+                    } else if (response.wrongCoupon == true) {
+                        // Handle wrong coupon case
+                    } else if (response.shouldMinAmount == true) {
+                        // Handle case where the minimum amount is not met
+                        alert('no min amount ')
+                    } else if (response.expired == true) {
+                        alert('coupon expired ');
+                        // Handle expired coupon case
+                    } else if (response.onlyOneTime == true) {
+                        // Handle case where only one-time usage is allowed
+                        alert('only one time ')
+                    } else if (response.usedCoupon == true) {
+                        // Handle case where the coupon has already been used
+                        alert('you already used one coupon')
+                    }
+                } catch (error) {
+                    // Your existing code for handling errors
+                    // ...
+                    console.error(error);
+
+                    Swal.fire({
+                        text: "An error occurred while applying the coupon",
+                        icon: "error",
+                        customClass: {
+                            container: 'your-container-class',
+                            title: 'your-title-class',
+                            content: 'your-content-class',
+                            confirmButton: 'your-confirm-button-class',
+                        },
+                    });
+                }
+            }
+        }
+
 
     </script>
 

@@ -80,19 +80,19 @@ router.post('/cancel-order',userController.cancelOrder);
 
 router.get('/resendOtp',userController.resendOtp)
 
-router.get('/changemail', userController.changeMail);
-
-router.post('/changemail', userController.sendOtpForEmailChange);
-
-router.get('/verifyEmailChange', userController.verifyEmailChange);
-
-router.post('/verifyEmailChange', userController.verifyEmailChangeOTP);
-
-router.get('/mailchange', userController.mailChangeOtp);
 
 router.post('/editAddress',userController.editAddress);
 
 router.post('/delete-address',userController.deleteAddress)
+
+router.post('/verify-payment',orderController.verifyPayment);
+
+router.post('/applyCoupon',orderController.applyCoupon);
+
+router.get('/wallet',auth.isLogin,userController.loadWallet);
+
+
+ 
 
 
    

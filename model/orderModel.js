@@ -46,6 +46,13 @@ const orderSchema = new mongoose.Schema({
         type: Number,
 
     },
+    couponApplied: {
+        type: Boolean,
+        
+    },
+    coupon_name: {
+        type: String,
+    },
     items: [{
         product_id: {
             type: mongoose.Schema.Types.ObjectId,
@@ -63,6 +70,9 @@ const orderSchema = new mongoose.Schema({
         total_price: {
             type: Number,
             required: true
+        },
+        couponDiscountTotal:{
+            type:Number
         },
         ordered_status: {
             type: String,

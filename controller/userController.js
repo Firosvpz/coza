@@ -255,105 +255,12 @@ const resendOtp = async (req, res) => {
         res.status(500).send({ error: "Something went wrong while resending OTP" });
     }
 }
-const mailChangeOtp = async (req, res) => {
-    try {
-        const id = req.session.user_id;
-        const user = await User.findOne({ _id: id });
-        if (!user) {
-            // Handle case where user is not found
-            return res.status(404).send('User not found');
-        }
-        req.session.user = user;
-        res.render('mailchange', { user })
-    } catch (error) {
-        console.log(error);
-    }
-}
-const changeMail = async (req, res) => {
-    try {
-        const id = req.session.user_id;
-        const user = await User.findOne({ _id: id });
-        if (!user) {
-            // Handle case where user is not found
-            return res.status(404).send('User not found');
-        }
-        req.session.user = user;
-        res.render('changemail', { user });
-    } catch (error) {
-        console.log(error);
-
-    }
-}
-
-const sendOtpForEmailChange = async (req, res) => {
-    try {
-        const { currentEmail, newEmail } = req.body
-        // Generate OTP
-        const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-        // Send OTP to the new email
-        await sendOtpverification({ email: newEmail, otp });
-        const saltrounds = 10
-        // Hash and store OTP in the database
-        const hashedOtp = await bcrypt.hash(otp, saltrounds);
-        const newOtpVerification = await new userOtp({
-            email: newEmail,
-            otp: hashedOtp,
-            createdAt: new Date(),
-        });
-        // Save OTP record
-        await newOtpVerification.save();
-
-        // Redirect to OTP verification page for the new email
-        res.redirect(`/verifyEmailChange?currentEmail=${currentEmail}&newEmail=${newEmail}&userId=${req.session.user_id}`);
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-const verifyEmailChange = async (req, res) => {
-    try {
-        const { currentEmail, newEmail, userId } = req.query;
-        const user = await User.findOne({ _id: userId })
-        console.log('ab:', currentEmail, newEmail);
-        res.render('mailchange', { currentEmail, newEmail, user });
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-const verifyEmailChangeOTP = async (req, res) => {
-    try {
-        const { currentEmail, newEmail } = req.body;
-        const otp = `${req.body.one}${req.body.two}${req.body.three}${req.body.four}`;
-
-        const user = await userOtp.findOne({ email: newEmail });
-        if (!user) {
-            res.render('changemail', { message: 'OTP expired or invalid' });
-        }
-
-        const { otp: hashedOtp } = user;
-        const validOtp = await bcrypt.compare(otp, hashedOtp);
-
-        if (validOtp) {
-            // Update email address in the database for the user
-            await User.findOneAndUpdate({ email: currentEmail }, { email: newEmail });
-
-            // Delete OTP record
-            await userOtp.deleteOne({ email: newEmail });
-
-            res.redirect('/home'); // Redirect to home or any desired page
-        } else {
-            res.render('mailchange', { message: 'Invalid OTP. Please try again.' });
-        }
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
 
 
 const logOut = async (req, res) => {
     try {
+        req.session.couponApplied = false;
+        req.session.discountAmount = 0;
         req.session.destroy()
         res.redirect('/')
     } catch (error) {
@@ -574,44 +481,44 @@ const profileUser = async (req, res) => {
 }
 const editAddress = async (req, res) => {
     try {
-      const userid = req.session.user_id;
-      console.log(userid);
-      const { id, name, house, phone, state } = req.body;
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: userid, "address._id": id },
-        {
-          $set: {
-            "address.$.name": name,
-            "address.$.housename": house,
-            "address.$.phone": phone,
-            "address.$.state": state,
-          },
-        },
-        { new: true } // Return the updated document
-      );
-  
-      console.log(updatedUser, "here is your updated user");
-      res.json({ edited: true });
+        const userid = req.session.user_id;
+        console.log(userid);
+        const { id, name, house, phone, state } = req.body;
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userid, "address._id": id },
+            {
+                $set: {
+                    "address.$.name": name,
+                    "address.$.housename": house,
+                    "address.$.phone": phone,
+                    "address.$.state": state,
+                },
+            },
+            { new: true } // Return the updated document
+        );
+
+        console.log(updatedUser, "here is your updated user");
+        res.json({ edited: true });
     } catch (err) {
-      console.log(err.message);
+        console.log(err.message);
     }
-  };
-  
-  const deleteAddress = async (req, res) => {
+};
+
+const deleteAddress = async (req, res) => {
     try {
-      console.log("hihi");
-      const userId = req.session.user_id;
-      const { Addid } = req.body;
-      console.log(Addid, "here we aere");
-      await User.updateOne(
-        { _id: userId },
-        { $pull: { address: { _id: Addid } } }
-      );
-      res.json({ deleted: true });
+        console.log("hihi");
+        const userId = req.session.user_id;
+        const { Addid } = req.body;
+        console.log(Addid, "here we aere");
+        await User.updateOne(
+            { _id: userId },
+            { $pull: { address: { _id: Addid } } }
+        );
+        res.json({ deleted: true });
     } catch (err) {
-      console.log(err.message);
-    }
-  };
+        console.log(err.message);
+    }
+};
 const loadPassword = async (req, res) => {
     try {
         const user = req.session.user_id;
@@ -692,6 +599,21 @@ const cancelOrder = async (req, res) => {
     }
 };
 
+const loadWallet = async (req, res) => {
+    try {
+        req.session.couponApplied = false;
+        req.session.discountAmount = 0;
+
+        const userId = req.session.user_id;
+
+        const user = await User.findOne({ _id: userId });
+
+        res.render('wallet', { user });
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
 
 
 module.exports = {
@@ -718,12 +640,9 @@ module.exports = {
     changePassword,
     cancelOrder,
     resendOtp,
-    changeMail,
-    sendOtpForEmailChange,
-    verifyEmailChange,
-    verifyEmailChangeOTP,
-    mailChangeOtp,
     editAddress,
-    deleteAddress
+    deleteAddress,
+    loadWallet
+
 
 }

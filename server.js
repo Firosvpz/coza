@@ -12,9 +12,9 @@ const PORT = process.env.PORT || 3000
 // middleware
 app.use(express.json())   
 app.use(express.urlencoded({extended:true}))     
-           
-app.use(session({       
-    secret:'key',    
+             
+app.use(session({         
+    secret:'key',
     saveUninitialized:false,             
     resave:false                                   
 }))                 

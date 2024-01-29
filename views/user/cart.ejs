@@ -203,33 +203,34 @@
 	<!-- Shoping Cart -->
 
 
-	<form class="bg0 p-t-75 p-b-85 " >
-		<div class="container mb-4" >
-    <nav aria-label="breadcrumb" >
-        <ol class="breadcrumb bg-light p-3 rounded-3" >
-            <li class="breadcrumb-item">
-                <a href="/home" class="text-decoration-none text-muted">Home</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="/shop" class="text-decoration-none text-muted">Shop</a>
-            </li>
-			<li class="breadcrumb-item">
-                <a href="/cart" class="text-decoration-none text-muted fw-bold text-dark">Cart</a>
-            </li>
-        </ol>
-    </nav>
-</div>
+	<form class="bg0 p-t-75 p-b-85 ">
+		<div class="container mb-4">
+			<nav aria-label="breadcrumb">
+				<ol class="breadcrumb bg-light p-3 rounded-3">
+					<li class="breadcrumb-item">
+						<a href="/home" class="text-decoration-none text-muted">Home</a>
+					</li>
+					<li class="breadcrumb-item">
+						<a href="/shop" class="text-decoration-none text-muted">Shop</a>
+					</li>
+					<li class="breadcrumb-item">
+						<a href="/cart" class="text-decoration-none text-muted fw-bold text-dark">Cart</a>
+					</li>
+				</ol>
+			</nav>
+		</div>
 
-		
+
 		<div class="container" id="reloadDiv">
 			<div class="row">
 				<div class="col-lg-8 col-xl-9 m-lr-auto m-b-50">
-					<div class="m-lr-25 m-r--38 m-lr-0-xl mt-3 me-3" style="background-color: rgba(248, 242, 234, 0.8); box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
+					<div class="m-lr-25 m-r--38 m-lr-0-xl mt-3 me-3"
+						style="background-color: rgba(248, 242, 234, 0.8); box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
 						<div class="wrap-table-shopping-cart">
 							<% if(cart && cart.items && cart.items.length> 0) { %>
 								<table class="table-shopping-cart">
 									<!-- Table header -->
-									<tr class="table_head bg-dark" >
+									<tr class="table_head bg-dark">
 										<th class="column-1 text-white">Product</th>
 										<th class="column-2 text-white">Name</th>
 										<th class="column-3 text-white">Price</th>
@@ -251,23 +252,23 @@
 											<td class="column-3">₹ <%=item.product_id.price%>
 											</td>
 											<td class="column-4">
-                                                <div class="wrap-num-product flex-w m-l-auto m-r-0">
-                                                    <div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
-                                                        onclick="increaseQuantity('<%=cart._id%>','<%=item.product_id._id%>',-1)">
-                                                        <i class="fs-16 zmdi zmdi-minus"></i>
-                                                    </div>
+												<div class="wrap-num-product flex-w m-l-auto m-r-0">
+													<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m"
+														onclick="increaseQuantity('<%=cart._id%>','<%=item.product_id._id%>',-1)">
+														<i class="fs-16 zmdi zmdi-minus"></i>
+													</div>
 
-                                                    <input class="mtext-104 cl3 txt-center num-product" type="text"
-                                                        name="quantity" min="1" max="100" value="<%= item.quantity%>"
-                                                        readonly>
+													<input class="mtext-104 cl3 txt-center num-product" type="text"
+														name="quantity" min="1" max="100" value="<%= item.quantity%>"
+														readonly>
 
-                                                    <div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m"
-                                                        onclick="increaseQuantity('<%=cart._id%>','<%=item.product_id._id%>',1)">
-                                                        <i class="fs-16 zmdi zmdi-plus"></i>
-                                                    </div>
-                                                </div>
-                                            </td>
-											
+													<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m"
+														onclick="increaseQuantity('<%=cart._id%>','<%=item.product_id._id%>',1)">
+														<i class="fs-16 zmdi zmdi-plus"></i>
+													</div>
+												</div>
+											</td>
+
 
 											<td class="column-5 ">₹ <%=item.total_price%>
 											</td>
@@ -287,60 +288,65 @@
 					</div>
 				</div>
 
-				<div class="col-lg-4 col-xl-3 m-lr-auto m-b-50 mt-5" >
-					<!-- Cart totals and checkout summary -->
-					<div class="bor10 p-lr-20 p-t-10 p-b-40 m-l-20 m-r-0-sm" style="background-color:white; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
-						<!-- Cart totals section -->
-						<h4 class="mtext-109 cl2 p-b-30 text-dark">
-							Cart Totals
-						</h4>
-						<div class="flex-w flex-t bor12 p-b-13">
-							<div class="size-208">
-								<span class="stext-110 cl2">
-									Subtotal:
-								</span>
-							</div>
+				<% if (subTotal>0) {%>
+					<div class="col-lg-4 col-xl-3 m-lr-auto m-b-50 mt-5">
+						<!-- Cart totals and checkout summary -->
+						<div class="bor10 p-lr-20 p-t-10 p-b-40 m-l-20 m-r-0-sm"
+							style="background-color:white; box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">
+							<!-- Cart totals section -->
+							<h4 class="mtext-109 cl2 p-b-30 text-dark">
+								Cart Totals
+							</h4>
+							<div class="flex-w flex-t bor12 p-b-13">
+								<div class="size-208">
+									<span class="stext-110 cl2">
+										Subtotal:
+									</span>
+								</div>
 
-							<div class="size-209">
-								<span class="mtext-110 cl2">
-									₹<%=subTotal%>
-								</span>
+								<div class="size-209">
+									<span class="mtext-110 cl2">
+										₹<%=subTotal%>
+									</span>
+								</div>
 							</div>
-						</div>
-						<br><br>
-						<div class="flex-w flex-t bor12 p-b-13">
-							<div class="size-208">
-								<span class="stext-110 cl2">
-									Shipping :
-								</span>
-							</div>
+							<br><br>
+							<div class="flex-w flex-t bor12 p-b-13">
+								<div class="size-208">
+									<span class="stext-110 cl2">
+										Shipping :
+									</span>
+								</div>
 
-							<div class="size-209">
-								<span class="mtext-110 cl2">
-									₹0
-								</span>
+								<div class="size-209">
+									<span class="mtext-110 cl2">
+										₹0
+									</span>
+								</div>
 							</div>
-						</div>
-						<br><br>
-						<div class="flex-w flex-t bor12 p-b-13">
-							<div class="size-208">
-								<span class="stext-110 cl2">
-									Subtotal:
-								</span>
-							</div>
+							<br><br>
+							<div class="flex-w flex-t bor12 p-b-13">
+								<div class="size-208">
+									<span class="stext-110 cl2">
+										Subtotal:
+									</span>
+								</div>
 
-							<div class="size-209">
-								<span class="mtext-110 cl2">
-									₹<%=subTotal%>
-								</span>
+								<div class="size-209">
+									<span class="mtext-110 cl2">
+										₹<%=subTotal%>
+									</span>
+								</div>
 							</div>
+							<br><br>
+							<a class="btn btn-dark" href="/checkout"
+								style="text-decoration: none; color: rgb(251, 247, 247);">
+								Proceed to Checkout
+							</a>
+
 						</div>
-						<br><br>
-						<button class="btn btn-dark "><a href="/checkout" style="text-decoration: none;color: rgb(251, 247, 247);">
-							Proceed to Checkout</a>
-						</button>
 					</div>
-				</div>
+					<%}%>
 			</div>
 		</div>
 
@@ -588,39 +594,39 @@
 
 	</script>
 
-<script>
-	function increaseQuantity(cartId, productId, count) {
-		$.ajax({
-			url: '/changeQuantity',
-			method: 'post',
-			data: {
-				cartId: cartId,
-				productId: productId,
-				count: count
-			},
-			success: (response) => {
-				if (response.success) {
-					$('#reloadDiv').load('/cart #reloadDiv')
-				} else {
+	<script>
+		function increaseQuantity(cartId, productId, count) {
+			$.ajax({
+				url: '/changeQuantity',
+				method: 'post',
+				data: {
+					cartId: cartId,
+					productId: productId,
+					count: count
+				},
+				success: (response) => {
+					if (response.success) {
+						$('#reloadDiv').load('/cart #reloadDiv')
+					} else {
+						Swal.fire({
+							title: 'Error',
+							icon: 'error',
+							text: response.message,
+							timer: 3000
+						})
+					}
+				},
+				error: (error) => [
 					Swal.fire({
 						title: 'Error',
 						icon: 'error',
-						text: response.message,
-						timer: 3000
+						text: error.message,
+						timer: 2000
 					})
-				}
-			},
-			error: (error) => [
-				Swal.fire({
-					title: 'Error',
-					icon: 'error',
-					text: error.message,
-					timer: 2000
-				})
-			]
-		})
-    }
-    </script>
+				]
+			})
+		}
+	</script>
 
 	<!--===============================================================================================-->
 	<script src="js/main.js"></script>

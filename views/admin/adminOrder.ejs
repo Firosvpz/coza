@@ -92,6 +92,12 @@
                         <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
                     </a>
                 </li>
+                <li>
+                    <a href="/admin/coupons">
+                        <i class="fa-solid fa-dollar-sign"></i> <span>coupons</span>
+                    </a>
+                </li>
+
 
 
 
@@ -186,6 +192,7 @@
                                 <thead class="text-white">
                                     <tr>
                                         <th>ORDER ID</th>
+                                        <th>CUSTOMER</th>
                                         <th>ITEMS</th>
                                         <th>ORDER DATE</th>
                                         <th>STATUS</th>
@@ -198,6 +205,9 @@
                                             <tr>
                                                 <td>
                                                     <%= order.order_id %>
+                                                </td>
+                                                <td>
+                                                    <%= order.user_name %>
                                                 </td>
                                                 <td>
                                                     <% order.items.forEach((item, index)=> { %>

@@ -522,6 +522,20 @@ const updateOrderStatus = async (req, res) => {
         if ((order.payment == 'razorPay') && (newStatus === 'cancelled' || newStatus === 'returned') || newStatus === 'returned' ) {
           // Update user's wallet and wallet history
           console.log('okayyy');
+
+          const user = await User.findById(order.user_id);
+          const currentDate = new Date();
+          const walletHistoryEntry = {
+            date: currentDate,
+            amount: item.total_price,
+            description: `Refund for order`,
+          };
+  
+          // Update wallet history and wallet amount
+          user.wallet_history.push(walletHistoryEntry);
+          user.wallet += item.total_price;
+          console.log('user:',user );
+          await user.save();
          
   
           const product = await products.findById(item.product_id);

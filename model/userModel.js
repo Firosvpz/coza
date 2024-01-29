@@ -34,13 +34,32 @@ const userSchema = new mongoose.Schema({
     address: [
         {
             name: String,
-            houseName:String,
-            phoneNo:String,
-            place:String,
-            postCode:Number,
-            state:String
+            houseName: String,
+            phoneNo: String,
+            place: String,
+            postCode: Number,
+            state: String
         }
-    ]
+    ], 
+    wallet: {
+        type: Number,
+        default: 0,
+    },
+    wallet_history: [
+        {
+            date: {
+                type: Date,
+                default:Date.now
+            },
+            amount: {
+                type: Number,
+                default:0
+            },
+            description: {
+                type: String,
+            },
+        },
+    ],
 },
     {
         timestamps: true

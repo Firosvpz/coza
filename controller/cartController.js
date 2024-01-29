@@ -2,6 +2,7 @@ const Cart = require('../model/cartModel')
 const products = require('../model/productModel')
 const User = require('../model/userModel')
 const categories = require('../model/categoryModel')
+const Coupon = require('../model/couponModel')
 
 
 const loadCart = async (req, res) => {
@@ -27,6 +28,8 @@ const loadCart = async (req, res) => {
                 originalAmts += itemPrice * product.quantity
             })    
             // console.log('cartDetails;',cartDetails);
+
+           
 
             res.render('cart', { cart: cartDetails, user, subTotal: originalAmts })
         }
@@ -131,26 +134,50 @@ const checkout = async (req, res) => {
     try {
         const userId = req.session.user_id
 
+        if (req.session.couponApplied !== true) {
+            req.session.couponApplied = false;
+          }
+
         // cart details
         if (!userId) {
             res.redirect('/login')
 
         } else {
             const cartDetails = await Cart.findOne({ user_id: userId }).populate({ path: 'items.product_id' })
+            console.log('A',cartDetails);
             const user = await User.findOne({ _id: userId })
 
             let amount = 0
+            let originalAmt=0
             if (cartDetails) {
                 cartDetails.items.forEach((cartItem => {
                     let itemPrice = cartItem.price
                     amount += itemPrice * cartItem.quantity
                 }))
             }
+            console.log('carts:',cartDetails.items.product_id);
+            // console.log('cartItems:',amount+=itemPrice * cartItem.quantity);
+            const coupons = await Coupon.find({});
+
+     
+            let discountAmount = 0;
+      
+            if (req.session.discountAmount) {
+              discountAmount = req.session.discountAmount;
+            }
+      
+            // Filter out coupons that the user has already used
+            const filteredCoupons = coupons.filter((coupon) => {
+              const isUserUsed = coupon.userUsed.some(
+                (used) => String(used.user_id) === String(userId)
+              );
+              return !isUserUsed;
+            });
             
 
 
 
-            res.render('checkout', { cart: cartDetails, user, subTotal: amount })
+            res.render('checkout', { cart: cartDetails, user, subTotal: amount,discountAmount,coupons:filteredCoupons })
         }
     } catch (error) {
         console.log(error);

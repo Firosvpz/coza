@@ -1,64 +1,809 @@
-<div class="card-body">
-    <form action="" method="post">
-        <div class="form-group">
-            <label class="form-label">Username</label>
-            <input type="hidden" class="form-control mb-1" name="id" value="<%=user._id%>">
-            <input type="text" class="form-control mb-1" name="username"
-                value="<%=user.username%>">
-        </div>
-        <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" name="email" value="<%=user.email%>"
-                readonly>
-            <button class="btn btn-sm btn-outline-danger rounded-pill badge mt-1"><a href="/changemail?email=<%=user.email%>">edit </a><i
-                    class="fa-solid fa-pen-to-square text-danger"></i></button>
+<!-- coupen model -->
 
-        </div>
-        <div class="form-group">
-            <label class="form-label">Phone</label>
-            <input type="text" class="form-control mb-1" name="mobileNumber"
-                value="<%=user.mobileNumber%>">
+const mongoose = require('mongoose')
 
-        </div>
-        <div class="form-group">
+const couponSchema = new mongoose.Schema({
+couponName:{
+type:String,
+required:true
+},
+couponCode:{
+type:String,
+required:true,
+unique: true,
+},
+discountAmount:{
+type:Number,
+required:true
+},
+minAmount:{
+type:Number,
+required:true
+},
+couponDescription:{
+type:String,
+required:true
+},
+Availability:{
+type:Number,
+required:true
+},
+expiryDate:{
+type:Date,
+},
+status:{
+type:Boolean,
+default:true
+},
+userUsed : [{
+user_id:{
+type : mongoose.Types.ObjectId,
+ref :'User'
+}
 
-            <a class="list-group-item list-group-item-action form-control w-25 text-center "
-                href="/changepassword">Change Password?</a>
-        </div>
-        <div class="text-right mt-3">
-            <button type="submit" class="btn btn-primary">Save changes</button>&nbsp;
 
+}],
+},{timestamps:true})
+
+
+module.exports = mongoose.model('Coupon',couponSchema)
+
+
+<!-- coupen controller -->
+const moment = require('moment');
+const User = require("../models/usersModels");
+const Coupon = require('../models/couponModel');
+
+const loadCouponList = async(req,res)=>{
+try {
+
+const coupons = await Coupon.find({});
+
+res.render('coupons',{coupons})
+
+} catch (error) {
+
+console.log(error.message);
+
+}
+}
+
+const loadAddCoupons = async(req,res)=>{
+try {
+
+res.render('add-coupons')
+
+} catch (error) {
+
+console.log(error.message);
+}
+}
+
+
+const addCoupon=async(req,res)=>{
+try {
+console.log('COUPONS:',req.body);
+const{name,couponCode,couponDescription,couponAvailability,discountAmount,minAmount,expiryDate}=req.body
+
+
+const existCoupon = await Coupon.findOne({
+couponCode: { $regex: new RegExp(couponCode), $options: 'i' }
+});
+
+if(existCoupon){
+
+res.render('add-coupons',{message:'Coupon code already exists',
+name,couponCode,couponDescription,couponAvailability,discountAmount,minAmount,expiryDate},)
+
+} else {
+
+const coupon=new Coupon({
+couponName:name,
+couponCode:couponCode,
+discountAmount:discountAmount,
+minAmount:minAmount,
+couponDescription:couponDescription,
+Availability:couponAvailability,
+expiryDate:expiryDate,
+status:true
+
+})
+
+
+
+await coupon.save()
+
+
+res.redirect('/admin/coupons')
+
+}
+
+} catch (error) {
+console.log(error.message);
+}
+}
+
+const deleteCoupons = async (req, res) => {
+try {
+const couponId = req.params.couponId;
+
+await Coupon.deleteOne({ _id:couponId });
+
+res.json({ success: true });
+
+} catch (error) {
+console.error('Error:', error);
+res.status(500).json({ success: false, error: 'Internal Server Error' });
+}
+};
+
+
+
+module.exports = {
+loadCouponList,
+loadAddCoupons,
+addCoupon,
+deleteCoupons
+}
+
+
+
+<!-- admin route -->
+adminRoute.get("/coupons", auth.isLogin, couponController.loadCouponList);
+
+adminRoute.get("/addCoupons", auth.isLogin, couponController.loadAddCoupons);
+
+adminRoute.post("/addCoupons", couponController.addCoupon);
+
+adminRoute.post(
+"/coupons/deleteCoupon/:couponId",
+couponController.deleteCoupons
+);
+
+
+
+<!-- user controller -->
+const applyCoupon = async (req, res) => {
+    try {
+      console.log(req.body);
+      const { couponCode, cartTotal } = req.body;
+      const { userId } = req.session;
+      const couponData = await Coupon.findOne({ couponCode: couponCode });
+  
+      req.session.coupon = couponData;
+      let discountedTotal = 0;
+      if (couponData) {
+        let currentDate = new Date();
+        console.log("currnewdate", currentDate);
+  
+        let minAmount = couponData.minAmount;
+  
+        if (cartTotal >= couponData.minAmount) {
+          console.log('cartTOTAL SUCCESS');
+          if (
+            currentDate <= couponData.expiryDate &&
+            couponData.status !== false
+            
+          ) { console.log("COuponData false");
+            const id = couponData._id;
+            const couponUsed = await Coupon.findOne({
+              _id: id,
+              "userUsed.user_id": userId,
+            });
+  
+            if (couponUsed) {
+              console.log("this coupon is already used");
+              res.send({ usedCoupon: true });
+            } else {
+              console.log("COupon not used");
+              if (req.session.couponApplied === false) {
+                console.log("Coupon Applied false");
+                // const updateCouponUsed = await Coupon.updateOne(
+                //   { _id: id },
+                //   { $push: { userUsed: { user_id: userId } } }
+                // );
+                // await Coupon.updateOne(
+                //   { _id: id },
+                //   { $inc: { Availability: -1 } }
+                // );
+                if (couponData.Availability <= 0) {
+                  // Update the status to expired
+                  await Coupon.updateOne({ _id: couponData._id }, { $set: { status: false } });
+                   return res.send({expired:true});
+  
+                }
+                
+                req.session.couponApplied = true;
+                console.log('req.session.couponApplied:',req.session.couponApplied);
+                req.session.discountAmount = couponData.discountAmount;
+  
+                  console.log('discount::::KLKJA',req.session.discountAmount);
+                  ;
+                // req.session.discountAmount = minAmount;
+                res.send({
+                  couponApplied: true,
+                  discountAmount:req.session.discountAmount,
+                });
+              } else {
+                console.log("COuponData true");
+                res.send({ onlyOneTime: true });
+              }
+            }
+          } else {
+            console.log("Coupon expired");
+            res.send({ expired: true });
+          }
+        } else {
+          console.log(`you should purchase atleast ${cartTotal}`);
+          res.send({ shouldMinAmount: true, minAmount });
+        }
+      } else {
+        console.log("Wrong Coupon");
+        res.send({ wrongCoupon: true });
+      }
+  
+      console.log("coupondata", couponData);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+
+
+
+
+<!-- user routes -->
+userRoute.post('/applyCoupon',checkoutController.applyCoupon);
+
+
+<!-- admin - add coupen.ejs  -->
+
+<main class="main-wrap">
+    <%- include('./adminLayouts/navBar.ejs') %>
+        <section class="content-main">
+            <div class="row">
+                <div class="card mb-4" style="max-width: 500px">
+                    <div class="card-body">
+                        <h4 class="card-title">Add Coupon</h4>
+
+                        <% if (typeof message !=='undefined' ) { %>
+                            <%if(message==='saved' ){%>
+                                <div class="alert alert-success">
+                                    <p>
+                                        <%= message %>
+                                    </p>
+                                </div>
+                                <%}else if(message==='' ){%>
+                                    <div>
+                                        <p>
+                                            <%= message %>
+                                        </p>
+                                    </div>
+                                    <%}else{%>
+                                        <div class="alert alert-danger">
+                                            <p>
+                                                <%= message %>
+                                            </p>
+                                        </div>
+                                        <%}%>
+                                            <% }%>
+
+                                                <div id="errorContainer" class="alert alert-danger"
+                                                    style="display: none;"></div>
+
+                                                <form id="offer-form" class="forms-sample" action="" method="POST">
+
+                                                    <div class="form-group mb-4">
+                                                        <label for="coupon-name" class="form-label">Coupon Name</label>
+                                                        <input type="text" class="form-control" id="coupon-name"
+                                                            name="name" placeholder="Enter coupon name"
+                                                            value="<%= locals.name %>" required>
+                                                    </div>
+
+                                                    <div class="form-group mb-4">
+                                                        <label class="form-label" for="coupon-code">Coupon Code</label>
+                                                        <input type="text" class="form-control" id="coupon-code"
+                                                            name="couponCode" placeholder="Enter coupon code"
+                                                            value="<%= locals.couponCode %>" required>
+                                                    </div>
+
+                                                    <div class="form-group mb-4">
+                                                        <label class="form-label" for="">Description</label>
+                                                        <input type="text" class="form-control" id="coupon-description"
+                                                            name="couponDescription" placeholder="Enter description"
+                                                            value="<%= locals.couponDescription %>" required>
+                                                    </div>
+
+                                                    <div class="form-group mb-4">
+                                                        <label class="form-label" for="">Availability</label>
+                                                        <input type="text" class="form-control" id="coupon-count"
+                                                            name="couponAvailability" placeholder="Enter availability"
+                                                            value="<%= locals.couponAvailability %>" required>
+                                                    </div>
+
+                                                    <div class="form-group mb-4">
+                                                        <label class="form-label" for="">Minimum Amount</label>
+                                                        <input type="text" class="form-control" id="coupon-minAmount"
+                                                            name="minAmount" placeholder="Enter Minimum amount"
+                                                            value="<%= locals.minAmount %>" required>
+                                                    </div>
+
+                                                    <div class="form-group mb-4">
+                                                        <label class="form-label" for="">Discount Amount</label>
+                                                        <input type="text" class="form-control" id="discount-amount"
+                                                            name="discountAmount" placeholder="Enter discount amount"
+                                                            value="<%= locals.discountAmount %>" required>
+                                                    </div>
+
+
+                                                    <div class="form-group mb-4">
+                                                        <label class="form-label" for="expiry-date">Expiry Date</label>
+                                                        <input type="date" class="form-control" id="expiry-date"
+                                                            name="expiryDate" placeholder="Select expiry date" required>
+                                                    </div>
+
+
+                                                    <div class="mt-4">
+                                                        <button type="submit"
+                                                            class="btn btn-primary mr-2">Submit</button>
+                                                        <a href="/admin/coupons" class="btn btn-secondary">Cancel</a>
+                                                    </div>
+
+                                                </form>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- content-main end// -->
+      
+<!-- admin - coupen.ejs -->
+<main class="main-wrap">
+    <%- include('./adminLayouts/navBar.ejs') %>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Coupons</h2>
+
+                </div>
+                <div>
+                    <a href="/admin/addCoupons" class="btn btn-primary btn-sm rounded">Create Coupons</a>
+                </div>
+
+            </div>
+            <div class="card mb-4">
+
+                <!-- card-header end// -->
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="example" style="width: 100%;">
+                            <thead>
+                                <tr>
+
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Code</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Availability</th>
+                                    <th scope="col">value</th>
+                                    <th scope="col">status</th>
+                                    <th scope="col">min amount</th>
+                                    <th scope="col" class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (coupons.length> 0) { %>
+                                    <% coupons.forEach(coupon=> { %>
+
+
+                                        <tr>
+
+                                            <td>
+                                                <%= coupon.couponName %>
+                                            </td>
+                                            <td>
+                                                <%= coupon.couponCode %>
+                                            </td>
+                                            <td>
+                                                <%= coupon.couponDescription %>
+                                            </td>
+                                            <td class="text">
+                                                <span id="">
+
+                                                    <span class="badge rounded-pill alert-primary">
+                                                        <%= coupon.Availability %>
+                                                    </span>
+
+
+                                            </td>
+                                            <td>
+                                                <%= coupon.discountAmount %>
+                                            </td>
+                                            <td class="text">
+                                                <span id="">
+
+                                                    <span class="badge rounded-pill alert-warning">
+                                                        <%= coupon.status %>
+                                                    </span>
+
+
+                                            </td>
+
+                                            <td class="text-center">
+                                                <%= coupon.minAmount %>
+                                            </td>
+
+                                            <td class="text-end">
+                                                <button class="btn btn-md rounded font-sm block-user delete-coupon"
+                                                    style="background-color: rgb(214, 0, 0);" data-toggle="modal"
+                                                    data-target="#deleteCouponModal"
+                                                    data-coupon-id="<%= coupon._id %>">Remove</button>
+                                            </td>
+
+                                        </tr>
+
+
+                                        <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td>No coupons Found1</td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- table-responsive //end -->
+                </div>
+                <!-- card-body end// -->
+
+            </div>
+            <!-- card end// -->
+
+        </section>
+        <!-- content-main end// -->
+      
+
+        <!-- Delete Coupon Modal -->
+        <div class="modal fade" id="deleteCouponModal" tabindex="-1" aria-labelledby="deleteCouponModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteCouponModalLabel">Confirm Deletion</h5>
+                        <button type="button" class="btn-close goBackBtn" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this coupon?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteCouponBtn">Delete</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </form>
+
+</main>
+<script src="/adminAssets/js/vendors/jquery-3.6.0.min.js"></script>
+<script src="/adminAssets/js/vendors/bootstrap.bundle.min.js"></script>
+<script src="/adminAssets/js/vendors/select2.min.js"></script>
+<script src="/adminAssets/js/vendors/perfect-scrollbar.js"></script>
+<script src="/adminAssets/js/vendors/jquery.fullscreen.min.js"></script>
+
+<!-- Main Script -->
+<script src="/adminAssets/js/main.js?v=1.1" type="text/javascript"></script>
+
+
+
+<!-- DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+
+
+
+<script>
+
+    $(document).ready(function () {
+        $('#example').DataTable();
+    });
+
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Handle Delete Coupon button click
+        $('.delete-coupon').on('click', function () {
+            const couponId = $(this).data('coupon-id');
+
+            // Set the couponId in the modal for reference
+            $('#deleteCouponModal').data('coupon-id', couponId);
+
+            // Show the modal
+            $('#deleteCouponModal').modal('show');
+        });
+
+        // Handle Confirm Delete Coupon button click
+        $('#confirmDeleteCouponBtn').on('click', function () {
+            // Retrieve the couponId from the modal
+            const couponId = $('#deleteCouponModal').data('coupon-id');
+
+            // Make a POST request to delete the coupon
+            fetch(`/admin/coupons/deleteCoupon/${couponId}`, {
+                method: 'POST',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Perform actions after successful deletion
+                        console.log('Coupon deleted successfully');
+
+                        // Redirect or update the UI as needed
+                        window.location.href = '/admin/coupons';
+                    } else {
+                        // Handle deletion failure
+                        console.error('Coupon deletion failed');
+                    }
+                })
+                .catch(error => {
+                    // Handle fetch error
+                    console.error('Fetch error:', error);
+                });
+        });
+    });
+
+</script>
+
+
+<!-- CHECKOUT -->
+
+//upper the add addAddress
+
+<div class="row justify-content-center mt-5 mb-5">
+    <button class="btn btn-primary" style="width: fit-content;" id="couponButton" onclick="openCouponModal()">Check
+        Available Coupons</button>
 </div>
 
 
-router.post('/profile',userController.editProfile)
+
+<!-- Modal to display coupon details -->
+<div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="height: 360px; overflow-y: scroll; overflow-x: hidden;">
+                <% if(coupons.length> 0) { %>
+                    <% coupons.forEach(coupon=> { %>
+                        <div class="card mb-3 d-flex flex-column align-items-center">
+                            <div class="card-body" style="background-color: rgb(246, 246, 246); width: 468px;">
+                                <h5 class="card-title text-center" id="couponCode">
+                                    <%= coupon.couponCode %>
+                                </h5>
+                                <p class="card-text text-center" id="couponDescription" style="font-size: smaller;">
+                                    <%= coupon.couponDescription %>
+                                </p>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <% if(subTotal>= coupon.minAmount) { %>
+                                            <% if(coupon.minAmount> 0) { %>
+                                                <p class="card-text text-left" id="minAmount" style="font-size: small;">
+                                                    Shop for ₹<%= coupon.minAmount %> & Save ₹<%= coupon.discountAmount
+                                                            %> <br></p>
+                                                <% }else{ %>
+                                                    <p class="card-text text-left" id="minAmount"
+                                                        style="font-size: small;">Save ₹<%= coupon.discountAmount %>
+                                                            <br></p>
+                                                    <% } %>
 
 
-const editProfile = async (req, res) => {
-    try {
-        const userId = req.session.user_id; // Assuming the correct session key is used to store the user ID
-        console.log('session:', userId);
+                                                        <% } else { %>
+                                                            <p class="card-text text-left"
+                                                                style="font-size: small; color: #ccc;">Shop for ₹<%=
+                                                                    coupon.minAmount %> & Save ₹<%=
+                                                                        coupon.discountAmount %> <br>(Not applicable)
+                                                            </p>
+                                                            <% } %>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <!-- Center the image using Bootstrap utility classes -->
+                                        <img src="/assets/images/pngwing1.png" alt="" width="60px"
+                                            class="mx-auto d-block">
+                                    </div>
+                                    <div class="col-md-4 d-flex flex-column justify-content-between">
+                                        <% if(subTotal>= coupon.minAmount) { %>
+                                            <p class="card-text text-right mb-0" style="font-size: small;">
+                                                <%= coupon.Availability %> claims left
+                                            </p>
+                                            <!-- <button type="button" class="btn btn-primary mx-auto d-block mt-2" style="font-size: small;">Apply Coupon</button> -->
+                                            <button type="button"
+                                                class="btn btn-primary mx-auto d-block mt-2 apply-coupon-btn"
+                                                data-coupon-code="<%= coupon.couponCode %>"
+                                                style="font-size: small;">Apply Coupon</button>
 
-        const { username, mobileNumber } = req.body;
+                                            <% } else { %>
+                                                <p class="card-text text-right mb-0"
+                                                    style="font-size: small; color: #ccc;">
+                                                    <%= coupon.Availability %> claims left
+                                                </p>
+                                                <!-- <button type="button" class="btn btn-secondary mx-auto d-block mt-2" style="font-size: small;" disabled>Apply Coupon</button> -->
+                                                <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% }) %>
+
+                            <% } else { %>
+                                <div class="card mb-3" style="background-color: rgb(215, 215, 215);">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-center" id="couponCode">No coupons found</h6>
+                                    </div>
+                                </div>
+                                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
 
 
+<!-- add in place order function -->
 
-        await User.findByIdAndUpdate(
-            userId,
-            {
-                $set: {
-                    username,
-                    mobileNumber
-                }
-            },
-            { new: true }
-        );
+async function placeOrder() {
+// Find the selected address
+const address = document.querySelector('input[name="selectedAddress"]:checked').value;
+const payment = document.querySelector('input[name="payment"]:checked').value;
 
-        res.redirect('/profile');
-    } catch (error) {
-        console.log(error);
-        // Handle the error appropriately (e.g., send an error response)
+// Retrieve the selected coupon code
+const selectedCouponButton = document.querySelector('.apply-coupon-btn.active');
+const couponCode = selectedCouponButton ? selectedCouponButton.dataset.couponCode : null;
+
+
+// Get the value of totalAmount
+const totalAmountElement = document.getElementById('totalAmount');
+const CouponDiscTotal = totalAmountElement ? totalAmountElement.textContent.trim() : '0';
+
+const total = document.getElementById('total').value;
+
+// Proceed with placing the order
+$.ajax({
+url: '/placeOrder',
+method: 'post',
+data: {
+selectedAddress: address,
+selectedPayment: payment,
+couponCode: couponCode,
+subTotal: total,
+CouponDiscTotal:CouponDiscTotal,
+},
+success: (response) => {
+if (response.success === true) {
+const param = response.params;
+const url = '/order-placed/' + param;
+window.location.href = url;
+}else if(response.walletFailed==true){
+Swal.fire({
+icon: 'error',
+title: 'Insufficient Balance',
+text: 'Please select another payment option .'
+});
+}
+else {
+razorpayPayment(response.order);
+}
+},
+});
+}
+
+
+<!-- script coupen -->
+<script>
+    function openCouponModal() {
+        // Show the modal
+        $('#couponModal').modal('show');
     }
-};
+
+
+    // Add this script to your page or include it in your JavaScript file
+    document.addEventListener("DOMContentLoaded", function () {
+        // Add event listener to all elements with class 'apply-coupon-btn'
+        const applyCouponButtons = document.querySelectorAll(".apply-coupon-btn");
+
+        applyCouponButtons.forEach(function (button) {
+            button.addEventListener("click", function (event) {
+                // Prevent the default button click behavior
+                event.preventDefault();
+
+                // Get the coupon code from the 'data-coupon-code' attribute
+                const couponCode = button.getAttribute("data-coupon-code");
+
+                // Call the applyCoupon function with the coupon code
+                applyCoupon(couponCode);
+            });
+        });
+    });
+
+    // Modify the applyCoupon function to accept the coupon code as a parameter
+    async function applyCoupon(couponCode) {
+        // Your existing code for applying the coupon
+
+        const cartTotal = document.getElementById('total').value;
+
+        console.log(cartTotal);
+        console.log(couponCode);
+        // ...
+
+        try {
+            const response = await $.ajax({
+                url: '/applyCoupon',
+                type: 'POST',
+                data: {
+                    couponCode: couponCode,
+                    cartTotal: cartTotal
+                }
+            });
+
+            // Your existing code for handling the response
+            // ...
+            const { discountAmount, discountedTotal, minAmount } = response;
+
+            if (response.couponApplied == true) {
+
+
+
+                // Update other payment details as needed
+                // For example, you might want to update the total amount payable
+                Swal.fire({
+                    text: "Coupon added successfully",
+                    icon: "success",
+                    customClass: {
+                        container: 'your-container-class',
+                        title: 'your-title-class',
+                        content: 'your-content-class',
+                        confirmButton: 'your-confirm-button-class',
+                    },
+                    didClose: () => {
+                        // Reload the page after the Swal is closed
+                        location.reload();
+                    }
+                });
+            } else if (response.wrongCoupon == true) {
+                // Handle wrong coupon case
+            } else if (response.shouldMinAmount == true) {
+                // Handle case where the minimum amount is not met
+                alert('min amount hahahahah')
+            } else if (response.expired == true) {
+                alert('coupon expired sorry bro');
+                // Handle expired coupon case
+            } else if (response.onlyOneTime == true) {
+                // Handle case where only one-time usage is allowed
+                alert('only one time bro;')
+            } else if (response.usedCoupon == true) {
+                // Handle case where the coupon has already been used
+                alert('ypu already used broo ad=nd sis')
+            }
+        } catch (error) {
+            // Your existing code for handling errors
+            // ...
+            console.error(error);
+
+            Swal.fire({
+                text: "An error occurred while applying the coupon",
+                icon: "error",
+                customClass: {
+                    container: 'your-container-class',
+                    title: 'your-title-class',
+                    content: 'your-content-class',
+                    confirmButton: 'your-confirm-button-class',
+                },
+            });
+        }
+    }
+
+
+</script>

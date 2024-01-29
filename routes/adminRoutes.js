@@ -1,6 +1,7 @@
 const express = require('express')
 const adminController = require('../controller/adminController')
 const auth = require('../middleware/adminauth')
+const couponController=require('../controller/couponController')
 const adminRouter=express()
 
 
@@ -80,4 +81,15 @@ adminRouter.get('/view',auth.isAdminLogin,adminController.viewOrderPage)
 
 adminRouter.post("/update-order-status", adminController.updateOrderStatus);
 
-module.exports=adminRouter   
+adminRouter.get("/coupons", auth.isAdminLogin, couponController.loadCouponList);
+
+adminRouter.get("/addCoupons", auth.isAdminLogin, couponController.loadAddCoupons);
+
+adminRouter.post("/addCoupons", couponController.addCoupon);
+
+adminRouter.post(
+"/coupons/deleteCoupon/:couponId",
+couponController.deleteCoupons
+);
+
+module.exports=adminRouter    

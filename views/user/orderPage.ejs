@@ -275,7 +275,11 @@
                 <tr>
                     <td>Total Price:</td>
                     <td>
-                        ₹ <%=orders.total_amount%>
+                        <% if(orders.couponApplied === true) { %>
+                            coupon applied <del style="color: red; text-decoration: line-through;">₹ <%= orders.total_amount %></del> ₹<%= orders.totalDiscountAmount %></p>
+                           <% }else{ %>
+                             ₹ <%= orders.total_amount %>
+                           <% } %>  
                     </td>
                 </tr>
                 <tr>

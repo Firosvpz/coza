@@ -38,7 +38,49 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
 		integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+<style>
+	/* Add your custom styles here */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown button {
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 8px 0;
+  z-index: 1;
+}
+
+.dropdown-menu a {
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  padding: 8px 16px;
+  transition: background-color 0.3s;
+}
+
+.dropdown-menu a:hover {
+  background-color: #555;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+</style>
 
 <body class="animsition">
 
@@ -48,57 +90,63 @@
 		<div class="container-menu-desktop trans-03">
 			<div class="wrap-menu-desktop">
 				<nav class="limiter-menu-desktop p-l-45">
-
+	
 					<!-- Logo desktop -->
 					<a href="/home" class="logo">
 						<img src="images/icons/logo-02.png" alt="IMG-LOGO">
 					</a>
-
+	
 					<!-- Menu desktop -->
 					<div class="menu-desktop">
-						<ul class="main-menu n" >
+						<ul class="main-menu n">
 							<li>
 								<a href="/home" style="text-decoration: none;">Home</a>
-
 							</li>
-
+	
 							<li>
 								<a href="/shop" style="text-decoration: none;">Shop</a>
 							</li>
-
-							<li class="label1" data-label1="">
-								<a href="/cart" style="text-decoration: none;">Cart</a>
-							</li>
-
+	
+							
 							<li>
 								<a href="/about" style="text-decoration: none;">About</a>
 							</li>
-
+	
 							<li>
 								<a href="/contact" style="text-decoration: none;">Contact</a>
 							</li>
-                            <li>
-								<div class="dropdown">
-									<button class="btn btn-transparent text-white  btn-sm fw-bold" type="button"
-										data-bs-toggle="dropdown" aria-expanded="false">
-										<%=locals.user?user.username:"PROFILE"%>
+	
+							<li>
+								<div class="dropdown ">
+									<button class=" text-white  fw-bold"  data-bs-toggle="dropdown" aria-expanded="false">
+									  <%= locals.user ? user.username : "PROFILE" %>
 									</button>
-									<ul class="dropdown-menu bg-transparent ">
+									<ul class="dropdown-menu bg-dark">
+									  <li>
 										
-											<a class="dropdown-item bg-dark text-white" href="/userprofile">User profile</a>
-									
-										
-										<!-- <li><a class="dropdown-item bg-dark text-white" href="/login"> -->
-											<%if(locals.user){%>
-												<a class="dropdown-item bg-dark text-white" href="/logout">Logout</a>
-											<%}else{%>
-											    <a class="dropdown-item bg-dark text-white" href="/login">Login</a>
-											<%}%>
-										</a></li>
-										
+										<a class="dropdown-item text-white" href="/userprofile"><i class="fa-solid fa-user"></i>  User profile</a>
+									  </li>
+									  <li>
+										<a class="dropdown-item text-white" href="/cart"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+									  </li>
+									  <% if (locals.user) { %>
+										<li>
+										  <a class="dropdown-item text-white" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+										</li>
+									  <% } else { %>
+										<li>
+										  <a class="dropdown-item text-white" href="/login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+										</li>
+									  <% } %>
+									  
 									</ul>
-								</div>
+								  </div>
+								  
 							</li>
 						</ul>
 					</div>
-                    
+				</nav>
+			</div>
+		</div>
+	</header>
+	
