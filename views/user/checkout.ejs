@@ -225,12 +225,12 @@
                             <% if(cart && cart.items && cart.items.length> 0) { %>
                                 <table class="table-shopping-cart">
                                     <!-- Table header -->
-                                    <tr class="table_head " style="background-color: rgba(13, 4, 17, 0.818);">
+                                    <tr class="table_head  " style="background-color: rgba(13, 4, 17, 0.818);">
                                         <th class="column-1 text-white">Item</th>
                                         <th class="column-2 text-white">Name</th>
                                         <th class="column-3 text-white">Price</th>
                                         <th class="column-4 text-white">Quantity</th>
-                                        <th class="column-5 text-white">Total</th>
+                                      
 
                                     </tr>
                                     <% cart.items.forEach(item=> { %>
@@ -244,8 +244,30 @@
                                             <td class="column-2" style="font-weight: bold;">
                                                 <%=item.product_id.name%>
                                             </td>
-                                            <td class="column-3">₹ <%=item.product_id.price%>
-                                            </td>
+                                            <td class="column-3">
+												<% if (item.product_id.offer) { 
+													var discount = (item.product_id.price * item.product_id.offer.percentage / 100).toFixed(0); 
+												} else { 
+													var discount = 0; 
+												} %>
+												
+												<% if (categories.length > 0) { %>
+													<% categories.forEach(category => { %>
+														<% if (category.offer && category.categoryName === item.product_id.category) { 
+															discount = (item.product_id.price * category.offer.percentage / 100).toFixed(0); 
+														} %>
+													<% }); %>
+												<% } %>
+										
+												<% if (discount > 0) { %>
+													<span class="mb-0 stext-105 cl3">
+														<del class="text-danger text-decoration-line-through">₹<%= item.product_id.price %></del>
+														<span class="price stext-105 cl3">₹<%= item.product_id.price - discount %></span>
+													</span>
+												<% } else { %>
+													<span class="stext-105 cl3">₹<%= item.product_id.price %></span>
+												<% } %>
+											</td>
                                             <td class="column-4">
                                                 <div class="me-4">
                                                     <p>
@@ -254,8 +276,7 @@
                                                 </div>
                                             </td>
 
-                                            <td class="column-5 ">₹ <%=item.total_price%>
-                                            </td>
+                                         
 
 
 

@@ -274,11 +274,35 @@
 						<h4 class="mtext-105 cl2 js-name-detail p-b-14">
 							<%=products.name%>
 						</h4>
+						
 
-						<span class="mtext-106 cl2">
-							Price : ₹ <%=products.price%>
-						</span>
+						<% if (products.offer) { var discount=(products.price * products.offer.percentage /
+							100).toFixed(0); } else { var discount=0; } %>
 
+							<% if (categories.length> 0) { %>
+								<% categories.forEach(category=> { %>
+									<% if (category.offer && category.categoryName===products.category)
+									 { discount=(products.price *
+										category.offer.percentage / 100).toFixed(0); } %>
+										<% }) %>
+											<% } %>
+
+												<% if (discount> 0) { %>
+													<span class="mb-0 stext-105 cl3 "> <del
+															class="text-danger text-decoration-line-through">₹
+															<%= products.price %>
+														</del>
+														<span class="price stext-105 cl3 ">₹ <%=
+																products.price - discount %>
+																<span class="badge badge-success"
+																	style="position: absolute;bottom: 70px;left: 5px;">Save
+																	₹ <%= discount %></span>
+														</span></span>
+													<% } else { %>
+														<span class="stext-105 cl3">
+															₹<%= products.price %>
+														</span>
+														<% } %>
 						
 
 						<p class="stext-102 cl3 p-t-23">

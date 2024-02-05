@@ -50,7 +50,7 @@ const addCoupon = async (req, res) => {
             const coupon = new Coupon({
                 couponName: name,
                 couponCode: couponCode,
-                discountAmount: discountAmount,
+                discountAmount: discountAmount, 
                 minAmount: minAmount,
                 couponDescription: couponDescription,
                 Availability: couponAvailability,

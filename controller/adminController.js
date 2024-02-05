@@ -2,6 +2,7 @@ const User = require('../model/userModel')
 const categories = require('../model/categoryModel')
 const products = require('../model/productModel')
 const Order = require('../model/orderModel')
+const Offer = require('../model/offerModel')
 const dotenv = require('dotenv')
 const { name } = require('ejs')
 const path = require('path')
@@ -19,7 +20,7 @@ const adminLogin = async (req, res) => {
     try {
         res.render('adminlogin')
     } catch (error) {
-        console.log(error); 
+        console.log(error);
     }
 }
 
@@ -55,11 +56,482 @@ const verifyAdminLogin = async (req, res) => {
 
 const loadDashboard = async (req, res) => {
     try {
-        res.render('dashboard')
+        // Unwind orders based on items
+        const unwoundOrders = [
+            {
+                $unwind: "$items",
+            },
+            {
+                $match: {
+                    $and: [
+                        { "items.ordered_status": "delivered" },
+                        { status: { $ne: "pending" } },
+                    ],
+                },
+            },
+        ];
+
+
+
+
+        // Monthly sales report based on items.ordered_status - delivered
+        // Monthly sales report based on items.ordered_status - delivered
+        let monthlySales = await Order.aggregate([
+            ...unwoundOrders,
+            {
+                $match: {
+                    date: {
+                        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+                        $lt: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1),
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: { $month: "$date" },  // Change from date to date
+                    totalSales: {
+                        $sum: {
+                            $subtract: [
+                                { $multiply: ["$items.quantity", "$items.price"] },
+                                { $ifNull: ["$items.couponDiscountTotal", 0] }, // Handle null values
+                            ],
+                        },
+                    },
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        // console.log("Monthly Sales:", monthlySales);
+
+
+        // Yearly sales report based on items.ordered_status - delivered
+        // Yearly sales report based on items.ordered_status - delivered
+        let yearlySales = await Order.aggregate([
+            ...unwoundOrders,
+            {
+                $match: {
+                    date: {
+                        $gte: new Date(new Date().getFullYear(), 0, 1),
+                        $lt: new Date(new Date().getFullYear() + 1, 0, 1),
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: { $year: "$date" },  // Change from date to date
+                    totalSales: {
+                        $sum: {
+                            $subtract: [
+                                { $multiply: ["$items.quantity", "$items.price"] },
+                                { $ifNull: ["$items.couponDiscountTotal", 0] }, // Handle null values
+                            ],
+                        },
+                    },
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        // console.log("Yearly Sales:", yearlySales);
+
+
+        const totalSales = await Order.aggregate([
+            {
+                $unwind: "$items",
+            },
+            {
+                $match: {
+                    status: { $ne: "pending" },
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalRevenue: {
+                        $sum: {
+                            $subtract: [
+                                { $multiply: ["$items.quantity", "$items.price"] },
+                                { $ifNull: ["$items.couponDiscountTotal", 0] }, // Handle null values
+                            ],
+                        },
+                    },
+                },
+            },
+        ]);
+        
+        // console.log("Total Sales:", totalSales);
+
+
+
+
+
+        // Count total orders, delivered orders, and other orders
+        const orderCounts = await Order.aggregate([
+            // Unwind without conditions
+            {
+                $unwind: "$items",
+            },
+            // Match to exclude orders with status 'pending'
+            {
+                $match: {
+                    status: { $ne: "pending" },
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalOrders: { $sum: 1 },
+                    deliveredOrders: {
+                        $sum: {
+                            $cond: [
+                                {
+                                    $eq: ["$items.ordered_status", "delivered"],
+                                },
+                                1,
+                                0,
+                            ],
+                        },
+                    },
+                    cancelOrders: {
+                        $sum: {
+                            $cond: [
+                                {
+                                    $eq: ["$items.ordered_status", "cancelled"],
+                                },
+                                1,
+                                0,
+                            ],
+                        },
+                    },
+                    otherOrders: {
+                        $sum: {
+                            $cond: [
+                                {
+                                    $ne: ["$items.ordered_status", "delivered"],
+                                },
+                                1,
+                                0,
+                            ],
+                        },
+                    },
+                },
+            },
+        ]);
+
+
+
+
+        // Count different payment methods
+        const paymentCounts = await Order.aggregate([
+            // Use the unwoundOrders variable in the pipeline
+            {
+                $unwind: "$items",
+            },
+            // Match to exclude orders with status 'pending'
+            {
+                $match: {
+                    status: { $ne: "pending" },
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: 1 },
+                    cod: {
+                        $sum: {
+                            $cond: [
+                                {
+                                    $eq: ["$payment", "COD"],
+                                },
+                                1,
+                                0,
+                            ],
+                        },
+                    },
+                    razorpay: {
+                        $sum: {
+                            $cond: [
+                                {
+                                    $eq: ["$payment", "razorPay"],
+                                },
+                                1,
+                                0,
+                            ],
+                        },
+                    },
+                    wallet: {
+                        $sum: {
+                            $cond: [
+                                {
+                                    $eq: ["$payment", "Wallet"],
+                                },
+                                1,
+                                0,
+                            ],
+                        },
+                    },
+                },
+            },
+        ]);
+
+        const productCount = await products.countDocuments({})
+        const categoryCount = await categories.countDocuments({})
+        const latestUsers = await User.find({}).sort({ createdAt: -1 }).limit(5)
+
+        const latestOrders = await Order.aggregate([
+            {
+                $unwind: "$items",
+            },
+            {
+                $match: {
+                    status: { $ne: "pending" },
+                },
+            },
+            {
+                $sort: {
+                   date: -1, // Sort in descending order based on date
+                },
+            },
+            {
+                $limit: 10, // Limit to the first 10 documents
+            },
+
+        ]);
+
+        console.log('monthlySales:', monthlySales);
+        console.log('yearlySales:', yearlySales);
+        console.log('totalSales:', totalSales[0]);
+        console.log('orderCounts:', orderCounts[0]);
+        console.log('paymentCounts:', paymentCounts[0]);
+        console.log('productCount:', productCount);
+        console.log('categoryCount:', categoryCount);
+
+
+
+        const currentYear = new Date().getFullYear();
+        const yearsToInclude = 7;
+        const currentMonth = new Date().getMonth() + 1; // Month is zero-based in JavaScript dates
+
+        // Create arrays with default values for each month and each year
+        const defaultMonthlyValues = Array.from({ length: 12 }, (_, i) => ({
+            month: i + 1,
+            total: 0,
+            count: 0,
+        }));
+
+        const defaultYearlyValues = Array.from({ length: yearsToInclude }, (_, i) => ({
+            year: currentYear - yearsToInclude + i + 1,
+            total: 0,
+            count: 0,
+        }));
+
+        // Monthly sales data
+        const monthlySalesData = await Order.aggregate([
+            {
+                $unwind: '$items',
+            },
+            {
+                $match: {
+                    'items.ordered_status': 'delivered',
+                    date: { $gte: new Date(currentYear, currentMonth - 1, 1) },
+                    status: { $ne: 'cancelled' },
+                },
+            },
+            {
+                $group: {
+                    _id: { $month: '$date' },
+                    total: {
+                        $sum: {
+                            $subtract: [
+                                { $multiply: ['$items.price', '$items.quantity'] },
+                                { $ifNull: ['$items.couponDiscountTotal', 0] }, // Handle null values
+                            ],
+                        },
+                    },
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: '$_id',
+                    total: '$total',
+                    count: '$count',
+                },
+            },
+        ]);
+        
+        console.log("Monthly Sales Data:", monthlySalesData);
+        
+
+        // Update monthly values based on retrieved data
+        const updatedMonthlyValues = defaultMonthlyValues.map((defaultMonth) => {
+            const foundMonth = monthlySalesData.find((monthData) => monthData.month === defaultMonth.month);
+            return foundMonth || defaultMonth;
+        });
+
+        console.log('Monthly Sales Data:', updatedMonthlyValues);
+
+        // Yearly sales data
+        // Yearly sales data
+        const yearlySalesData = await Order.aggregate([
+            {
+                $unwind: '$items',
+            },
+            {
+                $match: {
+                    date: { $gte: new Date(currentYear - yearsToInclude, 0, 1) }, // Adjust the start date
+                    status: { $ne: 'cancelled' },
+                },
+            },
+            {
+                $group: {
+                    _id: { $year: '$date' },
+                    total: {
+                        $sum: {
+                            $subtract: [
+                                { $ifNull: [{ $multiply: ['$items.price', '$items.quantity'] }, 0] }, // Default value if couponDiscountTotal is not present
+                                { $ifNull: ['$items.couponDiscountTotal', 0] }, // Default value if couponDiscountTotal is not present
+                            ],
+                        },
+                    },
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    year: '$_id',
+                    total: '$total',
+                    count: '$count',
+                },
+            },
+        ]);
+        
+        console.log("Yearly Sales Data:", yearlySalesData);
+        
+
+        // Update yearly values based on retrieved data
+        const updatedYearlyValues = defaultYearlyValues.map((defaultYear) => {
+            const foundYear = yearlySalesData.find((yearData) => yearData.year === defaultYear.year);
+            return foundYear || defaultYear;
+        });
+
+
+
+        console.log('Yearly Sales Data:', updatedYearlyValues);
+
+
+
+
+        // Render the dashboard template and pass the data
+        res.render('dashboard', {
+            monthlySales,
+            yearlySales,
+            totalSales: totalSales[0],
+            orderCounts: orderCounts[0],
+            paymentCounts: paymentCounts[0],
+            productCount,
+            categoryCount,
+            latestUsers,
+            latestOrders,
+            moment,
+            updatedMonthlyValues,
+            updatedYearlyValues,
+            // ... Continue with the rest of your data
+        });
     } catch (error) {
-        console.log(error);
+        console.log(error.message);
     }
-}
+};
+
+const salesReport = async (req, res) => {
+    try {
+      const firstOrder = await Order.find().sort({ date: 1 })
+      const lastOrder = await Order.find().sort({ date: -1 })
+  
+      const salesReport = await Order.find({ "items.ordered_status": "delivered" })
+        .populate("user_id")
+        .populate("items.product_id")
+        .sort({ date: -1 })
+  
+  
+      res.render('salesReport', {
+        firstOrder: moment(firstOrder[0].date).format("YYYY-MM-DD"),
+        lastOrder: moment(firstOrder[0].date).format("YYYY-MM-DD"),
+        salesReport,
+        moment
+      })
+  
+    } catch (error) {
+      console.error(error);
+  
+    }
+  }
+
+  const datePicker = async (req, res) => {
+    try {
+      const { startDate, endDate } = req.body
+      const startDateObj = new Date(startDate)
+      startDateObj.setHours(0, 0, 0, 0)
+      const endDateObj = new Date(endDate)
+      endDateObj.setHours(23, 59, 59, 999)
+  
+      const selectedDate = await Order.aggregate([
+        {
+          $match: {
+           date: {
+              $gte: startDateObj,
+              $lte: endDateObj,
+            },
+            "items.ordered_status": "delivered"
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "user_id",
+            foreignField: "_id",
+            as: "user",
+          }
+        },
+        {
+          $unwind: "$items",
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "items.product_id",
+            foreignField: "_id",
+            as: "items.product"
+          }
+        },
+        {
+          $unwind: "$items.product",
+        },
+        {
+          $group: {
+            _id: "$_id",
+            user: { $first: "$user" },
+            delivery_address: { $first: "$delivery_address" },
+            order_id: { $first: "$order_id" },
+            date: { $first: "$date" },
+            payment: { $first: "$payment" },
+            items: { $push: "$items" }
+          }
+        }
+      ])
+  
+      res.status(200).json({ selectedDate: selectedDate });
+    } catch (error) {
+      console.log(error);
+  
+    }
+  
+  }
+  
+
 
 // users list
 
@@ -121,9 +593,10 @@ const unBlockUser = async (req, res) => {
 // category 
 const loadCategory = async (req, res) => {
     try {
-        const categData = await categories.find({})
+        const categData = await categories.find({}).populate('offer')
+        const availableOffers = await Offer.find({ expiryDate: { $gte: new Date() } })
 
-        res.render('categories', { categories: categData })
+        res.render('categories', { categories: categData, offers: availableOffers, moment })
 
     } catch (error) {
         console.log(error);
@@ -185,13 +658,13 @@ const addCategoryItems = async (req, res) => {
         if (existingCategory && existingCategory._id.toString() !== req.body.id) {
 
             // If a similar name exists for a different category, prevent the update
-            res.render('add-categ', { message: 'category already exist' ,data:req.body});
+            res.render('add-categ', { message: 'category already exist', data: req.body });
         } else {
 
             const { categoryName, description } = req.body
 
             const newCategory = new categories({
-                 categoryName,
+                categoryName,
                 description
 
             })
@@ -214,9 +687,9 @@ const loadEditCategory = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error);  
+        console.log(error);
     }
-}  
+}
 
 
 // edit-category
@@ -231,8 +704,8 @@ const editCategory = async (req, res) => {
         if (existingCategory && existingCategory._id.toString() !== req.body.id) {
 
             // If a similar name exists for a different category, prevent the update
-           req.flash("message","category already exist")
-           res.render('edit-categ',{categories:req.body})
+            req.flash("message", "category already exist")
+            res.render('edit-categ', { categories: req.body })
 
         } else {
             // Update the category since the name doesn't exist or it's the same category being edited
@@ -263,8 +736,11 @@ const deleteCategory = async (req, res) => {
 
 const loadProducts = async (req, res) => {
     try {
-        const productData = await products.find({})
-        res.render('productslist', { products: productData })
+        const productData = await products.find({}).populate('offer')
+        console.log('p', productData);
+        const availableOffers = await Offer.find({ expiryDate: { $gte: new Date() } })
+
+        res.render('productslist', { products: productData, offers: availableOffers, moment })
     } catch (error) {
         console.log(error);
     }
@@ -274,7 +750,7 @@ const loadProducts = async (req, res) => {
 const loadAddProducts = async (req, res) => {
     try {
         const data = await categories.find({ isListed: true })
-        res.render('add-products', { categories: data,data })
+        res.render('add-products', { categories: data, data })
     } catch (error) {
         console.log(error);
     }
@@ -294,9 +770,9 @@ const addProducts = async (req, res) => {
 
             const filenames = []
 
-            const data = await categories.find({ isListed: true })  
+            const data = await categories.find({ isListed: true })
 
-             
+
             if (req.files.length !== 4) {
                 return res.render('add-products', { message: '4 images needed', categories: data })
             }
@@ -307,17 +783,17 @@ const addProducts = async (req, res) => {
                 await sharp(req.files[i].path).resize(800, 1200, { fit: 'fill' }).toFile(imagesPath)
                 filenames.push(req.files[i].filename)
             }
-            let discount = parseInt(price)+ Math.floor(parseInt(price) + Math.random() * 1000);
+            let discount = parseInt(price) + Math.floor(parseInt(price) + Math.random() * 1000);
             const newProduct = new products({
                 name: productName,
                 description,
-                price,  
+                price,
                 discount,
                 category,
-                images: filenames,  
-                quantity,  
+                images: filenames,
+                quantity,
                 date
-   
+
             })
 
             await newProduct.save()
@@ -438,8 +914,8 @@ const deleteImg = async (req, res) => {
         console.log(req.body);
         const { img, productid } = req.body
         console.log(img);
-       fs.unlink(path.join(__dirname, '../public/sharpimages', img), () => { });
-       
+        fs.unlink(path.join(__dirname, '../public/sharpimages', img), () => { });
+
 
         await products.updateOne(
             { _id: productid },
@@ -478,11 +954,11 @@ const loadOrders = async (req, res) => {
 };
 
 const viewOrderPage = async (req, res) => {
-    try {   
+    try {
         const itemId = req.query.itemId;
         const orderId = req.query.orderId;
-        console.log('itemId:',itemId);
-        console.log('orderId',orderId);
+        console.log('itemId:', itemId);
+        console.log('orderId', orderId);
 
         const mainOrder = await Order.findOne({ _id: orderId }).populate('user_id').populate({
             path: "items.product_id",
@@ -504,78 +980,78 @@ const viewOrderPage = async (req, res) => {
 
 const updateOrderStatus = async (req, res) => {
     const { orderId, itemId, newStatus } = req.body;
-    console.log('hjh:',req.body);
-  
+    console.log('hjh:', req.body);
+
     let update = { 'items.$.ordered_status': newStatus };
-  
+
     try {
-      const order = await Order.findById(orderId);
-      console.log('order:',order);
-      const item = order.items.find((item) => item._id.toString() === itemId);
-  
-      console.log('item:',item);
+        const order = await Order.findById(orderId);
+        console.log('order:', order);
+        const item = order.items.find((item) => item._id.toString() === itemId);
 
-      
-      if (item) {
-          console.log('orderpayment:',order.payment);
-        // If payment is RazorPay and status is 'cancelled' or 'returned'
-        if ((order.payment == 'razorPay') && (newStatus === 'cancelled' || newStatus === 'returned') || newStatus === 'returned' ) {
-          // Update user's wallet and wallet history
-          console.log('okayyy');
+        console.log('item:', item);
 
-          const user = await User.findById(order.user_id);
-          const currentDate = new Date();
-          const walletHistoryEntry = {
-            date: currentDate,
-            amount: item.total_price,
-            description: `Refund for order`,
-          };
-  
-          // Update wallet history and wallet amount
-          user.wallet_history.push(walletHistoryEntry);
-          user.wallet += item.total_price;
-          console.log('user:',user );
-          await user.save();
-         
-  
-          const product = await products.findById(item.product_id);
-        
-          if (product) {
-            // Increase the product quantity by the ordered quantity
-            const newStockQuantity = product.quantity + item.quantity;
-            await products.findByIdAndUpdate(item.product_id, { quantity: newStockQuantity });
-          }
-  
+
+        if (item) {
+            console.log('orderpayment:', order.payment);
+            // If payment is RazorPay and status is 'cancelled' or 'returned'
+            if ((order.payment == 'razorPay') && (newStatus === 'cancelled' || newStatus === 'returned') || newStatus === 'returned') {
+                // Update user's wallet and wallet history
+                console.log('okayyy');
+
+                const user = await User.findById(order.user_id);
+                const currentDate = new Date();
+                const walletHistoryEntry = {
+                    date: currentDate,
+                    amount: item.total_price,
+                    description: `Refund for order`,
+                };
+
+                // Update wallet history and wallet amount
+                user.wallet_history.push(walletHistoryEntry);
+                user.wallet += item.total_price;
+                console.log('user:', user);
+                await user.save();
+
+
+                const product = await products.findById(item.product_id);
+
+                if (product) {
+                    // Increase the product quantity by the ordered quantity
+                    const newStockQuantity = product.quantity + item.quantity;
+                    await products.findByIdAndUpdate(item.product_id, { quantity: newStockQuantity });
+                }
+
+            }
+
+            // If status is 'cancelled' or 'returned', update product stock quantity
+            if (newStatus === 'cancelled') {
+                const product = await products.findById(item.product_id);
+                console.log('mot okay');
+                if (product) {
+                    // Increase the product quantity by the ordered quantity
+                    const newStockQuantity = product.quantity + item.quantity;
+                    await products.findByIdAndUpdate(item.product_id, { quantity: newStockQuantity });
+                }
+            }
         }
-  
-        // If status is 'cancelled' or 'returned', update product stock quantity
-        if (newStatus === 'cancelled') {
-          const product = await products.findById(item.product_id);
-          console.log('mot okay');
-          if (product) {
-            // Increase the product quantity by the ordered quantity
-            const newStockQuantity = product.quantity + item.quantity;
-            await products.findByIdAndUpdate(item.product_id, { quantity: newStockQuantity });
-          }
-        }
-      }
-  
-      const updatedOrder = await Order.findOneAndUpdate(
-        { _id: orderId, 'items._id': itemId },
-        { $set: update },
-        { new: true }
-      );
-  
-      res.json({ success: true, updatedOrder });
+
+        const updatedOrder = await Order.findOneAndUpdate(
+            { _id: orderId, 'items._id': itemId },
+            { $set: update },
+            { new: true }
+        );
+
+        res.json({ success: true, updatedOrder });
     } catch (error) {
-      console.error('Error updating order status:', error);
-      res.status(500).json({ success: false, error: 'Internal Server Error' });
+        console.error('Error updating order status:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
-  };
+};
 
 
-  
-  
+
+
 
 
 
@@ -617,5 +1093,7 @@ module.exports = {
     loadOrders,
     viewOrderPage,
     updateOrderStatus,
-  
+    salesReport,
+    datePicker
+
 }

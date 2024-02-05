@@ -109,25 +109,26 @@
                             <!-- Profile link -->
                             <li>
                                 <div class="dropdown">
-									<button class=" text-dark  btn-sm fw-bold" type="button"
-										data-bs-toggle="dropdown" aria-expanded="false">
-										<%=locals.user?user.username:"PROFILE"%>
-									</button>
-									<ul class="dropdown-menu bg-transparent ">
-										
-											<li> <a class="dropdown-item bg-dark text-white" href="/userprofile">User profile</a>
-									
-										
-										<!-- <li><a class="dropdown-item bg-dark text-white" href="/login"> -->
-											<%if(locals.user){%>
-												<a class="dropdown-item bg-dark text-white" href="/logout">Logout</a>
-											<%}else{%>
-											    <a class="dropdown-item bg-dark text-white" href="/login">Login</a>
-											<%}%>
-										</li>
-										
-									</ul>
-								</div>
+                                    <button class=" text-dark  btn-sm fw-bold" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <%=locals.user?user.username:"PROFILE"%>
+                                    </button>
+                                    <ul class="dropdown-menu bg-transparent ">
+
+                                        <li> <a class="dropdown-item bg-dark text-white" href="/userprofile">User
+                                                profile</a>
+
+
+                                            <!-- <li><a class="dropdown-item bg-dark text-white" href="/login"> -->
+                                            <%if(locals.user){%>
+                                                <a class="dropdown-item bg-dark text-white" href="/logout">Logout</a>
+                                                <%}else{%>
+                                                    <a class="dropdown-item bg-dark text-white" href="/login">Login</a>
+                                                    <%}%>
+                                        </li>
+
+                                    </ul>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -144,101 +145,144 @@
 
     <!-- categories -->
     <div class="container">
-    <div class="flex-w flex-sb-m p-b-52">
-        <div class="flex-w flex-l-m filter-tope-group m-tb-10">
-            
-            <a href="/shop">
-                <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-                    All Products
-                </button>
-            </a>
-    
-            <% if(categories.length > 0) { %>
-                <% for (let i=0; i < categories.length; i++) { %>
-                    <a href="/shop?categoryId=<%=categories[i].categoryName%>">
-                        <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5">
-                            <%=categories[i].categoryName%>
-                        </button>
-                    </a>
-                <% } %>
-            <% } %>
-            <div class="form-group d-flex ">
-                <label for="priceSort" class=" fw-bold mt-3" style="white-space: nowrap;">Sort by Price:</label>
-                <select name="priceSort" id="priceSort" class="form-control border-dark w-50 ms-3 mt-2">
-                    <option value="">Default</option>
-                    <option value="asc">Low to High</option>
-                    <option value="desc">High to Low</option>
-                </select>
+        <div class="flex-w flex-sb-m p-b-52">
+            <div class="flex-w flex-l-m filter-tope-group m-tb-10">
+
+                <a href="/shop">
+                    <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
+                        All Products
+                    </button>
+                </a>
+
+                <% if(categories.length> 0) { %>
+                    <% for (let i=0; i < categories.length; i++) { %>
+                        <a href="/shop?categoryId=<%=categories[i].categoryName%>">
+                            <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5">
+                                <%=categories[i].categoryName%>
+                            </button>
+                        </a>
+                        <% } %>
+                            <% } %>
+                                <div class="form-group d-flex ">
+                                    <label for="priceSort" class=" fw-bold mt-3" style="white-space: nowrap;">Sort by
+                                        Price:</label>
+                                    <select name="priceSort" id="priceSort"
+                                        class="form-control border-dark w-50 ms-3 mt-2">
+                                        <option value="">Default</option>
+                                        <option value="asc">Low to High</option>
+                                        <option value="desc">High to Low</option>
+                                    </select>
+                                </div>
+
+
+
+
+            </div>
+            <div class="container-fluid">
+                <div class="row justify-content-end">
+                    <div class="col-md-4">
+                        <form action="#" class="search-form">
+                            <div class="form-group">
+                                <span class="icon ion-ios-search"></span>
+                                <input type="text" class="form-control border-dark" id="searchInput"
+                                    placeholder="Search for a product" autocomplete="off">
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
 
-           
-            
-            
         </div>
-        <div class="container-fluid">
-            <div class="row justify-content-end">
-              <div class="col-md-4">
-                <form action="#" class="search-form">
-                  <div class="form-group">
-                    <span class="icon ion-ios-search"></span>
-                    <input type="text" class="form-control border-dark" id="searchInput" placeholder="Search for a product" autocomplete="off">
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-       
+
     </div>
-    
-</div>
-
-
-    
 
 
 
-    
-        
 
+    <!-- products -->
+    <div class="container">
+        <div class="row isotope-grid" id="product-listing">
+            <% if (products.length> 0) { %>
+                <% products.forEach(product=> { %>
+                    <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women" id="pag">
+                        <!-- Block2 -->
+                        <div class="block2">
+                            <div class="block2-pic hov-img0 label-new " data-label="New">
+                                <img src="/sharpimages/<%= product.images[0] %>" alt="IMG-PRODUCT">
+                                <a href="/productdetails?id=<%= product._id %>"
+                                    class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
+                                    Quick View
+                                </a>
 
-            <!-- products -->
-            <div class="container">
-            <div class="row isotope-grid" id="product-listing">
-                <% if(products.length> 0) { %>
-                    <% products.forEach(product=> { %>
-                        <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item women">
-                            <!-- Block2 -->
-                            <div class="block2">
-                                <div class="block2-pic hov-img0 label-new" data-label="New">
-                                    <img src="/sharpimages/<%= product.images[0] %>" alt="IMG-PRODUCT">
+                                <div>
+                                    <% if (product.offer) { %>
+                                        <span class="status text-light badge badge-danger  rounded-pill p-1 "
+                                            style="position: absolute;top: 10px;left: 210px;">
+                                            <%= product.offer.percentage %>% off
+                                        </span>
+                                        <% } else if (categories.length> 0) { %>
+                                            <% for (let i=0; i < categories.length; i++) { %>
 
-                                    <a href="/productdetails?id=<%= product._id %>"
-                                        class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
-                                        Quick View
-                                    </a>
+                                                <% if (categories[i].offer &&
+                                                    categories[i].categoryName===product.category) { %>
+                                                    <span
+                                                        class="status text-white badge  badge-danger rounded-pill p-1 "
+                                                        style="position: absolute;top: 10px;left: 210px;">
+                                                        <%= categories[i].offer.percentage %>% off
+                                                    </span>
+                                                    <% } %>
+                                                        <% } %>
+                                                            <% } %>
 
                                 </div>
 
                                 <div class="block2-txt flex-w flex-t p-t-14">
-                                    <div class="block2-txt-child1 flex-col-l ">
-                                        <p class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                    <div class="block2-txt-child1 flex-col-l">
+                                        <span class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 ">
                                             <%= product.name %>
-                                        </p>
-
-                                        <span class="stext-105 cl3">
-                                            $<%= product.price %>
                                         </span>
-                                    </div>
 
+                                        <% if (product.offer) { var discount=(product.price * product.offer.percentage /
+                                            100).toFixed(0); } else { var discount=0; } %>
+
+                                            <% if (categories.length> 0) { %>
+                                                <% categories.forEach(category=> { %>
+                                                    <% if (category.offer && category.categoryName===product.category)
+                                                     { discount=(product.price *
+                                                        category.offer.percentage / 100).toFixed(0); } %>
+                                                        <% }) %>
+                                                            <% } %>
+
+                                                                <% if (discount> 0) { %>
+                                                                    <span class="mb-0 stext-105 cl3 "> <del
+                                                                            class="text-danger text-decoration-line-through">₹
+                                                                            <%= product.price %>
+                                                                        </del>
+                                                                        <span class="price stext-105 cl3 ">₹ <%=
+                                                                                product.price - discount %>
+                                                                                <span class="badge badge-success"
+                                                                                    style="position: absolute;bottom: 70px;left: 5px;">Save
+                                                                                    ₹ <%= discount %></span>
+                                                                        </span></span>
+                                                                    <% } else { %>
+                                                                        <span class="stext-105 cl3">
+                                                                            ₹<%= product.price %>
+                                                                        </span>
+                                                                        <% } %>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <% }) %>
-                            <% } else { %>
-                                <h3>No products available</h3>
-                                <% } %>
-            </div>
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+                            <h3>No products available</h3>
+                            <% } %>
         </div>
+    </div>
+
+
+    </div>
 
 
 
@@ -246,23 +290,23 @@
 
 
 
-            <!-- <nav aria-label="Page navigation">
+    <!-- <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center" id="paginationList">
                     Pagination items will be dynamically added here -->
-            <!-- </ul> -->
-            <!-- </nav> -->
+    <!-- </ul> -->
+    <!-- </nav> -->
 
 
-            <div class="pagination mb-3">
-                <% for (let i=1; i <=totalPages; i++) { %>
-                    <a href="#" class="page-link" data-page="<%= i %>">
-                        <%= i %>
-                    </a>
-                    <% } %>
-            </div>
+    <div class="pagination mb-3">
+        <% for (let i=1; i <=totalPages; i++) { %>
+            <a href="#" class="page-link" data-page="<%= i %>">
+                <%= i %>
+            </a>
+            <% } %>
+    </div>
 
 
-        </div>
+    </div>
     </div>
 
 
@@ -473,117 +517,119 @@
     <!--===============================================================================================-->
     <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script>
-        // pagination
-        // Function to create pagination links
-        // Event handler for pagination links
-        // Function to handle pagination click
         $(document).ready(function () {
             var searchTerm;
             var selectedCategory;
-            var currentPage = 1; // Initialize the current page
-            console.log('sdfsdfsd');
-
-
+            var currentPage = 1;
+    
             function sendFilterRequest(data, successCallback) {
-                console.log('data:', data);
                 $.ajax({
                     url: '/shop/filter',
                     method: 'GET',
                     data: data,
                     success: function (response) {
-                        console.log('response:', response);
-
-                        // Clear pagination and product listing elements
-                        // $('.pagination').empty();
                         $('#product-listing').empty();
-
-                        // Check if the response was successful and data exists
+    
                         if (response.success && response.data && response.data.length > 0) {
-                            // Loop through each product in the response and create product cards
                             response.data.forEach(product => {
+                                var discount = 0;
+    
+                                if (product.offer) {
+                                    discount = (product.price * product.offer.percentage / 100).toFixed(0);
+                                }
+    
+                                const categoryOffer = response.categories.find(category => category.categoryName === product.category);
+    
                                 var productCard = `
-                              
-              
-                               <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 ">
-                            <!-- Block2 -->
-                               <div class="block2">
-                                <div class="block2-pic hov-img0 label-new" data-label="New">
-                                    <img src="/sharpimages/${product.images[0]}" alt="IMG-PRODUCT">
-
-                                    <a href="/productdetails?id=${product._id}"
-                                        class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
-                                        Quick View
-                                    </a>
-                                </div>
-
-                                <div class="block2-txt flex-w flex-t p-t-14">
-                                    <div class="block2-txt-child1 flex-col-l ">
-                                        <p 
-                                            class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                            ${product.name}
-                                        </p>
-
+                                    <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 ">
+                                        <div class="block2">
+                                            <div class="block2-pic hov-img0 label-new" data-label="New">
+                                                <img src="/sharpimages/${product.images[0]}" alt="IMG-PRODUCT">
+                                                <a href="/productdetails?id=${product._id}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04 js-show-modal1">
+                                                    Quick View
+                                                </a>`;
+    
+                                if (product.offer) {
+                                    productCard += `
+                                        <div>
+                                            <span class="status text-light badge badge-danger rounded-pill p-1" style="position: absolute;top: 10px;left: 210px;">
+                                                ${product.offer.percentage}% off
+                                            </span>
+                                        </div>`;
+                                }
+    
+                                if (categoryOffer && categoryOffer.offer) {
+                                    productCard += `
+                                        <span class="status text-white badge badge-danger rounded-pill p-1" style="position: absolute; top: 10px; left: 210px;">
+                                            ${categoryOffer.offer.percentage}% off
+                                        </span>`;
+                                }
+    
+                                productCard += `
+                                            <div class="block2-txt flex-w flex-t p-t-14">
+                                                <div class="block2-txt-child1 flex-col-l">
+                                                    <p class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
+                                                        ${product.name}
+                                                    </p>`;
+    
+                                if (discount > 0) {
+                                    productCard += `
+                                        <span class="mb-0 stext-105 cl3">
+                                            <del class="text-danger text-decoration-line-through">₹${product.price}</del>
+                                            <span class="price stext-105 cl3">₹${product.price - discount}
+                                                <span class="badge badge-success" style="position: absolute;bottom: 120px;left: 20px;">Save ₹${discount}</span>
+                                            </span>
+                                        </span>`;
+                                } else {
+                                    productCard += `
                                         <span class="stext-105 cl3">
-                                            $${product.price}
-                                        </span>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                   `;
-
-                                // Append the product card to the product listing
+                                            ₹${product.price}
+                                        </span>`;
+                                }
+    
+                                productCard += `
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>`;
+    
                                 $('#product-listing').append(productCard);
                             });
                         } else {
-                            // If no products available, display a message
                             $('#product-listing').html('<h3>No products available</h3>');
                         }
-
-                        // Call the success callback if provided
+    
                         if (successCallback && typeof successCallback === 'function') {
                             successCallback(response);
                         }
-                    },
-                    error: function (error) {
-                        console.error('Error:', error);
                     }
                 });
             }
-
-
-
+    
             function performSearch(pageNumber) {
-                console.log('pageNOO:::', pageNumber);
                 var data = {
                     search: searchTerm,
                     category: selectedCategory,
-                    page: pageNumber, // Update the page parameter
-                    //   priceFrom: $('#priceFrom').val(), // Add the price filters
-                    //   priceTo: $('#priceTo').val(),
+                    page: pageNumber,
                     priceSort: $('#priceSort').val()
                 };
                 sendFilterRequest(data);
             }
-
-            // Live search as the user types
+    
             $('#searchInput').on('input', function () {
                 searchTerm = $(this).val().trim();
                 selectedCategory = getSelectedCategory();
-                currentPage = 1; // Reset current page when searching
+                currentPage = 1;
                 performSearch();
             });
-
-            // Helper function to get selected category
+    
             function getSelectedCategory() {
                 var selectedCategoryElement = $('.categories.panel li.selected-category a');
                 return selectedCategoryElement.length > 0
                     ? selectedCategoryElement.attr('href').split('=')[1]
                     : undefined;
             }
-
-            // Event handler for category filter
+    
             $('.categories.panel li a').on('click', function (e) {
                 e.preventDefault();
                 $('.categories.panel li').removeClass('selected-category');
@@ -591,78 +637,45 @@
                 var category = $(this).attr('href').split('=')[1];
                 $('#priceFrom').val('');
                 $('#priceTo').val('');
-                currentPage = 1; // Reset current page when changing category
+                currentPage = 1;
                 var data = { category: category };
                 sendFilterRequest(data);
             });
-
-            // Event handler for sorting option change
+    
             $('#priceSort').change(function () {
                 var selectedSortOption = $(this).val();
-                // var selectedCategory = getSelectedCategory();
                 var formData = '&priceSort=' + selectedSortOption;
-                // formData += selectedCategory ? '&category=' + selectedCategory : '';
-                // var priceSliderData = $('#priceSlider').data("ionRangeSlider").result;
-                // formData += '&priceFrom=' + priceSliderData.from;
-                // formData += '&priceTo=' + priceSliderData.to;
-
-
                 currentPage = 1;
                 var data = formData;
                 sendFilterRequest(data);
             });
-
-           
-
-            // Event handler for pagination links
+    
             $(document).on('click', '.pagination a.page-link', function (e) {
                 e.preventDefault();
                 var currentPage = $(this).data('page');
                 selectedCategory = getSelectedCategory();
                 performSearch(currentPage);
-
-
-                // Scroll to the top of the page
                 $('html body').animate({ scrollTop: 0 }, 'slow');
             });
-        });
-
-
-
-             $('#filterForm').submit(function (e) {
+    
+            $('#filterForm').submit(function (e) {
                 e.preventDefault();
-
-                // Serialize the form data
                 var formData = $(this).serialize();
-
-                // Get the price range values from the slider
                 var priceSliderData = $('#priceSlider').data("ionRangeSlider").result;
-                console.log('1:', priceSliderData.from);
-                console.log('2:', priceSliderData.to);
                 formData += '&priceFrom=' + priceSliderData.from;
                 formData += '&priceTo=' + priceSliderData.to;
-
-                // Get the selected category
                 var selectedCategory = getSelectedCategory();
                 formData += selectedCategory ? '&category=' + selectedCategory : '';
-
                 var selectedPriceSort = $('#priceSort').val();
                 formData += '&priceSort=' + selectedPriceSort;
-
-                // Reset current page when applying filters
                 currentPage = 1;
-
-                // Send the filter request
                 var data = formData;
                 sendFilterRequest(data);
-              });
-
-
-
-
-
+            });
+        });
     </script>
     
+
 
     <!--===============================================================================================-->
     <script src="js/main.js"></script>

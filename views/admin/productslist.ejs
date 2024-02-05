@@ -97,6 +97,16 @@
                         <i class="fa-solid fa-dollar-sign"></i><span>coupons</span>
                     </a>
                 </li>
+                <li>
+                    <a href="/admin/offers">
+                      <i class="fa-solid fa-briefcase"></i><span>offers</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/admin/banner">
+                      <i class="fa-solid fa-panorama"></i><span>banner</span>
+                    </a>
+                  </li>
 
 
 
@@ -198,6 +208,7 @@
                                         <th>CATEGORY</th>
                                         <th>PRICE</th>
                                         <th>STATUS</th>
+                                        <th>OFFERS</th>
                                         <th>QUANTITY</th>
 
 
@@ -247,6 +258,24 @@
                                                                         class="badge rounded-pill alert-success">Unlist</span>
                                                                     <% } %>
                                                         </span>
+                                                    </td>
+                                                    <td>
+                                                        <% if ( products[i].offer ){%>
+
+                                                            <button onclick="removeOffer('<%= products[i]._id %>')"
+                                                                class="btn btn-sm btn-outline-warning rounded font-sm">
+                                                                Remove offer </button>
+                                                            <p>
+                                                                <%= products[i].offer.name %>( <%=
+                                                                        products[i].offer.percentage %>% )
+                                                            </p>
+                                                            <% } else {%>
+                                                                <button class="btn btn-sm btn-outline-primary rounded
+                                                             font-sm" onclick="showModal('<%= products[i]._id %>')"> Apply
+                                                                    offer
+                                                                </button>
+                                                                <p>No offers</p>
+                                                                <% }%>
                                                     </td>
                                                     <td>
                                                         <%=products[i].quantity%>
@@ -379,6 +408,39 @@
 
     </div><!--End wrapper-->
 
+    <!-- offer Modal -->
+    <div class="modal fade" id="discountModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <% if (offers && offers.length> 0) { %>
+                <% for (offer of offers) { %>
+                    <div class="modal-content rounded bg-light border-white mb-3">
+                        <div data-offerid="<%= offer._id %>" style="cursor: pointer;" class="modal-body text-center">
+
+                            <div class="notice">
+                                <h4 class="text-white">
+                                    <%= offer.name %>
+                                </h4>
+                                <div class="icon text-info">
+                                    <i style="font-size: 20px;" class="fas fa-gift"></i>
+                                </div>
+                                <h5 class="text-danger">
+                                    <%= offer.percentage %>% Discount
+                                </h5>
+                                <p class="offer-validity text-dark">
+                                    <span>Valid from</span>
+                                    <%= moment(offer.startingDate).format('DD/MM/YYYY') %> <span> to</span>
+                                        <%= moment(offer.expiryDate).format('DD/MM/YYYY') %>
+                                </p>
+                            </div>
+                            <div class="code"></div>
+                        </div>
+                    </div>
+                    <% } %>
+                        <% } %>
+        </div>
+    </div>
+
 
     <!-- Bootstrap core JavaScript-->
     <script src="assets/js/jquery.min.js"></script>
@@ -411,6 +473,10 @@
         crossorigin="anonymous"></script>
     <!-- Latest version of SweetAlert CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Include Axios library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 
 
 
@@ -499,6 +565,62 @@
 
 
     </script>
+
+    <!-- Offer -->
+    <script>
+        function showModal(productId) {
+            console.log('productid:',productId);
+            $('#discountModal').modal('show');
+            const offerElements = document.querySelectorAll('.modal-body.text-center');
+            offerElements.forEach((element) => {
+                element.onclick = function () {
+                    const offerId = this.getAttribute('data-offerid');
+                    enterOffer(offerId, productId);
+                };
+            });
+        }
+
+        async function enterOffer(offerId, productId) {
+            $('#discountModal').modal('hide');
+            const response = await axios.patch('/admin/applyProductOffer', { offerId, productId })
+            if (response.data.success) {
+                // Use SweetAlert for a more stylish alert
+                Swal.fire({
+                    title: 'Offer applied',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed || result.isDismissed) {
+                        window.location = '/admin/products';
+                    }
+                });
+            }
+        }
+
+        async function removeOffer(productId) {
+            try {
+                const isConfirmed = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, remove it!'
+                });
+
+                if (isConfirmed.isConfirmed) {
+                    const response = await axios.patch('/admin/removeProductOffer', { productId })
+                    if (response.data.success) {
+                        window.location = '/admin/products'
+                    }
+                }
+            } catch (error) {
+                console.log(error.message);
+            }
+        }
+    </script>
+
 
 
 

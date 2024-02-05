@@ -289,7 +289,35 @@
                                         <table class="table ">
                                             <tr>
                                                 <th>Total</th>
-                                                <td>₹ <%= item.total_price %></td>
+                                                <td class="column-3">
+                                                    <% if (item.product_id.offer) { 
+                                                        var discount = (item.product_id.price * item.product_id.offer.percentage / 100).toFixed(0); 
+                                                    } else { 
+                                                        var discount = 0; 
+                                                    } %>
+                                                    
+                                                    <% if (categories.length > 0) { %>
+                                                        <% categories.forEach(category => { %>
+                                                            <% if (category.offer && category.categoryName === item.product_id.category) { 
+                                                                discount = (item.product_id.price * category.offer.percentage / 100).toFixed(0); 
+                                                            } %>
+                                                        <% }); %>
+                                                    <% } %>
+                                            
+                                                    <% if (discount > 0) { %>
+                                                        <span class="mb-0 stext-105 cl3">
+                                                            <del class="text-danger text-decoration-line-through">₹<%= item.product_id.price*item.quantity %></del>
+                                                            <span class="price stext-105 cl3">₹<%= item.product_id.price* item.quantity - discount %></span>
+                                                           
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span class="stext-105 cl3">₹<%= item.product_id.price* item.quantity %></span>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Quantity</th>
+                                                <td><%= item.quantity%></td>
                                             </tr>
                                             <tr>
                                                 <th>Delivery Address</th>

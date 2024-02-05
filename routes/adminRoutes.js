@@ -2,7 +2,10 @@ const express = require('express')
 const adminController = require('../controller/adminController')
 const auth = require('../middleware/adminauth')
 const couponController=require('../controller/couponController')
+const offerController = require('../controller/offerController')
+const bannerController = require('../controller/bannerController')
 const adminRouter=express()
+const uploadImg = require('../middleware/uploadImages')
 
 
 const path = require('path')
@@ -91,5 +94,41 @@ adminRouter.post(
 "/coupons/deleteCoupon/:couponId",
 couponController.deleteCoupons
 );
+
+adminRouter.get('/offers',auth.isAdminLogin,offerController.loadOffers)
+
+adminRouter.get('/add-offer',auth.isAdminLogin,offerController.loadAddOffer)
+
+adminRouter.post('/add-offer',offerController.addOffer)
+
+adminRouter.patch('/applycategoryOffer',offerController.applycategoryOffer)
+
+adminRouter.patch('/removecategoryOffer',offerController.removeCategoryOffer)
+
+adminRouter.patch('/applyProductOffer',offerController.applyProductOffer)
+
+adminRouter.patch('/removeProductOffer',offerController.removeProductOffer)
+
+adminRouter.post("/offer/deleteOffer/:offerId", offerController.deleteOffer);
+
+adminRouter.get('/sales-report',auth.isAdminLogin,adminController.salesReport)
+
+adminRouter.post('/sales-report',adminController.datePicker)
+
+adminRouter.get('/banner',auth.isAdminLogin,bannerController.loadBanner)
+
+adminRouter.get('/add-banner',bannerController.addBanner)
+
+adminRouter.post('/add-banner',uploadImg.upload.array("bannerImage", 1),bannerController.postBanner)
+
+adminRouter.get('/edit-banner',auth.isAdminLogin,bannerController.loadEditBanner)
+
+adminRouter.post('/edit-banner',uploadImg.upload.array("bannerImage", 1),bannerController.editBanner)
+
+
+
+
+
+
 
 module.exports=adminRouter    

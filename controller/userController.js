@@ -283,11 +283,12 @@ const loadHome = async (req, res) => {
 
 
 
+
 const PRODUCTS_PER_PAGE = 8;
 
 const shop = async (req, res) => {
     try {
-        let user
+        let user;
         let data;
 
         if (req.session.user_id) {
@@ -295,94 +296,73 @@ const shop = async (req, res) => {
             user = await User.findOne({ _id: id });
         }
 
-
         const categoryId = req.query.categoryId;
 
-        if (categoryId) {
-            data = await products.find({ isListed: true, category: categoryId });
-        } else {
-            data = await products.find({ isListed: true });
-        }
-
-        const categoryData = await Categories.find({ isListed: true });
+        let categoryData = await Categories.find({ isListed: true });
         const ListedCategory = categoryData.map(categ => categ.categoryName);
 
-
-
-
-        const page = req.query.page || 1;
+        const page = parseInt(req.query.page) || 1;
         const searchTerm = req.query.search;
-        const priceFrom = req.query.priceFrom;
-        const priceTo = req.query.priceTo;
+        const priceFrom = parseFloat(req.query.priceFrom);
+        const priceTo = parseFloat(req.query.priceTo);
         const priceSort = req.query.priceSort;
 
+        // Define the base query for listed products
+        const baseQuery = {
+            isListed: true,
+        };
 
-        let listedProducts = data.filter((product) => {
-            const isListedProducts = product.isListed === true;
-            const productcategory = ListedCategory.includes(product.category)
-            return isListedProducts && productcategory
-        });
+        // If a category is specified, include it in the query
+        if (categoryId) {
+            baseQuery.category = categoryId;
+
+        }
 
         // Extend the query conditions based on the search term
         if (searchTerm) {
-            listedProducts = listedProducts.filter((product) =>
-                product.name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+            baseQuery.name = { $regex: new RegExp(searchTerm, 'i') };
         }
 
         // Further filter products based on price range
-        if (priceFrom && priceTo) {
-            listedProducts = listedProducts.filter((product) => {
-                const productPrice = parseFloat(product.price);
-                return (
-                    productPrice >= parseFloat(priceFrom) &&
-                    productPrice <= parseFloat(priceTo)
-                );
-            });
+        if (!isNaN(priceFrom) && !isNaN(priceTo)) {
+            baseQuery.price = { $gte: priceFrom, $lte: priceTo };
         }
 
         // Extend the query conditions based on the sorting option
+        const sort = {};
         if (priceSort) {
-            if (priceSort === 'asc') {
-                listedProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-            } else if (priceSort === 'desc') {
-                listedProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-            }
+            sort.price = (priceSort === 'asc') ? 1 : -1;
         }
 
         // Calculate the total number of pages
-        const totalPages = Math.ceil(listedProducts.length / PRODUCTS_PER_PAGE);
+        const totalProducts = await products.countDocuments(baseQuery);
+        const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE);
 
         // Perform pagination on the listed products
-        const startIndex = (page - 1) * PRODUCTS_PER_PAGE;
-        const endIndex = page * PRODUCTS_PER_PAGE;
-        const paginatedProducts = listedProducts.slice(startIndex, endIndex);
+        const paginatedProducts = await products.find(baseQuery).populate('offer')
+            .sort(sort)
+            .skip((page - 1) * PRODUCTS_PER_PAGE)
+            .limit(PRODUCTS_PER_PAGE);
+
+        // Populate the offer field for each category
+        const populatedCategories = await Promise.all(categoryData.map(async (category) => {
+            const categoryWithOffer = await Categories.findById(category._id).populate('offer');
+            return categoryWithOffer;
+        }));
 
 
         if (req.xhr) {
-            res.json({ success: true, data: paginatedProducts })
-
+            res.json({ success: true, data: paginatedProducts, categories: populatedCategories });
         } else {
             // If it's a regular request, render the 'shop' view
             res.render('shop', {
                 products: paginatedProducts,
                 user,
                 req,
-                // currentRoute: '/shop',
                 totalPages,
-                categories: categoryData
-
-                // currentPage: page,
+                categories: populatedCategories
             });
-
         }
-
-
-
-
-
-
-
     } catch (error) {
         console.log(error);
     }
@@ -417,11 +397,22 @@ const about = async (req, res) => {
 
 const productDetails = async (req, res) => {
     try {
-        const userData = req.session.user_id
-        const id = req.query.id
-        const data = await products.findOne({ _id: id })
+        req.session.couponApplied = false;
+        req.session.discountAmount = 0;
 
-        res.render('productdetails', { products: data, user: userData })
+        let user;
+        if (req.session.userId) {
+            const id = req.session.userId;
+            user = await User.findOne({ _id: id });
+        }
+        const id = req.query.id
+        const data = await products.findOne({ _id: id }).populate('offer')
+
+        const categories = await Categories.find({ isListed: true }).populate('offer');
+       
+
+
+        res.render('productdetails', { products: data, user ,categories})
     } catch (error) {
         console.log(error);
     }

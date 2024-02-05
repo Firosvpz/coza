@@ -35,7 +35,7 @@ app.use(express.static(path.resolve(__dirname,'public')))
 // connection 
 connectDB()     
      
-app.use('/',require('./routes/userRoutes'))
+app.use('/',require('./routes/userRoutes'))  
 app.use('/admin',require('./routes/adminRoutes'))
     
   

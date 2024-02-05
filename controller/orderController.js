@@ -6,7 +6,9 @@ const Order = require('../model/orderModel')
 const Coupon = require('../model/couponModel')
 const moment = require('moment')
 const razorpay = require("razorpay");
-
+const path=require('path')
+const ejs = require('ejs')
+const puppeteer = require("puppeteer");
 
 var instance = new razorpay({
     key_id: process.env.RAZORPAY_ID_KEY,
@@ -106,6 +108,7 @@ const placeOrder = async (req, res) => {
 
                     cartProducts[i].couponDiscountTotal += itemDiscount;
                 }
+               
                 req.session.couponApplied = false;
 
             } else {
@@ -488,13 +491,22 @@ const orderList = async (req, res) => {
 
 const viewOrder = async (req, res) => {
     try {
+        req.session.couponApplied = false;
+        req.session.discountAmount= 0;
+
         const userId = req.session.user_id
         const orderId = req.query.orderId
 
-        const mainOrder = await Order.findOne({ _id: orderId, user_id: userId }).populate('items.product_id');
+        const mainOrder = await Order.findOne({ _id: orderId, user_id: userId }).populate({
+            path: "items.product_id",
+            populate:{
+              path:'offer'
+            }
+          });
+          const categData = await categories.find({ isListed: true }).populate('offer');
         const user = await User.findOne({ _id: userId })
         // console.log('mainOrder:',mainOrder);
-        res.render('viewOrder', { order: mainOrder, user, moment })
+        res.render('viewOrder', { order: mainOrder, user, moment,categories:categData })
 
     } catch (error) {
         console.log(error);
@@ -513,6 +525,53 @@ const loadProfileAddress = async (req, res) => {
     }
 }
 
+const invoiceDownload = async (req, res) => {
+    try {
+      const { orderId } = req.query;
+      const { user_id } = req.session;
+      let sumTotal = 0;
+  
+      const userData = await User.findById(user_id);
+      const orderData = await Order.findById(orderId).populate('items.product_id');
+  
+      orderData.items.forEach((item) => {
+        const total = item.product_id.price * item.quantity;
+        sumTotal += total;
+      });
+  
+      const date = new Date();
+      const data = {
+        order: orderData,
+        user: userData,
+        date,
+        sumTotal,
+        moment
+      };
+  
+      // Render the EJS template
+      const ejsTemplate = path.resolve(__dirname, '../views/user/invoice.ejs');
+      const ejsData = await ejs.renderFile(ejsTemplate, data);
+  
+      // Launch Puppeteer and generate PDF
+      const browser = await puppeteer.launch({ headless: true });
+      const page = await browser.newPage();
+      await page.setContent(ejsData, { waitUntil: 'networkidle0' });
+      const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+  
+      // Close the browser
+      await browser.close();
+  
+      // Set headers for inline display in the browser
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename=order_invoice.pdf');
+      res.send(pdfBuffer);
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).send('Internal Server Error');
+    }
+  };
+
+
 module.exports = {
     orderPage,
     placeOrder,
@@ -520,5 +579,6 @@ module.exports = {
     loadProfileAddress,
     viewOrder,
     verifyPayment,
-    applyCoupon
+    applyCoupon,
+    invoiceDownload
 }   

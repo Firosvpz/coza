@@ -14,7 +14,7 @@
   <!--favicon-->
   <link rel="icon" href="/admin/assets/images/favicon.ico" type="image/x-icon">
   <!-- Vector CSS -->
-  <link href="/admin//assets/plugins/vectormap/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
+  <!-- <link href="/admin//assets/plugins/vectormap/jquery-jvectormap-2.0.2.css" rel="stylesheet" /> -->
   <!-- simplebar CSS-->
   <link href="/admin/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
   <!-- Bootstrap core CSS-->
@@ -29,8 +29,12 @@
   <link href="/admin/assets/css/app-style.css" rel="stylesheet" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-  integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-  crossorigin="anonymous" referrerpolicy="no-referrer" />
+    integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+
+    
 
 </head>
 
@@ -42,7 +46,7 @@
     <!--Start sidebar-wrapper-->
     <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
       <div class="brand-logo">
-        <a >
+        <a>
           <!-- <img src="/images/logo-icon.png" class="logo-icon" alt="logo icon"> -->
           <h5 class="logo-text">COZASTORE Admin</h5>
         </a>
@@ -71,18 +75,28 @@
           <a href="/admin/products">
             <i class="fa-brands fa-product-hunt"></i> <span>products</span>
           </a>
-      </li>
-      <li>
-        <a href="/admin/orders">
-          <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
-        </a>
-    </li>
-    <li>
-      <a href="/admin/coupons">
-        <i class="fa-solid fa-dollar-sign"></i> <span>coupons</span>
-      </a>
-  </li>
-
+        </li>
+        <li>
+          <a href="/admin/orders">
+            <i class="fa-brands fa-jedi-order"></i> <span>Orders</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/coupons">
+            <i class="fa-solid fa-dollar-sign"></i> <span>coupons</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/offers">
+            <i class="fa-solid fa-briefcase"></i><span>offers</span>
+          </a>
+        </li>
+        <li>
+          <a href="/admin/banner">
+            <i class="fa-solid fa-panorama"></i><span>banner</span>
+          </a>
+        </li>
+       
 
 
 
@@ -169,278 +183,247 @@
 
         <!--Start Dashboard Content-->
 
-        <div class="card mt-3">
-          <div class="card-content">
-            <div class="row row-group m-0">
-              <div class="col-12 col-lg-6 col-xl-3 border-light">
-                <div class="card-body">
-                  <h5 class="text-white mb-0">9526 <span class="float-right"><i class="fa fa-shopping-cart"></i></span>
-                  </h5>
-                  <div class="progress my-3" style="height:3px;">
-                    <div class="progress-bar" style="width:55%"></div>
-                  </div>
-                  <p class="mb-0 text-white small-font">Total Orders <span class="float-right">+4.2% <i
-                        class="zmdi zmdi-long-arrow-up"></i></span></p>
-                </div>
+        <section class="content-main">
+          <div class="content-header">
+              <div>
+                <div class=" text-center text-danger fw-bold" style="font-size:xx-large;">DASHBOARD</div>
+                  <p class="text-center">Whole data about your business here</p>
               </div>
-              <div class="col-12 col-lg-6 col-xl-3 border-light">
-                <div class="card-body">
-                  <h5 class="text-white mb-0">8323 <span class="float-right"><i class="fa fa-usd"></i></span></h5>
-                  <div class="progress my-3" style="height:3px;">
-                    <div class="progress-bar" style="width:55%"></div>
-                  </div>
-                  <p class="mb-0 text-white small-font">Total Revenue <span class="float-right">+1.2% <i
-                        class="zmdi zmdi-long-arrow-up"></i></span></p>
-                </div>
+              <div>
+                  <a href="/admin/sales-report" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Sales report</a>
               </div>
-              <div class="col-12 col-lg-6 col-xl-3 border-light">
-                <div class="card-body">
-                  <h5 class="text-white mb-0">6200 <span class="float-right"><i class="fa fa-eye"></i></span></h5>
-                  <div class="progress my-3" style="height:3px;">
-                    <div class="progress-bar" style="width:55%"></div>
-                  </div>
-                  <p class="mb-0 text-white small-font">Visitors <span class="float-right">+5.2% <i
-                        class="zmdi zmdi-long-arrow-up"></i></span></p>
-                </div>
-              </div>
-              <div class="col-12 col-lg-6 col-xl-3 border-light">
-                <div class="card-body">
-                  <h5 class="text-white mb-0">5630 <span class="float-right"><i class="fa fa-envira"></i></span></h5>
-                  <div class="progress my-3" style="height:3px;">
-                    <div class="progress-bar" style="width:55%"></div>
-                  </div>
-                  <p class="mb-0 text-white small-font">Messages <span class="float-right">+2.2% <i
-                        class="zmdi zmdi-long-arrow-up"></i></span></p>
-                </div>
-              </div>
-            </div>
+              <br>
           </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12 col-lg-8 col-xl-8">
-            <div class="card">
-              <div class="card-header">Site Traffic
-                <div class="card-action">
-                  <div class="dropdown">
-                    <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
-                      <i class="icon-options"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                      <a class="dropdown-item" href="javascript:void();">Action</a>
-                      <a class="dropdown-item" href="javascript:void();">Another action</a>
-                      <a class="dropdown-item" href="javascript:void();">Something else here</a>
-                      <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="javascript:void();">Separated link</a>
-                    </div>
+          <div class="row">
+              <div class="col-lg-3">
+                  <div class="card card-body mb-4">
+                      <article class="icontext">
+                          <span class="icon icon-sm rounded-circle bg-primary"><i class="text-primary material-icons md-monetization_on"></i></span>
+                          <div class="text">
+                              <h6 class="mb-1 card-title">Revenue: <span>₹<%= totalSales.totalRevenue %></span></h6>
+                             
+                              <br>
+                              <span class="text-sm "> Revenue based on orders placed and delivered  </span>
+                          </div>
+                      </article>
                   </div>
-                </div>
               </div>
+              <div class="col-lg-3">
+                  <div class="card card-body mb-4">
+                      <article class="icontext">
+                          <span class="icon icon-sm rounded-circle bg-success-light"><i class="text-success material-icons md-local_shipping"></i></span>
+                          <div class="text">
+                              <h6 class="mb-1 card-title">Orders</h6>
+                              <span><strong>Total Orders : </strong> <%= orderCounts.totalOrders %></span><br>
+                              <span class="text-sm ">Delivered Orders : <%= orderCounts.deliveredOrders %> </span><br>
+                              <span class="text-sm">Pending Orders &nbsp;&nbsp;&nbsp; :  <%= orderCounts.otherOrders %> </span>
+                          </div>
+                      </article>
+                  </div>
+              </div>
+              <div class="col-lg-3">
+                  <div class="card card-body mb-4">
+                      <article class="icontext">
+                          <span class="icon icon-sm rounded-circle bg-warning-light"><i class="text-warning material-icons md-qr_code"></i></span>
+                          <div class="text">
+                              <h6 class="mb-1 card-title">Products</h6>
+                              <span><%= productCount %> products</span>
+                              <span class="text-sm"> in <%= categoryCount %> category </span>
+                          </div>
+                      </article>
+                  </div>
+              </div>
+              <div class="col-lg-3">
+                  <div class="card card-body mb-4">
+                      <article class="icontext">
+                          <span class="icon icon-sm rounded-circle bg-info-light"><i class="text-info material-icons md-shopping_basket"></i></span>
+                          <div class="text">
+                              <h6 class="mb-1 card-title">Monthly Earning</h6>
+                              
+                              <span>₹<%= monthlySales[0]?.totalSales %> </span>
+                              <span class="text-sm"> Current month earning </span>
+                          </div>
+                      </article>
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-xl-8 col-lg-12">
+                  <div class="card mb-4">
+                      <article class="card-body">
+                          <div style="display: flex; justify-content: space-between;">
+                              <div>
+                                  <h5 class="card-title">Sale statistics</h5>
+                              </div>
+                              <div>
+                                  <button class="btn btn-danger toggle-chart" data-chart-type="monthly">Monthly</button>
+                          <button class="btn btn-primary toggle-chart" data-chart-type="yearly">Yearly</button>
+                              </div>
+                          
+                          </div><br>
+                          
+                          <canvas id="myChart" ></canvas>
+                      </article>
+                  </div>
+                  <div class="row">
+                      <div class="card mb-4">
+                          <header class="card-header">
+                              <h4 class="card-title">New Members</h4>
+                          </header>
+                          <div class="card-body">
+                              <div class="table-responsive">
+                                  <table class="table align-middle table-nowrap mb-0">
+                                      <thead class="table-light">
+                                          <tr>
+                                              <th scope="col" class="text-center">
+                                                  <div class="form-check align-middle">
+                                                      <label class="form-check-label" for="transactionCheck01"></label>
+                                                  </div>
+                                              </th>
+                                              <th class="align-middle" scope="col">Name</th>
+                                              <th class="align-middle" scope="col">Email</th>
+                                              <th class="align-middle" scope="col">Mobile</th>
+                                              <th class="align-middle" scope="col">Joined Date</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                          <%latestUsers.forEach(person=>{%>
+                                              <tr>
+                                                  <td class="text-center">
+                                                      <div class="form-check">
+                                                          <label class="form-check-label" for="transactionCheck02"></label>
+                                                      </div>
+                                                  </td>
+                                                  <td><a href="#" class="fw-bold">
+                                                          <%=person.username%>
+                                                      </a></td>
+                                                  <td>
+                                                      <%=person.email%>
+                                                  </td>
+                                                  <td>
+                                                      <%=person.mobileNumber%>
+                                                  </td>
+                                                  <td>
+                                                    <% 
+                                                    // Assuming createdAt is a date object or a parsable date string
+                                                    const createdAt = new Date(person.createdAt);
+                                                    // Check if the timezone offset is 0 (GMT)
+                                                    if (createdAt.getTimezoneOffset() === 0) { %>
+                                                        <!-- If it's GMT, you can hide details or display a message -->
+                                                        <span>Details hidden for GMT time</span>
+                                                    <% } else { %>
+                                                        <!-- Display the createdAt time -->
+                                                        <%= createdAt.toLocaleDateString() %>
+                                                    <% } %>
+                                                  </td>
+                                              </tr>
+                                          <%})%>
+                                      </tbody>
+                                  </table>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+
+              <div class="col-xl-4 col-lg-12">
+                  
+                      <div class="card mb-4">
+                        <article class="card-body" >
+                          <h5 class="card-title">Order Chart</h5>
+                          <div id="chart3" class="badge-dark badge  "></div>
+                        </article>
+                      </div>
+                   
+                  
+                 
+                      <div class="card mb-4">
+                          <article class="card-body" >
+                            <h5 class="card-title">Payment Method Chart</h5>
+                            <div id="chart4" class="badge-dark badge  " ></div>
+                          </article>
+                          <span  style="text-align: center; margin-bottom: 25px;">Based on total orders</span>
+                        </div>
+                  </div>
+              
+
+              
+          </div>
+          <div class="card mb-4">
+              <header class="card-header">
+                  <h4 class="card-title">Latest orders</h4>
+              </header>
               <div class="card-body">
-                <ul class="list-inline">
-                  <li class="list-inline-item"><i class="fa fa-circle mr-2 text-white"></i>New Visitor</li>
-                  <li class="list-inline-item"><i class="fa fa-circle mr-2 text-light"></i>Old Visitor</li>
-                </ul>
-                <div class="chart-container-1">
-                  <canvas id="chart1"></canvas>
-                </div>
+                  <div class="table-responsive">
+                      <div class="table-responsive">
+                          <table class="table align-middle table-nowrap mb-0">
+                              <thead class="table-light">
+                                  <tr>
+                                      <th></th>
+                                      <th class="align-middle" scope="col"></th>
+                                      <th class="align-middle" scope="col">Order ID</th>
+                                      <th class="align-middle" scope="col">Billing Name</th>
+                                      <th class="align-middle" scope="col">Date</th>
+                                      
+                                      <th class="align-middle" scope="col">Payment Status</th>
+                                      <th class="align-middle" scope="col">Payment Method</th>
+                                      <th class="align-middle" scope="col">View Details</th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <% latestOrders.forEach((order,index)=> { %>
+                                  <tr>
+                                      <td></td>
+                                      <td><%= index+1 %></td>
+                                      <td><a href="#" class="fw-bold">#<%= order.order_id %></a></td>
+                                      <td><%= order.user_name %></td>
+                                      <td><%= moment(order.date).format('DD MMM, YYYY') %></td>
+                                      
+                                      <td>
+                                          <span class="badge badge-pill badge-danger"><%= order.items.ordered_status %></span>
+                                      </td>
+                                      <td><i class="material-icons md-payment font-xxl text-muted mr-5"></i> <%= order.payment %> </td>
+                                      <td>
+                                          <a  href="/admin/view?orderId=<%= order._id %>&itemId=<%= order.items._id %>" class="btn btn-sm btn-secondary"> View details</a>
+                                      </td>
+                                  </tr>
+                                  <% }) %>
+                                  
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+                  <!-- table-responsive end// -->
               </div>
-
-              <div class="row m-0 row-group text-center border-top border-light-3">
-                <div class="col-12 col-lg-4">
-                  <div class="p-3">
-                    <h5 class="mb-0">45.87M</h5>
-                    <small class="mb-0">Overall Visitor <span> <i class="fa fa-arrow-up"></i> 2.43%</span></small>
-                  </div>
-                </div>
-                <div class="col-12 col-lg-4">
-                  <div class="p-3">
-                    <h5 class="mb-0">15:48</h5>
-                    <small class="mb-0">Visitor Duration <span> <i class="fa fa-arrow-up"></i> 12.65%</span></small>
-                  </div>
-                </div>
-                <div class="col-12 col-lg-4">
-                  <div class="p-3">
-                    <h5 class="mb-0">245.65</h5>
-                    <small class="mb-0">Pages/Visit <span> <i class="fa fa-arrow-up"></i> 5.62%</span></small>
-                  </div>
-                </div>
-              </div>
-
-            </div>
           </div>
 
-          <div class="col-12 col-lg-4 col-xl-4">
-            <div class="card">
-              <div class="card-header">Weekly sales
-                <div class="card-action">
-                  <div class="dropdown">
-                    <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
-                      <i class="icon-options"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                      <a class="dropdown-item" href="javascript:void();">Action</a>
-                      <a class="dropdown-item" href="javascript:void();">Another action</a>
-                      <a class="dropdown-item" href="javascript:void();">Something else here</a>
-                      <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="javascript:void();">Separated link</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="card-body">
-                <div class="chart-container-2">
-                  <canvas id="chart2"></canvas>
-                </div>
-              </div>
-              <div class="table-responsive">
-                <table class="table align-items-center">
-                  <tbody>
-                    <tr>
-                      <td><i class="fa fa-circle text-white mr-2"></i> Direct</td>
-                      <td>$5856</td>
-                      <td>+55%</td>
-                    </tr>
-                    <tr>
-                      <td><i class="fa fa-circle text-light-1 mr-2"></i>Affiliate</td>
-                      <td>$2602</td>
-                      <td>+25%</td>
-                    </tr>
-                    <tr>
-                      <td><i class="fa fa-circle text-light-2 mr-2"></i>E-mail</td>
-                      <td>$1802</td>
-                      <td>+15%</td>
-                    </tr>
-                    <tr>
-                      <td><i class="fa fa-circle text-light-3 mr-2"></i>Other</td>
-                      <td>$1105</td>
-                      <td>+5%</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div><!--End Row-->
+          <input type="hidden" value="<%= updatedYearlyValues[0].total %>" id="2018" />
+          <input type="hidden" value="<%= updatedYearlyValues[1].total %>" id="2019" />
+          <input type="hidden" value="<%= updatedYearlyValues[2].total %>" id="2020" />
+          <input type="hidden" value="<%= updatedYearlyValues[3].total %>" id="2021" />
+          <input type="hidden" value="<%= updatedYearlyValues[4].total %>" id="2022" />
+          <input type="hidden" value="<%= updatedYearlyValues[5].total %>" id="2023" />
+          <input type="hidden" value="<%= updatedYearlyValues[6].total %>" id="2024" />
+  
+    
+          
+          <input type="hidden" value="<%= updatedMonthlyValues[0].total %>" id="jan" />
+          <input type="hidden" value="<%= updatedMonthlyValues[1].total %>" id="feb" />
+          <input type="hidden" value="<%= updatedMonthlyValues[2].total %>" id="mar" />
+          <input type="hidden" value="<%= updatedMonthlyValues[3].total %>" id="apr" />
+          <input type="hidden" value="<%= updatedMonthlyValues[4].total %>" id="may" />
+          <input type="hidden" value="<%= updatedMonthlyValues[5].total %>" id="jun" />
+          <input type="hidden" value="<%= updatedMonthlyValues[6].total %>" id="jul" />
+          <input type="hidden" value="<%= updatedMonthlyValues[7].total %>" id="aug" />
+          <input type="hidden" value="<%= updatedMonthlyValues[8].total %>" id="sep" />
+          <input type="hidden" value="<%= updatedMonthlyValues[9].total %>" id="oct" />
+          <input type="hidden" value="<%= updatedMonthlyValues[10].total %>" id="nov" />
+          <input type="hidden" value="<%= updatedMonthlyValues[11].total %>" id="dec" />
 
-        <div class="row">
-          <div class="col-12 col-lg-12">
-            <div class="card">
-              <div class="card-header">Recent Order Tables
-                <div class="card-action">
-                  <div class="dropdown">
-                    <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
-                      <i class="icon-options"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                      <a class="dropdown-item" href="javascript:void();">Action</a>
-                      <a class="dropdown-item" href="javascript:void();">Another action</a>
-                      <a class="dropdown-item" href="javascript:void();">Something else here</a>
-                      <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="javascript:void();">Separated link</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="table-responsive">
-                <table class="table align-items-center table-flush table-borderless">
-                  <thead>
-                    <tr>
-                      <th>Product</th>
-                      <th>Photo</th>
-                      <th>Product ID</th>
-                      <th>Amount</th>
-                      <th>Date</th>
-                      <th>Shipping</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Iphone 5</td>
-                      <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                      <td>#9405822</td>
-                      <td>$ 1250.00</td>
-                      <td>03 Aug 2017</td>
-                      <td>
-                        <div class="progress shadow" style="height: 3px;">
-                          <div class="progress-bar" role="progressbar" style="width: 90%"></div>
-                        </div>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>Earphone GL</td>
-                      <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                      <td>#9405820</td>
-                      <td>$ 1500.00</td>
-                      <td>03 Aug 2017</td>
-                      <td>
-                        <div class="progress shadow" style="height: 3px;">
-                          <div class="progress-bar" role="progressbar" style="width: 60%"></div>
-                        </div>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>HD Hand Camera</td>
-                      <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                      <td>#9405830</td>
-                      <td>$ 1400.00</td>
-                      <td>03 Aug 2017</td>
-                      <td>
-                        <div class="progress shadow" style="height: 3px;">
-                          <div class="progress-bar" role="progressbar" style="width: 70%"></div>
-                        </div>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>Clasic Shoes</td>
-                      <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                      <td>#9405825</td>
-                      <td>$ 1200.00</td>
-                      <td>03 Aug 2017</td>
-                      <td>
-                        <div class="progress shadow" style="height: 3px;">
-                          <div class="progress-bar" role="progressbar" style="width: 100%"></div>
-                        </div>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>Hand Watch</td>
-                      <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                      <td>#9405840</td>
-                      <td>$ 1800.00</td>
-                      <td>03 Aug 2017</td>
-                      <td>
-                        <div class="progress shadow" style="height: 3px;">
-                          <div class="progress-bar" role="progressbar" style="width: 40%"></div>
-                        </div>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>Clasic Shoes</td>
-                      <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                      <td>#9405825</td>
-                      <td>$ 1200.00</td>
-                      <td>03 Aug 2017</td>
-                      <td>
-                        <div class="progress shadow" style="height: 3px;">
-                          <div class="progress-bar" role="progressbar" style="width: 100%"></div>
-                        </div>
-                      </td>
-                    </tr>
-
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div><!--End Row-->
-
-        <!--End Dashboard Content-->
+          
+       
+      </section>        <!--End Dashboard Content-->
 
         <!--start overlay-->
         <div class="overlay toggle-menu"></div>
@@ -514,15 +497,90 @@
   <!-- sidebar-menu js -->
   <script src="/admin/assets/js/sidebar-menu.js"></script>
   <!-- loader scripts -->
-  <script src="/admin/assets/js/jquery.loading-indicator.js"></script>
+  <!-- <script src="/admin/assets/js/jquery.loading-indicator.js"></script> -->
   <!-- Custom scripts -->
   <script src="/admin/assets/js/app-script.js"></script>
   <!-- Chart js -->
 
   <script src="/admin/assets/plugins/Chart.js/Chart.min.js"></script>
 
+  <script src="/admin/assets/js/schart.js"></script>
+
   <!-- Index js -->
-  <script src="/admin/assets/js/index.js"></script>
+  <!-- <script src="/admin/assets/js/index.js"></script> -->
+
+ 
+
+  
+   <!-- Include Chart.js script -->
+   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+
+  <script>
+    let cancelOrder = parseInt("<%= orderCounts.cancelOrders %>");
+    let placeOrder = parseInt("<%= orderCounts.totalOrders %>");
+    let deliveredOrder = parseInt("<%= orderCounts.deliveredOrders %>");
+    var options = {
+      series: [ cancelOrder,placeOrder, deliveredOrder],
+      chart: {
+        width: 280,
+        type: "pie",
+      },
+      labels: [ "Cancelled","Placed", "Delivered"],
+     
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200,
+            },
+            legend: {
+              position: "bottom",
+            },
+          },
+        },
+      ],
+      
+    };
+
+    var chart = new ApexCharts(document.querySelector("#chart3"), options);
+    chart.render();
+  </script>
+
+
+
+<script>
+let wallet = parseInt("<%= paymentCounts.wallet %>");
+let razorPay = parseInt("<%= paymentCounts.razorpay %>");
+let cod = parseInt("<%= paymentCounts.cod %>");
+var options = {
+series: [  cod, razorPay, wallet],
+chart: {
+width: 280,
+type: "pie",
+},
+labels: [ "Cash on Delivery", "Razorpay", "Wallet"],
+responsive: [
+{
+  breakpoint: 480,
+  options: {
+    chart: {
+      width: 200,
+    },
+    legend: {
+      position: "bottom",
+    },
+  },
+},
+],
+};
+
+var chart = new ApexCharts(document.querySelector("#chart4"), options);
+chart.render();
+</script>
+
+
 
 
 </body>

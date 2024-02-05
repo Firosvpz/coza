@@ -72,7 +72,8 @@ const orderSchema = new mongoose.Schema({
             required: true
         },
         couponDiscountTotal:{
-            type:Number
+            type:Number,
+            default:0
         },
         ordered_status: {
             type: String,
