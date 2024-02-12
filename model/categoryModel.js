@@ -9,15 +9,15 @@ const categorySchema = new mongoose.Schema({
 
     isListed: {
         type: Boolean,
-        default: true 
+        default: true
     },
-    offer : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'offer'
+    offer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'offer'
     },
-    createdAt:{
-        type:Date,
-        default:Date.now
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 })
 

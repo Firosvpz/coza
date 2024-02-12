@@ -9,12 +9,11 @@ const path = require('path')
 const sharp = require('sharp')
 const session = require('express-session')
 const moment = require('moment')
-
 const fs = require('fs')
-
-
-
 dotenv.config()
+
+//................................................................................................................................//
+
 
 const adminLogin = async (req, res) => {
     try {
@@ -23,21 +22,17 @@ const adminLogin = async (req, res) => {
         console.log(error);
     }
 }
-
+//................................................................................................................................//
 
 const verifyAdminLogin = async (req, res) => {
     try {
-
         const admin = {
             email: process.env.email_admin,
             password: process.env.admin_password
         }
-
         const admin_email = admin.email
         const admin_pswd = admin.password
-
         const { email, password } = req.body
-
         if (admin_email == email && admin_pswd == password) {
             req.session.admin = email
             res.redirect('/admin/dashboard')
@@ -45,14 +40,11 @@ const verifyAdminLogin = async (req, res) => {
             req.flash('message', 'incorrect email or password')
             res.redirect('/admin')
         }
-
-
-
     } catch (error) {
         console.log(error);
-
     }
 }
+//................................................................................................................................//
 
 const loadDashboard = async (req, res) => {
     try {
@@ -70,11 +62,6 @@ const loadDashboard = async (req, res) => {
                 },
             },
         ];
-
-
-
-
-        // Monthly sales report based on items.ordered_status - delivered
         // Monthly sales report based on items.ordered_status - delivered
         let monthlySales = await Order.aggregate([
             ...unwoundOrders,
@@ -101,16 +88,11 @@ const loadDashboard = async (req, res) => {
                 },
             },
         ]);
-
-        // console.log("Monthly Sales:", monthlySales);
-
-
-        // Yearly sales report based on items.ordered_status - delivered
         // Yearly sales report based on items.ordered_status - delivered
         let yearlySales = await Order.aggregate([
             ...unwoundOrders,
             {
-                $match: {
+            $match: {
                     date: {
                         $gte: new Date(new Date().getFullYear(), 0, 1),
                         $lt: new Date(new Date().getFullYear() + 1, 0, 1),
@@ -118,13 +100,13 @@ const loadDashboard = async (req, res) => {
                 },
             },
             {
-                $group: {
-                    _id: { $year: "$date" },  // Change from date to date
+             $group: {
+                    _id: { $year: "$date" }, 
                     totalSales: {
                         $sum: {
                             $subtract: [
                                 { $multiply: ["$items.quantity", "$items.price"] },
-                                { $ifNull: ["$items.couponDiscountTotal", 0] }, // Handle null values
+                                { $ifNull: ["$items.couponDiscountTotal", 0] }, 
                             ],
                         },
                     },
@@ -132,40 +114,29 @@ const loadDashboard = async (req, res) => {
                 },
             },
         ]);
-
-        // console.log("Yearly Sales:", yearlySales);
-
-
         const totalSales = await Order.aggregate([
             {
-                $unwind: "$items",
+             $unwind: "$items",
             },
             {
-                $match: {
+             $match: {
                     status: { $ne: "pending" },
                 },
             },
             {
-                $group: {
+            $group: {
                     _id: null,
                     totalRevenue: {
                         $sum: {
                             $subtract: [
                                 { $multiply: ["$items.quantity", "$items.price"] },
-                                { $ifNull: ["$items.couponDiscountTotal", 0] }, // Handle null values
+                                { $ifNull: ["$items.couponDiscountTotal", 0] },
                             ],
                         },
                     },
                 },
             },
         ]);
-        
-        // console.log("Total Sales:", totalSales);
-
-
-
-
-
         // Count total orders, delivered orders, and other orders
         const orderCounts = await Order.aggregate([
             // Unwind without conditions
@@ -218,10 +189,6 @@ const loadDashboard = async (req, res) => {
                 },
             },
         ]);
-
-
-
-
         // Count different payment methods
         const paymentCounts = await Order.aggregate([
             // Use the unwoundOrders variable in the pipeline
@@ -290,30 +257,19 @@ const loadDashboard = async (req, res) => {
             },
             {
                 $sort: {
-                   date: -1, // Sort in descending order based on date
+                    date: -1, 
                 },
             },
             {
-                $limit: 10, // Limit to the first 10 documents
+                $limit: 10, 
             },
-
         ]);
-
-        console.log('monthlySales:', monthlySales);
-        console.log('yearlySales:', yearlySales);
-        console.log('totalSales:', totalSales[0]);
-        console.log('orderCounts:', orderCounts[0]);
-        console.log('paymentCounts:', paymentCounts[0]);
-        console.log('productCount:', productCount);
-        console.log('categoryCount:', categoryCount);
-
-
-
+      
         const currentYear = new Date().getFullYear();
         const yearsToInclude = 7;
-        const currentMonth = new Date().getMonth() + 1; // Month is zero-based in JavaScript dates
+        const currentMonth = new Date().getMonth() + 1; 
 
-        // Create arrays with default values for each month and each year
+      // Create arrays with default values for each month and each year
         const defaultMonthlyValues = Array.from({ length: 12 }, (_, i) => ({
             month: i + 1,
             total: 0,
@@ -361,19 +317,11 @@ const loadDashboard = async (req, res) => {
                 },
             },
         ]);
-        
-        console.log("Monthly Sales Data:", monthlySalesData);
-        
-
         // Update monthly values based on retrieved data
         const updatedMonthlyValues = defaultMonthlyValues.map((defaultMonth) => {
             const foundMonth = monthlySalesData.find((monthData) => monthData.month === defaultMonth.month);
             return foundMonth || defaultMonth;
         });
-
-        console.log('Monthly Sales Data:', updatedMonthlyValues);
-
-        // Yearly sales data
         // Yearly sales data
         const yearlySalesData = await Order.aggregate([
             {
@@ -381,7 +329,7 @@ const loadDashboard = async (req, res) => {
             },
             {
                 $match: {
-                    date: { $gte: new Date(currentYear - yearsToInclude, 0, 1) }, // Adjust the start date
+                    date: { $gte: new Date(currentYear - yearsToInclude, 0, 1) }, 
                     status: { $ne: 'cancelled' },
                 },
             },
@@ -391,8 +339,8 @@ const loadDashboard = async (req, res) => {
                     total: {
                         $sum: {
                             $subtract: [
-                                { $ifNull: [{ $multiply: ['$items.price', '$items.quantity'] }, 0] }, // Default value if couponDiscountTotal is not present
-                                { $ifNull: ['$items.couponDiscountTotal', 0] }, // Default value if couponDiscountTotal is not present
+                                { $ifNull: [{ $multiply: ['$items.price', '$items.quantity'] }, 0] }, 
+                                { $ifNull: ['$items.couponDiscountTotal', 0] }, 
                             ],
                         },
                     },
@@ -408,23 +356,11 @@ const loadDashboard = async (req, res) => {
                 },
             },
         ]);
-        
-        console.log("Yearly Sales Data:", yearlySalesData);
-        
-
         // Update yearly values based on retrieved data
         const updatedYearlyValues = defaultYearlyValues.map((defaultYear) => {
             const foundYear = yearlySalesData.find((yearData) => yearData.year === defaultYear.year);
             return foundYear || defaultYear;
         });
-
-
-
-        console.log('Yearly Sales Data:', updatedYearlyValues);
-
-
-
-
         // Render the dashboard template and pass the data
         res.render('dashboard', {
             monthlySales,
@@ -439,101 +375,98 @@ const loadDashboard = async (req, res) => {
             moment,
             updatedMonthlyValues,
             updatedYearlyValues,
-            // ... Continue with the rest of your data
         });
     } catch (error) {
         console.log(error.message);
     }
 };
+//................................................................................................................................//
 
 const salesReport = async (req, res) => {
     try {
-      const firstOrder = await Order.find().sort({ date: 1 })
-      const lastOrder = await Order.find().sort({ date: -1 })
-  
-      const salesReport = await Order.find({ "items.ordered_status": "delivered" })
-        .populate("user_id")
-        .populate("items.product_id")
-        .sort({ date: -1 })
-  
-  
-      res.render('salesReport', {
-        firstOrder: moment(firstOrder[0].date).format("YYYY-MM-DD"),
-        lastOrder: moment(firstOrder[0].date).format("YYYY-MM-DD"),
-        salesReport,
-        moment
-      })
-  
-    } catch (error) {
-      console.error(error);
-  
-    }
-  }
+        const firstOrder = await Order.find().sort({ date: 1 })
+        const lastOrder = await Order.find().sort({ date: -1 })
 
-  const datePicker = async (req, res) => {
+        const salesReport = await Order.find({ "items.ordered_status": "delivered" })
+            .populate("user_id")
+            .populate("items.product_id")
+            .sort({ date: -1 })
+
+
+        res.render('salesReport', {
+            firstOrder: moment(firstOrder[0].date).format("YYYY-MM-DD"),
+            lastOrder: moment(firstOrder[0].date).format("YYYY-MM-DD"),
+            salesReport,
+            moment
+        })
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+//................................................................................................................................//
+
+const datePicker = async (req, res) => {
     try {
-      const { startDate, endDate } = req.body
-      const startDateObj = new Date(startDate)
-      startDateObj.setHours(0, 0, 0, 0)
-      const endDateObj = new Date(endDate)
-      endDateObj.setHours(23, 59, 59, 999)
-  
-      const selectedDate = await Order.aggregate([
-        {
-          $match: {
-           date: {
-              $gte: startDateObj,
-              $lte: endDateObj,
+        const { startDate, endDate } = req.body
+        const startDateObj = new Date(startDate)
+        startDateObj.setHours(0, 0, 0, 0)
+        const endDateObj = new Date(endDate)
+        endDateObj.setHours(23, 59, 59, 999)
+
+        const selectedDate = await Order.aggregate([
+            {
+                $match: {
+                    date: {
+                        $gte: startDateObj,
+                        $lte: endDateObj,
+                    },
+                    "items.ordered_status": "delivered"
+                }
             },
-            "items.ordered_status": "delivered"
-          }
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "user_id",
-            foreignField: "_id",
-            as: "user",
-          }
-        },
-        {
-          $unwind: "$items",
-        },
-        {
-          $lookup: {
-            from: "products",
-            localField: "items.product_id",
-            foreignField: "_id",
-            as: "items.product"
-          }
-        },
-        {
-          $unwind: "$items.product",
-        },
-        {
-          $group: {
-            _id: "$_id",
-            user: { $first: "$user" },
-            delivery_address: { $first: "$delivery_address" },
-            order_id: { $first: "$order_id" },
-            date: { $first: "$date" },
-            payment: { $first: "$payment" },
-            items: { $push: "$items" }
-          }
-        }
-      ])
-  
-      res.status(200).json({ selectedDate: selectedDate });
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "user_id",
+                    foreignField: "_id",
+                    as: "user",
+                }
+            },
+            {
+                $unwind: "$items",
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.product_id",
+                    foreignField: "_id",
+                    as: "items.product"
+                }
+            },
+            {
+                $unwind: "$items.product",
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    user: { $first: "$user" },
+                    delivery_address: { $first: "$delivery_address" },
+                    order_id: { $first: "$order_id" },
+                    date: { $first: "$date" },
+                    payment: { $first: "$payment" },
+                    items: { $push: "$items" }
+                }
+            }
+        ])
+
+        res.status(200).json({ selectedDate: selectedDate });
     } catch (error) {
-      console.log(error);
-  
+        console.log(error);
+
     }
-  
-  }
-  
 
-
-// users list
+}
+//................................................................................................................................//
 
 const usersList = async (req, res) => {
     try {
@@ -543,6 +476,7 @@ const usersList = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
 const blockUser = async (req, res) => {
     try {
@@ -554,23 +488,16 @@ const blockUser = async (req, res) => {
             req.session.destroy()
             res.redirect('/home')
         }
-
-
-
-
         if (!updateUser) {
             return res.status(404).send("user not found")
         }
-
         res.json({ status: 'success', user: updateUser })
         res.status(500).json({ status: 'error', error: 'internal server error' })
-
-
-
     } catch (error) {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
 const unBlockUser = async (req, res) => {
     try {
@@ -589,8 +516,8 @@ const unBlockUser = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-// category 
 const loadCategory = async (req, res) => {
     try {
         const categData = await categories.find({}).populate('offer')
@@ -602,8 +529,8 @@ const loadCategory = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-// list category
 const listCategory = async (req, res) => {
     try {
         const categId = req.params.id
@@ -617,8 +544,8 @@ const listCategory = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-// unlist category 
 const unListCategory = async (req, res) => {
     try {
         const categId = req.params.id
@@ -634,8 +561,8 @@ const unListCategory = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-// load add category
 const addCategory = async (req, res) => {
     try {
         res.render('add-categ', { data: req.body })
@@ -643,32 +570,22 @@ const addCategory = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-//add category to categories
 const addCategoryItems = async (req, res) => {
     try {
-
-        // console.log(req.body);
-
         const categoryNameRegex = new RegExp(`^${req.body.categoryName}$`, 'i');
 
         const existingCategory = await categories.findOne({ categoryName: { $regex: categoryNameRegex } });
 
-
         if (existingCategory && existingCategory._id.toString() !== req.body.id) {
-
-            // If a similar name exists for a different category, prevent the update
             res.render('add-categ', { message: 'category already exist', data: req.body });
         } else {
-
             const { categoryName, description } = req.body
-
             const newCategory = new categories({
                 categoryName,
                 description
-
             })
-
             await newCategory.save()
             res.redirect('/admin/categories')
         }
@@ -677,7 +594,8 @@ const addCategoryItems = async (req, res) => {
     }
 
 }
-// load edit-category
+//................................................................................................................................//
+
 const loadEditCategory = async (req, res) => {
     try {
 
@@ -690,25 +608,18 @@ const loadEditCategory = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-
-// edit-category
 const editCategory = async (req, res) => {
     try {
-        // Convert the input category name to a case-insensitive regex pattern
         const categoryNameRegex = new RegExp(`^${req.body.categoryName}$`, 'i');
-
-        // Check for an existing category with a similar name (case-insensitive)
         const existingCategory = await categories.findOne({ categoryName: { $regex: categoryNameRegex } });
 
-        if (existingCategory && existingCategory._id.toString() !== req.body.id) {
-
-            // If a similar name exists for a different category, prevent the update
+        if (existingCategory && existingCategory._id.toString() !== req.body.id) {e
             req.flash("message", "category already exist")
             res.render('edit-categ', { categories: req.body })
 
         } else {
-            // Update the category since the name doesn't exist or it's the same category being edited
             await categories.findByIdAndUpdate({ _id: req.body.id }, { name: req.body.categoryName, description: req.body.description });
             res.redirect('/admin/categories');
         }
@@ -716,7 +627,7 @@ const editCategory = async (req, res) => {
         console.log(error);
     }
 }
-
+//................................................................................................................................//
 
 const deleteCategory = async (req, res) => {
     try {
@@ -731,8 +642,7 @@ const deleteCategory = async (req, res) => {
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 };
-
-// loadProducts
+//................................................................................................................................//
 
 const loadProducts = async (req, res) => {
     try {
@@ -745,8 +655,8 @@ const loadProducts = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-// load add products
 const loadAddProducts = async (req, res) => {
     try {
         const data = await categories.find({ isListed: true })
@@ -755,8 +665,8 @@ const loadAddProducts = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-// add products
 const addProducts = async (req, res) => {
     try {
         console.log(req.body);
@@ -805,8 +715,8 @@ const addProducts = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-// list products 
 const listProducts = async (req, res) => {
     try {
         const productId = req.params.id
@@ -820,8 +730,8 @@ const listProducts = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-// unlist products
 const unListProducts = async (req, res) => {
     try {
         const productId = req.params.id
@@ -835,8 +745,8 @@ const unListProducts = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
-// load edit products
 const loadEditProducts = async (req, res) => {
 
     try {
@@ -851,8 +761,8 @@ const loadEditProducts = async (req, res) => {
         console.log(error);
     }
 }
-
-// edit product 
+//................................................................................................................................//
+ 
 const editProduct = async (req, res) => {
     try {
         const id = req.body.id
@@ -908,7 +818,8 @@ const editProduct = async (req, res) => {
         console.log(error);
     }
 }
-// deleteimg
+//................................................................................................................................//
+
 const deleteImg = async (req, res) => {
     try {
         console.log(req.body);
@@ -927,11 +838,12 @@ const deleteImg = async (req, res) => {
     }
 }
 
-// orders
+//................................................................................................................................//
+
 const loadOrders = async (req, res) => {
     try {
-        const page = parseInt(req.query.page) || 1;  // Get the page number from the query parameter, default to 1 if not provided
-        const pageSize = 5;  // Set the number of orders to display per page
+        const page = parseInt(req.query.page) || 1;  
+        const pageSize = 5;  
 
         // Default sort order based on the ordered date in descending order
         const defaultSortOrder = -1;
@@ -943,15 +855,16 @@ const loadOrders = async (req, res) => {
 
         const orders = await Order.find()
             .populate('items.product_id')
-            .sort({ date: sortOrder, _id: defaultSortOrder })  // Sort by date in the specified order, then by _id in the default order
-            .skip((page - 1) * pageSize)  // Skip records based on pagination
-            .limit(pageSize);  // Limit the number of records per page
+            .sort({ date: sortOrder, _id: defaultSortOrder })  
+            .skip((page - 1) * pageSize)  
+            .limit(pageSize); 
 
         res.render('adminOrder', { orders, moment, totalOrders, currentPage: page, pageSize, sortOrder });
     } catch (error) {
         console.log(error);
     }
 };
+//................................................................................................................................//
 
 const viewOrderPage = async (req, res) => {
     try {
@@ -976,7 +889,8 @@ const viewOrderPage = async (req, res) => {
         console.log(error);
         res.status(500).send('Internal Server Error');
     }
-};
+};//................................................................................................................................//
+
 
 const updateOrderStatus = async (req, res) => {
     const { orderId, itemId, newStatus } = req.body;
@@ -993,12 +907,9 @@ const updateOrderStatus = async (req, res) => {
 
 
         if (item) {
-            console.log('orderpayment:', order.payment);
             // If payment is RazorPay and status is 'cancelled' or 'returned'
             if ((order.payment == 'razorPay') && (newStatus === 'cancelled' || newStatus === 'returned') || newStatus === 'returned') {
-                // Update user's wallet and wallet history
-                console.log('okayyy');
-
+        
                 const user = await User.findById(order.user_id);
                 const currentDate = new Date();
                 const walletHistoryEntry = {
@@ -1006,7 +917,6 @@ const updateOrderStatus = async (req, res) => {
                     amount: item.total_price,
                     description: `Refund for order`,
                 };
-
                 // Update wallet history and wallet amount
                 user.wallet_history.push(walletHistoryEntry);
                 user.wallet += item.total_price;
@@ -1041,22 +951,13 @@ const updateOrderStatus = async (req, res) => {
             { $set: update },
             { new: true }
         );
-
         res.json({ success: true, updatedOrder });
     } catch (error) {
         console.error('Error updating order status:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 };
-
-
-
-
-
-
-
-
-//logout 
+//................................................................................................................................//
 
 const adminLogout = async (req, res) => {
     try {
@@ -1066,6 +967,8 @@ const adminLogout = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
+
 module.exports = {
     adminLogin,
     verifyAdminLogin,
@@ -1095,5 +998,4 @@ module.exports = {
     updateOrderStatus,
     salesReport,
     datePicker
-
 }

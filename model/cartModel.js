@@ -21,7 +21,7 @@ const cartSchema = new mongoose.Schema({
             required: true
         },
         total_price: {
-            type: Number, 
+            type: Number,
             required: true
         },
         status: {
@@ -36,4 +36,4 @@ const cartSchema = new mongoose.Schema({
 })
 
 const cart = mongoose.model('cart', cartSchema)
-module.exports = cart
+module.exports = cart

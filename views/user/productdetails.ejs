@@ -274,16 +274,15 @@
 						<h4 class="mtext-105 cl2 js-name-detail p-b-14">
 							<%=products.name%>
 						</h4>
-						
+
 
 						<% if (products.offer) { var discount=(products.price * products.offer.percentage /
 							100).toFixed(0); } else { var discount=0; } %>
 
 							<% if (categories.length> 0) { %>
 								<% categories.forEach(category=> { %>
-									<% if (category.offer && category.categoryName===products.category)
-									 { discount=(products.price *
-										category.offer.percentage / 100).toFixed(0); } %>
+									<% if (category.offer && category.categoryName===products.category) {
+										discount=(products.price * category.offer.percentage / 100).toFixed(0); } %>
 										<% }) %>
 											<% } %>
 
@@ -292,81 +291,80 @@
 															class="text-danger text-decoration-line-through">₹
 															<%= products.price %>
 														</del>
-														<span class="price stext-105 cl3 ">₹ <%=
-																products.price - discount %>
-																<span class="badge badge-success"
-																	style="position: absolute;bottom: 70px;left: 5px;">Save
-																	₹ <%= discount %></span>
+														<span class="price stext-105 cl3 ">₹ <%= products.price -
+																discount %>
+																
 														</span></span>
 													<% } else { %>
 														<span class="stext-105 cl3">
 															₹<%= products.price %>
 														</span>
 														<% } %>
-						
-
-						<p class="stext-102 cl3 p-t-23">
-							Description : <%=products.description%>	
-						</p>
-
-						<!--  -->
-						
-							
-							<div class="">
-								<div class="size-204 flex-w flex-m respon6-next">
-									<input type="text" name="productId" id="productId" value="<%= products._id %>"
-										hidden>
-								</div>
-								<div class="w-100"></div>
-								<div class="input-group col-md-2  mb-3 ">
-									<% if(products.quantity> 0){ %>
-										
-										<input type="hidden" id="quantity" name="quantity"
-											class="quantity form-control text-center input-number fw-bold " value="1" min="1" max="10" readonly> 
-										
-										<% }else{ %>
-											<p style="color: red;">Out of Stock</p>
-											<% } %>
 
 
-								</div>
-                                <% if (products.quantity > 0){ %>
-								<button onclick="addTocart('<%=products._id%>')"
-									class=" btn btn-success btn-lg">
-									Add to cart
-								</button>
-								<% } %>
-							</div>
-						</div>
-					</div>
+															<p class="stext-102 cl3 p-t-23">
+																Description : <%=products.description%>
+															</p>
 
-					<!--  -->
-					<div class="flex-w flex-m p-l-100 p-t-40 respon7">
-						<div class="flex-m bor9 p-r-10 m-r-11">
-							<a href="#"
-								class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100"
-								data-tooltip="Add to Wishlist">
-								<i class="zmdi zmdi-favorite"></i>
-							</a>
-						</div>
+															<!--  -->
 
-						<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
-							data-tooltip="Facebook">
-							<i class="fa fa-facebook"></i>
-						</a>
 
-						<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
-							data-tooltip="Twitter">
-							<i class="fa fa-twitter"></i>
-						</a>
+															<div class="">
+																<div class="size-204 flex-w flex-m respon6-next">
+																	<input type="text" name="productId" id="productId"
+																		value="<%= products._id %>" hidden>
+																</div>
+																<div class="w-100"></div>
+																<div class="input-group col-md-2  mb-3 ">
+																	<% if(products.quantity> 0){ %>
 
-						<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
-							data-tooltip="Google Plus">
-							<i class="fa fa-google-plus"></i>
-						</a>
+																		<input type="hidden" id="quantity"
+																			name="quantity"
+																			class="quantity form-control text-center input-number fw-bold "
+																			value="1" min="1" max="10" readonly>
+
+																		<% }else{ %>
+																			<p style="color: red;">Out of Stock</p>
+																			<% } %>
+
+
+																</div>
+																<% if (products.quantity> 0){ %>
+																	<button onclick="addTocart('<%=products._id%>')"
+																		class=" btn btn-success btn-lg">
+																		Add to cart
+																	</button>
+																	<% } %>
+															</div>
 					</div>
 				</div>
+
+				<!--  -->
+				<div class="flex-w flex-m p-l-100 p-t-40 respon7">
+					<div class="flex-m bor9 p-r-10 m-r-11">
+						<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100"
+							data-tooltip="Add to Wishlist">
+							<i class="zmdi zmdi-favorite"></i>
+						</a>
+					</div>
+
+					<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
+						data-tooltip="Facebook">
+						<i class="fa fa-facebook"></i>
+					</a>
+
+					<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
+						data-tooltip="Twitter">
+						<i class="fa fa-twitter"></i>
+					</a>
+
+					<a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 m-r-8 tooltip100"
+						data-tooltip="Google Plus">
+						<i class="fa fa-google-plus"></i>
+					</a>
+				</div>
 			</div>
+		</div>
 		</div>
 
 		<div class="bor10 m-t-50 p-t-43 p-b-40">
@@ -928,40 +926,40 @@
 	<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
 
 	<script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const slickGallery = document.querySelector('.slick3');
-            const productImages = slickGallery.querySelectorAll('.wrap-pic-w img');
-            let isZoomed = false;
+		document.addEventListener('DOMContentLoaded', function () {
+			const slickGallery = document.querySelector('.slick3');
+			const productImages = slickGallery.querySelectorAll('.wrap-pic-w img');
+			let isZoomed = false;
 
-            productImages.forEach((img) => {
-                img.addEventListener('mouseover', function () {
-                    // Apply zoom effect on mouseover
-                    if (!isZoomed) {
-                        img.style.transform = 'scale(2.3)';
-                        img.style.transition = 'transform 0.3s ease'; // Optional: Add a transition for a smooth effect
-                        isZoomed = true;
-                    }
-                });
+			productImages.forEach((img) => {
+				img.addEventListener('mouseover', function () {
+					// Apply zoom effect on mouseover
+					if (!isZoomed) {
+						img.style.transform = 'scale(2.3)';
+						img.style.transition = 'transform 0.3s ease'; // Optional: Add a transition for a smooth effect
+						isZoomed = true;
+					}
+				});
 
-                img.addEventListener('mousemove', function (e) {
-                    if (isZoomed) {
-                        const boundingBox = img.getBoundingClientRect();
-                        const offsetX = (e.clientX - boundingBox.left) / boundingBox.width;
-                        const offsetY = (e.clientY - boundingBox.top) / boundingBox.height;
+				img.addEventListener('mousemove', function (e) {
+					if (isZoomed) {
+						const boundingBox = img.getBoundingClientRect();
+						const offsetX = (e.clientX - boundingBox.left) / boundingBox.width;
+						const offsetY = (e.clientY - boundingBox.top) / boundingBox.height;
 
-                        // Move the image according to mouse movement
-                        img.style.transformOrigin =` ${offsetX * 100}% ${offsetY * 100}%`;
-                    }
-                });
+						// Move the image according to mouse movement
+						img.style.transformOrigin = ` ${offsetX * 100}% ${offsetY * 100}%`;
+					}
+				});
 
-                img.addEventListener('mouseleave', function () {
-                    // Reset to normal size on mouseleave
-                    img.style.transform = 'scale(1)';
-                    isZoomed = false;
-                });
-            });
-        });
-    </script>
+				img.addEventListener('mouseleave', function () {
+					// Reset to normal size on mouseleave
+					img.style.transform = 'scale(1)';
+					isZoomed = false;
+				});
+			});
+		});
+	</script>
 
 
 	<script>
@@ -980,6 +978,8 @@
 	<script src="vendor/isotope/isotope.pkgd.min.js"></script>
 	<!--===============================================================================================-->
 	<script src="vendor/sweetalert/sweetalert.min.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
 		$('.js-addwish-b2, .js-addwish-detail').on('click', function (e) {
 			e.preventDefault();
@@ -1007,129 +1007,126 @@
 		});
 
 		/*---------------------------------------------*/
+		</script>
 
 		// add to cart
 
-		function addTocart(productId) {
-			const quantity = document.getElementById('quantity').value;
-			const data = { productId: productId, quantity: quantity };
+		<script>
+    function addTocart(productId) {
+        const quantity = document.getElementById('quantity').value;
+        const data = { productId: productId, quantity: quantity };
 
-			$.ajax({
-				method: 'POST',
-				url: 'cart', // Update the URL to match your endpoint
-				data: JSON.stringify(data),
-				contentType: 'application/json',
-				success: function (response) {
-					if (response.success) {
-						var nameProduct = $('.js-name-detail').html();
-						swal({
-							title: nameProduct,
-							text: 'is added to cart!',
-							icon: 'success',
-							buttons: {
-								confirm: {
-									text: 'OK',
-									value: 'confirm',
-								},
-								cart: {
-									text: 'Go to Cart',
-									value: 'cart',
-								}
-							},
-						})
-							.then((value) => {
-								switch (value) {
-									case 'confirm':
-										// Do nothing or add any other actions
-										break;
-									case 'cart':
-										// Redirect to the cart page
-										window.location.href = '/cart'; // Replace with your actual cart page URL
-										break;
-									default:
-										// Do nothing
-										break;
-								}
-							});
-					} else {
-						console.log("Failed to add product to cart");
-					}
-				},
-				error: function (error) {
-					console.log("Error:", error);
-				}
-			});
-
-		}
+        $.ajax({
+            method: 'POST',
+            url: 'cart', // Update the URL to match your endpoint
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            success: function (response) {
+                if (response.success) {
+                    var nameProduct = $('.js-name-detail').html();
+                    Swal.fire({
+                        title: nameProduct,
+                        text: 'is added to cart!',
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: 'OK',
+                        cancelButtonText: 'Go to Cart',
+                    })
+                    .then((result) => {
+                        if (result.dismiss === Swal.DismissReason.cancel) {
+                            // Redirect to the cart page
+                            window.location.href = '/cart'; // Replace with your actual cart page URL
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Error adding to cart",
+                        text: "Please login to continue",
+                        icon: "error",
+                        showCancelButton: true,
+                        confirmButtonText: "Login", // Text for the login button
+                        cancelButtonText: "Cancel", // Text for the cancel button
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redirect to the login section when the "Login" button is clicked
+                            window.location.href = "/login"; // Replace "/login" with your actual login page URL
+                        }
+                    })
+                }
+            },
+            error: function () {
+                // Handle AJAX error if needed
+            }
+        });
+    }
+</script>
 
 
-		// max value
 
-		// JavaScript to handle quantity increment and decrement
-	
-	</script>
+		
+
 	<!--===============================================================================================-->
 	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 	<script>
-		$('.js-pscroll').each(function () {
-			$(this).css('position', 'relative');
-			$(this).css('overflow', 'hidden');
-			var ps = new PerfectScrollbar(this, {
-				wheelSpeed: 1,
-				scrollingThreshold: 1000,
-				wheelPropagation: false,
-			});
+						$('.js-pscroll').each(function () {
+							$(this).css('position', 'relative');
+							$(this).css('overflow', 'hidden');
+							var ps = new PerfectScrollbar(this, {
+								wheelSpeed: 1,
+								scrollingThreshold: 1000,
+								wheelPropagation: false,
+							});
 
-			$(window).on('resize', function () {
-				ps.update();
-			})
-		});
+							$(window).on('resize', function () {
+								ps.update();
+							})
+						});
 	</script>
 	<!--===============================================================================================-->
 	<script src="js/main.js"></script>
 	<script>
-		$(document).ready(function () {
-			var maxQuantity = 10;
-			var availableStock = `<%= products.quantity %>`; // Assuming product.stockQuantity is a server-side variable
-	
-			$('.quantity-right-plus').click(function (e) {
-				// Stop acting like a button
-				e.preventDefault();
-				// Get the field name
-				var quantity = parseInt($('#quantity').val());
-	
-				// If not undefined and less than the maximum and less than available stock
-				if (!isNaN(quantity) && quantity < maxQuantity && quantity < availableStock) {
-					$('#quantity').val(quantity + 1);
-				} else if (quantity >= availableStock) {
-					// Display SweetAlert message if quantity exceeds available stock
-					swal.fire({
-						title: "Insufficient Stock",
-						text: "There is not enough stock available for this quantity.",
-						icon: "warning",
-					});
-				} else {
-					// Display SweetAlert message if quantity exceeds maximum
-					swal.fire({
-						title: "Exceeded Maximum Quantity",
-						text: "You can only order up to " + maxQuantity + " products.",
-						icon: "warning",
-					});
-				}
-			});
-	
-			$('.quantity-left-minus').click(function (e) {
-				// Stop acting like a button
-				e.preventDefault();
-				// Get the field name
-				var quantity = parseInt($('#quantity').val());
-	
-				// If not undefined and greater than 1
-				if (!isNaN(quantity) && quantity > 1) {
-					$('#quantity').val(quantity - 1);
-				}
-			});
-		});
+						$(document).ready(function () {
+							var maxQuantity = 10;
+							var availableStock = `<%= products.quantity %>`; // Assuming product.stockQuantity is a server-side variable
+
+							$('.quantity-right-plus').click(function (e) {
+								// Stop acting like a button
+								e.preventDefault();
+								// Get the field name
+								var quantity = parseInt($('#quantity').val());
+
+								// If not undefined and less than the maximum and less than available stock
+								if (!isNaN(quantity) && quantity < maxQuantity && quantity < availableStock) {
+									$('#quantity').val(quantity + 1);
+								} else if (quantity >= availableStock) {
+									// Display SweetAlert message if quantity exceeds available stock
+									swal.fire({
+										title: "Insufficient Stock",
+										text: "There is not enough stock available for this quantity.",
+										icon: "warning",
+									});
+								} else {
+									// Display SweetAlert message if quantity exceeds maximum
+									swal.fire({
+										title: "Exceeded Maximum Quantity",
+										text: "You can only order up to " + maxQuantity + " products.",
+										icon: "warning",
+									});
+								}
+							});
+
+							$('.quantity-left-minus').click(function (e) {
+								// Stop acting like a button
+								e.preventDefault();
+								// Get the field name
+								var quantity = parseInt($('#quantity').val());
+
+								// If not undefined and greater than 1
+								if (!isNaN(quantity) && quantity > 1) {
+									$('#quantity').val(quantity - 1);
+								}
+							});
+						});
 	</script>
 
 </body>

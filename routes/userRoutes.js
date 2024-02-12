@@ -4,14 +4,14 @@ const cartController = require('../controller/cartController')
 const orderController = require('../controller/orderController')
 const auth = require('../middleware/auth')
 const router = express()
+//................................................................................................................................//
 
 
 // view engine
 router.set('view engine','ejs')
 router.set('views','./views/user')
+//................................................................................................................................//
 
-
- 
 router.get('/',auth.islogOut,userController.homePage);
 
 router.get('/home',userController.homePage);
@@ -91,17 +91,5 @@ router.post('/applyCoupon',orderController.applyCoupon);
 router.get('/wallet',auth.isLogin,userController.loadWallet);
 
 router.get('/invoice',auth.isLogin,orderController.invoiceDownload)
-
-
- 
-
-
-   
-
-
-
-
-
-    
 
 module.exports= router 

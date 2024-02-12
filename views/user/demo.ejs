@@ -1,184 +1,98 @@
-<!-- banner model -->
-const mongoose = require( 'mongoose' ) 
+// Otp verification
+const verifyOtp = async (req, res) => {
+    const email = req.body.email;
+    const otp = req.body.one + req.body.two + req.body.three + req.body.four;
+    const user = await userOtp.findOne({ email: email });
 
-const Schema = mongoose.Schema
-
-const bannerSchema = Schema({
-    image : {
-        type : Array,
-        required : true
-    },
-
-    title : {
-        type : String,
-        required : true
-    },
-
-    description : {
-        type : String,
-        required : true
-    },
-    occassion: {
-        type: String,
-        required:true
-    },
-
-    status : {
-        type : Boolean, 
-        default : true
+    if (!user) {
+        res.render('otp', { message: 'otp expired', email: email })
+        return;
     }
-
-})
-
-module.exports = mongoose.model("banner",bannerSchema)
+    const { otp: hashedOtp } = user;
+    const validOtp = await bcrypt.compare(otp, hashedOtp);
 
 
+    if (validOtp == true) {
+        const userData = await User.findOne({ email: email })
+        await User.findByIdAndUpdate({ _id: userData._id }, { $set: { verified: true } });
+        await userOtp.deleteOne({ email: email });
 
-<!-- banner controller -->
-const bannerModel = require('../models/bannerModel');
-const path = require('path')
-const sharp = require('sharp')
-
-
-const loadBanner = async (req, res, next) => {
-    try {
-        const banner = await bannerModel.find()
-
-        res.render('banner', { banner })
-    } catch (err) {
-        next(err)
-    }
-}
-
-
-const addBanner = async (req, res, next) => {
-    try {
-        let { message } = req.session
-        req.session.message = ''
-        res.render('add-banner', { message })
-    } catch (err) {
-        next(err)
-    }
-}
-
-
-const postBanner = async (req, res, next) => {
-    try {
-        const { title, bannerDescription, bannerOccassion } = req.body
-
-
-        const bannerExist = await bannerModel.findOne({ title: title })
-
-        if (bannerExist) {
-            req.session.message = 'banner already exist'
-            res.redirect('/admin/banner')
-        } else {
-            const imageArr = []
-
-            if (req.files && req.files.length > 0) {
-                for (let i = 0; i < req.files.length; i++) {
-                    const filePath = path.join(
-                        __dirname,
-                        "../public/ResizedImages",
-                        req.files[i].filename
-                    );
-                    await sharp(req.files[i].path)
-                        .resize({  width: 1920, height: 900  })
-                        .toFile(filePath);
-                    imageArr.push(req.files[i].filename);
-                }
-            }
-
-            const banner = new bannerModel({
-                title: title,
-                description: bannerDescription,
-                occassion: bannerOccassion,
-                image: imageArr,
-                status: true
-                // search : search,
-                // page : page
-            })
-            await banner.save()
-            req.session.message = "saved"
-            res.redirect('/admin/addBanner')
-        }
-    } catch (err) {
-        next(err)
-    }
-}
-
-const loadEditBanner = async (req, res, next) => {
-    try {
-        const { id } = req.query
-        const banner = await bannerModel.findById({ _id: id })
-
-        res.render('edit-banner', { banner })
-    } catch (err) {
-        next(err)
-
-    }
-}
-
-const editBanner = async (req, res, next) => {
-    try {
-        const {
-            banner_id, banner_title, banner_description, banner_occassion
-        } = req.body;
-        const imageArr = []
-
-        if (req.files && req.files.length > 0) {
-
-            for (let i = 0; i < req.files.length; i++) {
-
-                const filePath = path.join(__dirname, "../public/ResizedImages", req.files[i].filename)
-
-                await sharp(req.files[i].path)
-                    .resize({ width: 1920, height: 900 })
-                    .toFile(filePath);
-                imageArr.push(req.files[i].filename);
-            }
-        }
-        if (req.files.length) {
-            await bannerModel.findByIdAndUpdate(
-                { _id: banner_id },
+        req.session.userId = userData._id
+        if (req.session.referralCode) {
+            await User.findOneAndUpdate(
+                { referralCode: req.session.referralCode },
                 {
-                    $set: {
-                        title: banner_title,
-                        description: banner_description,
-                        occassion: banner_occassion,
-                        image: imageArr
-                    }
-                })
-
-            res.redirect("/admin/banner");
-        } else {
-            await bannerModel.findByIdAndUpdate(
-                { _id: banner_id },
-                {
-                    $set: {
-                        title: banner_title,
-                        description: banner_description,
-                        occassion: banner_occassion,
+                    $inc: { wallet: 100 },
+                    $push: {
+                        wallet_history: {
+                            date: new Date(),
+                            amount: 100,
+                            description: Referral Bonus for referring  ${userData.username}
+                        }
                     }
                 }
-            )
-            res.redirect("/admin/banner");
+            );
+            await User.findOneAndUpdate(
+                { _id: req.session.userId },
+                {
+                    $inc: { wallet: 50 },
+                    $push: {
+                        wallet_history: {
+                            date: new Date(),
+                            amount: 50,
+                            description: Welcome Bonus For using referral link
+                        }
+                    }
+                }
+            );
         }
-
-    } catch (err) {
-        next(err)
+        req.session.referralCode = null;
+        req.session.userId = null
+        res.redirect('/login');
+    } else {
+        // res.render('otp', { email: email, message: 'otp is incorrect' })
+        req.flash('message', 'Incorrect OTP');
+        res.redirect(/otp?email=${email})
     }
 }
+//Register Verify
+const verifyRegister = async (req, res) => {
+    try {
+        const { username, email, mobile, password, confirmPassword, code } = req.body;
+        if (code) {
+            req.session.referralCode = code;
+        }
+        // Check if email already exists
+        const existingUser = await User.findOne({ email: email });
+        if (existingUser) {
+            return res.status(400).render('register', { message: 'Email is already registered' })
+        }
 
+        if (password !== confirmPassword) {
+            return res.status(400).send({ error: "Passwords do not match" });
+        }
 
-module.exports={
-    loadBanner,
-    addBanner,
-    postBanner,
-    loadEditBanner,
-    editBanner
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const referralCode = generateReferralCode();
+
+        // Create new user
+        const newUser = new User({
+            username,
+            email,
+            mobile,
+            password: hashedPassword,
+            verified: false,
+            isAdmin: 0,
+            referralCode: referralCode
+        });
+
+        await newUser.save();
+        sendOtpVerification(newUser, res);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "Internal server error" });
+    }
+};
+function generateReferralCode() {
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
-
-
-<!-- banner .ejs --> 
-<!-- add banner -->

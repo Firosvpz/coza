@@ -13,6 +13,7 @@ const isAdminLogin = async (req,res,next)=>{
         console.log(error);
     }
 }
+//................................................................................................................................//
 
 const isAdminLogout = async (req,res,next)=>{
     try {
@@ -24,6 +25,8 @@ const isAdminLogout = async (req,res,next)=>{
         console.log(error);
     }
 } 
+//................................................................................................................................//
+
 module.exports = {
     isAdminLogin,
     isAdminLogout

@@ -1,7 +1,7 @@
 const bannerModel = require('../model/bannerModel')
 const path = require('path')
 const sharp = require('sharp')
-
+//................................................................................................................................//
 
 const loadBanner = async (req, res, next) => {
     try {
@@ -12,7 +12,7 @@ const loadBanner = async (req, res, next) => {
         next(err)
     }
 }
-
+//................................................................................................................................//
 
 const addBanner = async (req, res, next) => {
     try {
@@ -23,15 +23,11 @@ const addBanner = async (req, res, next) => {
         next(err)
     }
 }
-
+//................................................................................................................................//
 
 const postBanner = async (req, res, next) => {
     try {
         const { title, bannerDescription, bannerOccassion } = req.body
-
-        // console.log('bodfy:',req.body);
-
-
         const bannerExist = await bannerModel.findOne({ title: title })
 
         if (bannerExist) {
@@ -48,7 +44,7 @@ const postBanner = async (req, res, next) => {
                         req.files[i].filename
                     );
                     await sharp(req.files[i].path)
-                        .resize({  width: 1920, height: 900  })
+                        .resize({ width: 1920, height: 900 })
                         .toFile(filePath);
                     imageArr.push(req.files[i].filename);
                 }
@@ -60,8 +56,6 @@ const postBanner = async (req, res, next) => {
                 occassion: bannerOccassion,
                 image: imageArr,
                 status: true
-                // search : search,
-                // page : page
             })
             await banner.save()
             req.session.message = "saved"
@@ -71,18 +65,18 @@ const postBanner = async (req, res, next) => {
         next(err)
     }
 }
+//................................................................................................................................//
 
 const loadEditBanner = async (req, res, next) => {
     try {
         const { id } = req.query
         const banner = await bannerModel.findById({ _id: id })
-
         res.render('edit-banner', { banner })
     } catch (err) {
         next(err)
-
     }
 }
+//................................................................................................................................//
 
 const editBanner = async (req, res, next) => {
     try {
@@ -129,14 +123,13 @@ const editBanner = async (req, res, next) => {
             )
             res.redirect("/admin/banner");
         }
-
     } catch (err) {
         next(err)
     }
 }
+//................................................................................................................................//
 
-
-module.exports={
+module.exports = {
     loadBanner,
     addBanner,
     postBanner,

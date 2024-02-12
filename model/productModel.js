@@ -29,11 +29,8 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-
     date: {
         type: String,
-
-
     },
     isListed: {
         type: Boolean,
@@ -46,7 +43,6 @@ const productSchema = new mongoose.Schema({
     offerPrice: {
         type: Number
     }
-
 }, {
     timestamps: true
 }

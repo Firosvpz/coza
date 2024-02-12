@@ -3,33 +3,83 @@ const bcrypt = require('bcrypt')
 const nodemailer = require('nodemailer')
 const dotenv = require('dotenv')
 const mongoose = require('mongoose')
-dotenv.config()
-
 const userOtp = require('../model/userOtpModel')
 const products = require('../model/productModel')
 const Categories = require('../model/categoryModel')
 const { usersList, listCategory } = require('./adminController')
 const Order = require('../model/orderModel')
+const bannerModel = require('../model/bannerModel')
+dotenv.config()
 
-
-
+//................................................................................................................................//
 
 const homePage = async (req, res) => {
     try {
-        const userData = await User.findOne({ _id: req.session.user_id });
+        const id = req.session.user_id;
+        const userData = await User.findOne({ _id: id });
+        const banner = await bannerModel.find({ status: true })
+        const latestProducts = await products.find().sort({ _id: 1 }).limit(4).populate({
+            path: 'offer',
+        })
 
-        if (userData) {
-            res.render('home', { user: userData });
-        } else {
-            // Handle case when user data is not found
-            res.render('home', { user: null }); // or handle differently as needed
-        }
+        const categories = await Categories.find({}).populate('offer')
+
+        const orders = await Order.aggregate([
+            { $unwind: '$items' },
+            {
+                $group: {
+                    _id: '$items.product_id',
+                    totalQuantity: { $sum: '$items.quantity' },
+                    totalRevenue: { $sum: '$items.total_price' }
+                }
+            },
+            { $sort: { totalQuantity: -1 } },
+            { $limit: 4 },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'productDetails'
+                }
+            },
+            { $unwind: '$productDetails' },
+            {
+                $project: {
+                    _id: '$productDetails._id',
+                    name: '$productDetails.name',
+                    totalQuantity: 1,
+                    totalRevenue: 1
+
+                }
+            }
+        ])
+        const orderProductIds = orders.map(order => order._id);
+
+        const topProducts = await products.find({ _id: { $in: orderProductIds } })
+            .sort({ _id: -1 })
+            .limit(4)
+            .populate({
+                path: 'offer',
+            })
+
+        // Sort products by totalQuantity in descending order
+        const topDeals = topProducts.sort((a, b) => {
+            const aQuantity = orders.find(order => order._id.equals(a._id)).totalQuantity;
+            const bQuantity = orders.find(order => order._id.equals(b._id)).totalQuantity;
+            return bQuantity - aQuantity;
+        });
+
+        req.session.couponApplied = false;
+        req.session.discountAmount = 0;
+
+        res.render("home", { user: userData, currentRoute: '/', banner, latestProducts, topDeals, categories });
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Internal Server Error');
     }
 }
-
+//................................................................................................................................//
 
 const registerUser = async (req, res) => {
     try {
@@ -38,21 +88,16 @@ const registerUser = async (req, res) => {
         console.log(error.message);
     }
 }
+//................................................................................................................................//
 
 const verifyRegister = async (req, res) => {
     try {
         const { username, email, mobileNumber, password, confirmPassword } = req.body
-        // console.log(req.body);
-
         if (password !== confirmPassword) {
             req.flash('message', 'password do not match')
             res.redirect('/register')
         }
-
-
         const hashedPassword = await bcrypt.hash(password, 10)
-        console.log("hashed Password", hashedPassword);
-
         // create new user
         const newUser = new User({
             username,
@@ -61,18 +106,17 @@ const verifyRegister = async (req, res) => {
             password: hashedPassword,
             verified: false,
         })
-
         await newUser.save()
 
         sendOtpverification(newUser, res)
-        // res.redirect('/login')
+
     } catch (error) {
         console.log(error);
         req.flash('message', 'email already exist')
         res.redirect('/register')
     }
-
 }
+//................................................................................................................................//
 
 const loginUser = async (req, res) => {
     try {
@@ -81,13 +125,14 @@ const loginUser = async (req, res) => {
         console.log(error.message);
     }
 }
+//................................................................................................................................//
 
 const verifyLogin = async (req, res) => {
     try {
         const { email, password } = req.body
         const user = await User.findOne({ email: email })
         const data = await User.findOne({ email: email, isBlocked: true })
-        console.log(data);
+
         if (!user) {
             req.flash('message', 'User not found')
             res.redirect('/login')
@@ -109,10 +154,10 @@ const verifyLogin = async (req, res) => {
     }
 
 }
+//................................................................................................................................//
 
 const sendOtpverification = async ({ email }, res) => {
     try {
-        // const{email}=req.body
         let transporter = nodemailer.createTransport({
             service: 'gmail',
             host: 'smtp.gmail.com',
@@ -124,8 +169,6 @@ const sendOtpverification = async ({ email }, res) => {
             }
         })
         const otp = `${Math.floor(1000 + Math.random() * 9000)}`
-        console.log('email:', email);
-        console.log('from:', process.env.email_user);
         const mailOptions = {
             from: process.env.email_user,
             to: email,
@@ -162,34 +205,30 @@ const sendOtpverification = async ({ email }, res) => {
         console.log(error.message);
     }
 }
+//................................................................................................................................//
 
 const loadOtp = async (req, res) => {
     try {
         const email = req.query.email
-
         res.render('loginOtp', { email: email })
     } catch (error) {
 
     }
 }
+//................................................................................................................................//
 
 const verifyOtp = async (req, res) => {
     try {
         const email = req.body.email;
-        console.log('email:', email);
         const otp = `${req.body.one}${req.body.two}${req.body.three}${req.body.four}`;
 
-        console.log('otp:', otp);
         const user = await userOtp.findOne({ email: email })
-        console.log("user:", user);
-
 
         if (!user) {
             res.render('loginOtp', { message: 'otp expired' })
         }
         const { otp: hashedOtp } = user;
         const validOtp = await bcrypt.compare(otp, hashedOtp)
-        console.log(validOtp);
 
         if (validOtp === true) {
             const userData = await User.findOne({ email: email })
@@ -197,7 +236,6 @@ const verifyOtp = async (req, res) => {
             await userOtp.deleteOne({ email: email })
 
             req.session.user_id = userData._id
-
             res.redirect('/home')
         } else {
             res.render('loginOtp', { message: 'otp is incorrect' })
@@ -206,6 +244,7 @@ const verifyOtp = async (req, res) => {
         console.log(error.message);
     }
 }
+//................................................................................................................................//
 
 const loginOtp = async (req, res) => {
     try {
@@ -214,48 +253,41 @@ const loginOtp = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
 const verifyLoginOtp = async (req, res) => {
     try {
         const email = req.body.email
-
         const user = await User.findOne({ email: email })
 
-        console.log('user:', user);
         if (!user) {
             res.status(400).send({ error: "email does not exist" })
         }
         sendOtpverification(user, res)
         res.redirect(`/loginOtp?email=${email}`);
-
-
     } catch (error) {
         console.log(error);
-
     }
 }
+//................................................................................................................................//
+
 const resendOtp = async (req, res) => {
     const email = req.query.email;
-
     try {
         const user = await User.findOne({ email: email });
 
         if (!user) {
             return res.status(400).send({ error: "Email does not exist" });
         }
-
         // Call your function to send the OTP again
-        sendOtpverification(user, res); // Assuming this function sends the OTP
+        sendOtpverification(user, res);
         res.redirect('/loginotp')
-
-
-
     } catch (error) {
         console.log(error);
         res.status(500).send({ error: "Something went wrong while resending OTP" });
     }
 }
-
+//................................................................................................................................//
 
 const logOut = async (req, res) => {
     try {
@@ -265,27 +297,20 @@ const logOut = async (req, res) => {
         res.redirect('/')
     } catch (error) {
         console.log(error);
-
     }
 }
+//................................................................................................................................//
 
 const loadHome = async (req, res) => {
     try {
         res.render('home')
-
     } catch (error) {
         console.log(error);
     }
 }
-
-
-
-
-
-
+//................................................................................................................................//
 
 const PRODUCTS_PER_PAGE = 8;
-
 const shop = async (req, res) => {
     try {
         let user;
@@ -350,7 +375,6 @@ const shop = async (req, res) => {
             return categoryWithOffer;
         }));
 
-
         if (req.xhr) {
             res.json({ success: true, data: paginatedProducts, categories: populatedCategories });
         } else {
@@ -367,33 +391,29 @@ const shop = async (req, res) => {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
 const contact = async (req, res) => {
     try {
         const id = req.session.user_id;
-        console.log('user', id);
-
         const user = await User.findOne({ _id: id });
-
         res.render('contact', { user })
-
     } catch (error) {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
 const about = async (req, res) => {
     try {
         const id = req.session.user_id;
-        console.log('user', id);
-
         const user = await User.findOne({ _id: id });
         res.render('about', { user })
-
     } catch (error) {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
 const productDetails = async (req, res) => {
     try {
@@ -409,36 +429,28 @@ const productDetails = async (req, res) => {
         const data = await products.findOne({ _id: id }).populate('offer')
 
         const categories = await Categories.find({ isListed: true }).populate('offer');
-       
-
-
-        res.render('productdetails', { products: data, user ,categories})
+        res.render('productdetails', { products: data, user, categories })
     } catch (error) {
         console.log(error);
     }
 }
-
+//................................................................................................................................//
 
 const userProfile = async (req, res) => {
     try {
         const id = req.session.user_id;
-
         const user = await User.findOne({ _id: id });
         res.render('profile', { user });
     } catch (error) {
         console.log(error);
     }
 };
+//................................................................................................................................//
 
 const editProfile = async (req, res) => {
     try {
         const userId = req.session.user_id; // Assuming the correct session key is used to store the user ID
-        console.log('session:', userId);
-
         const { username, mobileNumber } = req.body;
-
-
-
         await User.findByIdAndUpdate(
             userId,
             {
@@ -453,9 +465,9 @@ const editProfile = async (req, res) => {
         res.redirect('/profile');
     } catch (error) {
         console.log(error);
-        // Handle the error appropriately (e.g., send an error response)
     }
 };
+//................................................................................................................................//
 
 const profileUser = async (req, res) => {
     try {
@@ -463,13 +475,14 @@ const profileUser = async (req, res) => {
         if (!id) {
             res.redirect('/login')
         }
-
         const user = await User.findOne({ _id: id });
         res.render('userprofile', { user })
     } catch (error) {
         console.log(error);
     }
 }
+//................................................................................................................................//
+
 const editAddress = async (req, res) => {
     try {
         const userid = req.session.user_id;
@@ -487,20 +500,17 @@ const editAddress = async (req, res) => {
             },
             { new: true } // Return the updated document
         );
-
-        console.log(updatedUser, "here is your updated user");
         res.json({ edited: true });
     } catch (err) {
         console.log(err.message);
     }
 };
+//................................................................................................................................//
 
 const deleteAddress = async (req, res) => {
     try {
-        console.log("hihi");
         const userId = req.session.user_id;
         const { Addid } = req.body;
-        console.log(Addid, "here we aere");
         await User.updateOne(
             { _id: userId },
             { $pull: { address: { _id: Addid } } }
@@ -510,6 +520,8 @@ const deleteAddress = async (req, res) => {
         console.log(err.message);
     }
 };
+//................................................................................................................................//
+
 const loadPassword = async (req, res) => {
     try {
         const user = req.session.user_id;
@@ -518,12 +530,11 @@ const loadPassword = async (req, res) => {
         console.log(error);
     }
 }
-
+//................................................................................................................................//
 
 const changePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
-        console.log(req.body);
         const userId = req.session.user_id
         const user = await User.findOne({ _id: userId })
         const passwordMatch = await bcrypt.compare(currentPassword, user.password);
@@ -543,14 +554,13 @@ const changePassword = async (req, res) => {
         console.log();
     }
 }
+//................................................................................................................................//
+
 const cancelOrder = async (req, res) => {
-    console.log('sghjdshdj:', req.body);
     const orderId = req.body.orderId;
     const itemId = req.body.itemId;
     const reason = req.body.reason;
     const returnReason = req.body.returnReason;
-
-
     try {
         if (reason) {
             const updatedOrder = await Order.updateOne(
@@ -562,11 +572,8 @@ const cancelOrder = async (req, res) => {
                     }
                 }
             );
-
             res.status(200).json({ message: 'Order cancellation requested', order: updatedOrder });
-
         }
-
         if (returnReason) {
             const updatedOrder = await Order.updateOne(
                 { _id: orderId, 'items._id': itemId },
@@ -577,18 +584,14 @@ const cancelOrder = async (req, res) => {
                     }
                 }
             );
-
             res.status(200).json({ message: 'Order return requested', order: updatedOrder });
-
         }
-
-
-
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
     }
 };
+//................................................................................................................................//
 
 const loadWallet = async (req, res) => {
     try {
@@ -596,16 +599,13 @@ const loadWallet = async (req, res) => {
         req.session.discountAmount = 0;
 
         const userId = req.session.user_id;
-
         const user = await User.findOne({ _id: userId });
-
         res.render('wallet', { user });
     } catch (error) {
         console.log(error.message);
     }
 };
-
-
+//................................................................................................................................//
 
 module.exports = {
     homePage,
@@ -634,6 +634,4 @@ module.exports = {
     editAddress,
     deleteAddress,
     loadWallet
-
-
 }

@@ -20,5 +20,4 @@ const otpValidation= new mongoose.Schema({
 
 otpValidation.index({createdAt:1},{expireAfterSeconds:60})
 
-
 module.exports=mongoose.model('userotp',otpValidation)

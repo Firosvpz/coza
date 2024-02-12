@@ -1,9 +1,6 @@
-
 const mongoose = require('mongoose')
 
-
 const offerSchema = new mongoose.Schema({
-
     name : {
         type : String,
         required : true

@@ -29,7 +29,6 @@ const orderSchema = new mongoose.Schema({
     expected_delivery: {
         type: String,
         required: true
-
     },
     status: {
         type: String,
@@ -82,11 +81,7 @@ const orderSchema = new mongoose.Schema({
         cancellationReason: {
             type: String
         },
-
-
     }]
-
-
 })
 
 module.exports = mongoose.model("Orders", orderSchema)

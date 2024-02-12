@@ -3,27 +3,26 @@ const Categories = require('../model/categoryModel')
 const Products = require('../model/productModel')
 const moment = require('moment')
 
+//................................................................................................................................//
 
 const loadOffers = async(req,res)=> {
     try {
         const offers= await Offer.find({})
         res.render('offer',{offers,moment})
-        
     } catch (error) {
         console.log(error);
     }
 }
+//................................................................................................................................//
 
 const loadAddOffer = async(req,res)=>{
     try {
-        
-    res.render('add-offer')
-
+       res.render('add-offer')
     } catch (error) {
-
         console.log(error.message);
     }
 }
+//................................................................................................................................//
 
 const addOffer = async(req,res,next)=>{
     try {
@@ -50,6 +49,7 @@ const addOffer = async(req,res,next)=>{
         next(err)
     }
 }
+//................................................................................................................................//
 
 const applycategoryOffer = async(req,res)=>{
     try {
@@ -65,6 +65,7 @@ const applycategoryOffer = async(req,res)=>{
         console.log(err.message);
     }
 }
+//................................................................................................................................//
 
 const removeCategoryOffer = async(req,res)=>{
     try {
@@ -79,6 +80,7 @@ const removeCategoryOffer = async(req,res)=>{
         console.log(err.message);
     }
 }
+//................................................................................................................................//
 
 const applyProductOffer = async  (req,res) => {
     try {
@@ -97,6 +99,7 @@ const applyProductOffer = async  (req,res) => {
 
     }
 }
+//................................................................................................................................//
 
 const removeProductOffer = async(req,res)=>{
     try {
@@ -111,13 +114,12 @@ const removeProductOffer = async(req,res)=>{
        console.log(err.message);
     }
 }
+//................................................................................................................................//
 
 const deleteOffer = async (req, res) => {
     try {
         const offerId = req.params.offerId;
-  
         await Offer.deleteOne({ _id:offerId });
-        
         res.json({ success: true });
   
     } catch (error) {
@@ -125,10 +127,7 @@ const deleteOffer = async (req, res) => {
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
   };
-
-
-
-
+//................................................................................................................................//
 
 module.exports={
     loadOffers,
