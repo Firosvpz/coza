@@ -37,8 +37,15 @@ connectDB()
      
 app.use('/',require('./routes/userRoutes'))  
 app.use('/admin',require('./routes/adminRoutes'))
+
+app.set('view engine', 'ejs')
+app.set('views', "./views")
+
+app.get('*', (req, res) => {
+  res.status(404).render('error')
+})
     
-  
+
  
 app.listen(PORT,()=>{
     console.log(`server is running on port http://localhost:${PORT}`);

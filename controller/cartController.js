@@ -93,8 +93,6 @@ const addtoCart = async (req, res) => {
                                 items: {
                                     product_id: productId,
                                     quantity: quantity,
-                                    price: product.price,
-                                    total_price: product.price * quantity
                                 }
                             }
                         })
@@ -106,8 +104,6 @@ const addtoCart = async (req, res) => {
                     items: [{
                         product_id: productId,
                         quantity: quantity,
-                        price: product.price,
-                        total_price: product.price * quantity
                     }]
                 })
                 await newcart.save()
@@ -215,9 +211,7 @@ const checkout = async (req, res) => {
 const addAddress = async (req, res) => {
     try {
         const { name, houseName, phoneNumber, place, postCode, state } = req.body
-        console.log('body;', name);
         const userId = req.session.user_id
-        console.log('id:', userId);
         const data = await User.findByIdAndUpdate(
             { _id: userId },
             {

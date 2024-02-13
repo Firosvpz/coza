@@ -118,71 +118,173 @@
 <body class="animsition">
 
     <!-- Header -->
-    <header class="header-v3">
-        <!-- Header desktop -->
-        <div class="container-menu-desktop trans-03">
-            <div class="wrap-menu-desktop">
-                <nav class="limiter-menu-desktop p-l-45">
 
-                    <!-- Logo desktop -->
-                    <a href="/home" class="logo">
-                        <img src="images/icons/logo-02.png" alt="IMG-LOGO">
-                    </a>
+ <header class="header-v2" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+    <!-- Header desktop -->
+    <div class="container-menu-desktop trans-03">
+        <div class="wrap-menu-desktop">
+            <nav class="limiter-menu-desktop bg-dark p-l-45">
+                <!-- Logo desktop -->
+                <a href="#" class="logo">
+                    <img src="images/icons/logo-02.png" alt="IMG-LOGO" />
+                </a>
+                <!-- Menu desktop -->
+                <div class="menu-desktop ">
+                    <ul class="main-menu">
+                        <li>
+                            <a class="menu-link text-white" href="/">Home</a>
+                        </li>
+                        <li>
+                            <a class="menu-link text-white" href="/shop">Shop</a>
+                        </li>
+                        <li>
+                            <a class="menu-link text-white" href="/about">About</a>
+                        </li>
 
-                    <!-- Menu desktop -->
-                    <div class="menu-desktop">
-                        <ul class="main-menu n">
-                            <li>
-                                <a href="/home" style="text-decoration: none;">Home</a>
-
-                            </li>
-
-                            <li>
-                                <a href="/shop" style="text-decoration: none;">Shop</a>
-                            </li>
-
-                            <li class="label1" data-label1="">
-                                <a href="/cart" style="text-decoration: none;">Cart</a>
-                            </li>
-
-                            <li>
-                                <a href="/about" style="text-decoration: none;">About</a>
-                            </li>
-
-                            <li>
-                                <a href="/contact" style="text-decoration: none;">Contact</a>
-                            </li>
-                            <li>
-                                <div class="dropdown">
-                                    <button class="btn btn-transparent text-white  btn-sm fw-bold" type="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                        <%=locals.user?user.username:"PROFILE"%>
-                                    </button>
-                                    <ul class="dropdown-menu bg-transparent ">
-
-                                        <a class="dropdown-item bg-dark text-white" href="/profile">User profile</a>
-
-
-                                        <!-- <li><a class="dropdown-item bg-dark text-white" href="/login"> -->
-                                        <%if(locals.user){%>
-                                            <a class="dropdown-item bg-dark text-white" href="/logout">Logout</a>
-                                            <%}else{%>
-                                                <a class="dropdown-item bg-dark text-white" href="/login">Login</a>
-                                                <%}%>
-                                                    </a>
-                            </li>
-
-                        </ul>
-                    </div>
-                    </li>
+                        <li>
+                            <a class="menu-link text-white" href="/contact">Contact</a>
+                        </li>
+                        <li>
+                            <div class="dropdown d-none d-md-block  ">
+                                <button class="text-white text-decoration-underline" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    <%= locals.user ? user.username : "Profile" %>
+                                </button>
+                                <ul class="dropdown-menu bg-dark ">
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="/userprofile"><i
+                                                class="fa-solid fa-user"></i> User profile</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="/cart"><i
+                                                class="fa-solid fa-cart-shopping"></i> Cart</a>
+                                    </li>
+                                    <% if (locals.user) { %>
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="/logout"><i
+                                                    class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                                        </li>
+                                        <% } else { %>
+                                            <li>
+                                                <a class="dropdown-item  text-danger" href="/login"><i
+                                                        class="fa-solid fa-right-to-bracket"></i> Login</a>
+                                            </li>
+                                            <% } %>
+                                </ul>
+                            </div>
+                        </li>
                     </ul>
-            </div>
+                </div>
 
+                <!-- Icon header -->
+                <div class="wrap-icon-header flex-w flex-r-m h-full">
+
+                    <div class="flex-c-m h-full p-l-18 p-r-25 bor5">
+                        <div class="icon-header-item cl2 hov-cl1 trans-04 p-lr-11" data-notify="2">
+                            <a href="/cart" style="text-decoration: none;color: white;"><i
+                                    class="zmdi zmdi-shopping-cart"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="flex-c-m h-full p-lr-19">
+                        <div class="icon-header-item cl2 hov-cl1 trans-04 p-lr-11 js-show-sidebar "
+                            style="text-decoration: none;color: white;">
+                            <i class="zmdi zmdi-menu"></i>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Header Mobile -->
+    <div class="wrap-header-mobile bg-dark">
+        <!-- Logo moblie -->
+        <div class="logo-mobile">
+            <a href="#" class="logo">
+                <img src="images/icons/logo-02.png" alt="IMG-LOGO" />
+            </a>
         </div>
 
+        <!-- Icon header -->
+        <div class="wrap-icon-header flex-w flex-r-m h-full m-r-15">
 
-    </header>
 
+            <div class="flex-c-m h-full p-lr-10 bor5">
+                <div class="icon-header-item cl2 hov-cl1 trans-04 p-lr-11  js-show-cart" data-notify="2">
+                    <a href="/cart" style="text-decoration: none;color: white;">
+                        <i class="zmdi zmdi-shopping-cart"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button show menu -->
+        <div class="btn-show-menu-mobile hamburger hamburger--squeeze">
+            <span class="hamburger-box">
+                <span class="hamburger-inner"></span>
+            </span>
+        </div>
+    </div>
+
+    <!-- Menu Mobile -->
+    <div class="menu-mobile">
+        <nav class="limiter-menu-desktop bg-dark p-l-45">
+            <!-- Logo desktop -->
+
+            <!-- Menu desktop -->
+            <div class="menu-desktop ">
+                <ul class="main-menu">
+                    <li>
+                        <a class="menu-link text-white" href="/">Home</a>
+                    </li>
+                    <li>
+                        <a class="menu-link text-white" href="/shop">Shop</a>
+                    </li>
+                    <li>
+                        <a class="menu-link text-white" href="/about">About</a>
+                    </li>
+
+                    <li>
+                        <a class="menu-link text-white" href="/contact">Contact</a>
+                    </li>
+                    <li>
+                        <div class="dropdown d-none d-md-block  ">
+                            <button class="text-white text-decoration-underline" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <%= locals.user ? user.username : "Profile" %>
+                            </button>
+                            <ul class="dropdown-menu bg-dark ">
+                                <li>
+                                    <a class="dropdown-item text-danger" href="/userprofile"><i
+                                            class="fa-solid fa-user"></i> User profile</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="/cart"><i
+                                            class="fa-solid fa-cart-shopping"></i> Cart</a>
+                                </li>
+                                <% if (locals.user) { %>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="/logout"><i
+                                                class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                                    </li>
+                                    <% } else { %>
+                                        <li>
+                                            <a class="dropdown-item " href="/login"><i
+                                                    class="fa-solid fa-right-to-bracket"></i> Login</a>
+                                        </li>
+                                        <% } %>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+
+    </div>
+
+    <!-- Modal Search -->
+
+</header>
 
 
 

@@ -16,14 +16,6 @@ const cartSchema = new mongoose.Schema({
             type: Number,
             default: 1
         },
-        price: {
-            type: Number,
-            required: true
-        },
-        total_price: {
-            type: Number,
-            required: true
-        },
         status: {
             type: String,
             default: "placed"

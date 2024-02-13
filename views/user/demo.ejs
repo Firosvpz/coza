@@ -1,98 +1,80 @@
-// Otp verification
-const verifyOtp = async (req, res) => {
-    const email = req.body.email;
-    const otp = req.body.one + req.body.two + req.body.three + req.body.four;
-    const user = await userOtp.findOne({ email: email });
+<div class="container">
+    <div class="flex-w flex-sb-m p-b-52">
+        <!-- Filter -->
+        <div class="flex-w flex-c-m m-tb-10">
+            <div
+                class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
+                <i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
+                <i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
+                Filter
+            </div>
+        </div>
 
-    if (!user) {
-        res.render('otp', { message: 'otp expired', email: email })
-        return;
-    }
-    const { otp: hashedOtp } = user;
-    const validOtp = await bcrypt.compare(otp, hashedOtp);
+        <div class="dis-none panel-filter w-full p-t-10">
+            <div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
+                <div class="filter-col1 p-r-15 p-b-27 d-flex">
+                    <div class="mtext-102 cl2 p-b-15 mt-2">
+                        Sort By :
+                    </div>
+                   
+                        <select name="priceSort" id="priceSort" class="form-control  bg-transparent w-auto ms-2 ">
+                            <option value="">Default</option>
+                            <option value="asc">Low to High</option>
+                            <option value="desc">High to Low</option>
+                        </select>
+                    
+                </div>
 
+                <div class="filter-col2 p-r-15 p-b-27 d-flex">
+                    <div class="mtext-102 cl2 p-b-15">
+                        categories:
+                    </div>
 
-    if (validOtp == true) {
-        const userData = await User.findOne({ email: email })
-        await User.findByIdAndUpdate({ _id: userData._id }, { $set: { verified: true } });
-        await userOtp.deleteOne({ email: email });
+                    <ul class="d-flex">
+                        <li class="p-b-6">
+                            <a href="/shop">
+                                <button
+                                    class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1"
+                                    data-filter="*">
+                                    All 
+                                </button>
+                            </a>
+                        </li>
 
-        req.session.userId = userData._id
-        if (req.session.referralCode) {
-            await User.findOneAndUpdate(
-                { referralCode: req.session.referralCode },
-                {
-                    $inc: { wallet: 100 },
-                    $push: {
-                        wallet_history: {
-                            date: new Date(),
-                            amount: 100,
-                            description: Referral Bonus for referring  ${userData.username}
-                        }
-                    }
-                }
-            );
-            await User.findOneAndUpdate(
-                { _id: req.session.userId },
-                {
-                    $inc: { wallet: 50 },
-                    $push: {
-                        wallet_history: {
-                            date: new Date(),
-                            amount: 50,
-                            description: Welcome Bonus For using referral link
-                        }
-                    }
-                }
-            );
-        }
-        req.session.referralCode = null;
-        req.session.userId = null
-        res.redirect('/login');
-    } else {
-        // res.render('otp', { email: email, message: 'otp is incorrect' })
-        req.flash('message', 'Incorrect OTP');
-        res.redirect(/otp?email=${email})
-    }
-}
-//Register Verify
-const verifyRegister = async (req, res) => {
-    try {
-        const { username, email, mobile, password, confirmPassword, code } = req.body;
-        if (code) {
-            req.session.referralCode = code;
-        }
-        // Check if email already exists
-        const existingUser = await User.findOne({ email: email });
-        if (existingUser) {
-            return res.status(400).render('register', { message: 'Email is already registered' })
-        }
+                        <% if (categories.length> 0) { %>
+                            <% for (let i=0; i < categories.length; i++) { %>
+                                <li class="p-b-6 ">
+                                    <a href="/shop?categoryId=<%=categories[i].categoryName%>">
+                                        <button
+                                            class="stext-106  cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1"
+                                            data-filter="*">
+                                            <%=categories[i].categoryName%>
+                                        </button>
+                                    </a>
+                                </li>
+                                <% } %>
+                                    <% } else { %>
+                                        <li class="p-b-6">
+                                            <button
+                                                class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1"
+                                                data-filter="*">
+                                                There are no categories
+                                            </button>
+                                        </li>
+                                        <% } %>
+                    </ul>
+                </div>
 
-        if (password !== confirmPassword) {
-            return res.status(400).send({ error: "Passwords do not match" });
-        }
+            </div>
+        </div>
+    </div>
+</div>
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const referralCode = generateReferralCode();
-
-        // Create new user
-        const newUser = new User({
-            username,
-            email,
-            mobile,
-            password: hashedPassword,
-            verified: false,
-            isAdmin: 0,
-            referralCode: referralCode
-        });
-
-        await newUser.save();
-        sendOtpVerification(newUser, res);
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ error: "Internal server error" });
-    }
-};
-function generateReferralCode() {
-    return Math.random().toString(36).substring(2, 8).toUpperCase();
-}
+<!-- search -->
+<form action="#" class="search-form">
+    <div class="form-group mb-0">
+        <span class="icon ion-ios-search"></span>
+        <input type="text" class="form-control border-dark" id="searchInput"
+            placeholder="Search for a product" autocomplete="off">
+    </div>
+</form>

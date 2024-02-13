@@ -45,20 +45,173 @@
 </head>
 
 <body>
-    <div class="container mb-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-light p-3 rounded-3">
-                <li class="breadcrumb-item">
-                    <a href="/home" class="text-decoration-none text-muted ">Home</a>
-                </li>
-                <li class="breadcrumb-item">
-                    <a href="/shop" class="text-decoration-none text-muted">Shop</a>
-                </li>
+   <!-- Header -->
+	<header class="header-v2" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+		<!-- Header desktop -->
+		<div class="container-menu-desktop trans-03">
+			<div class="wrap-menu-desktop">
+				<nav class="limiter-menu-desktop bg-dark p-l-45">
+					<!-- Logo desktop -->
+					<a href="#" class="logo">
+						<img src="images/icons/logo-02.png" alt="IMG-LOGO" />
+					</a>
+					<!-- Menu desktop -->
+					<div class="menu-desktop ">
+						<ul class="main-menu">
+							<li>
+								<a class="menu-link text-white" href="/">Home</a>
+							</li>
+							<li>
+								<a class="menu-link text-white" href="/shop">Shop</a>
+							</li>
+							<li>
+								<a class="menu-link text-white" href="/about">About</a>
+							</li>
+
+							<li>
+								<a class="menu-link text-white" href="/contact">Contact</a>
+							</li>
+							<li>
+								<div class="dropdown d-none d-md-block  ">
+									<button class="text-white text-decoration-underline" data-bs-toggle="dropdown"
+										aria-expanded="false">
+										<%= locals.user ? user.username : "Profile" %>
+									</button>
+									<ul class="dropdown-menu bg-dark ">
+										<li>
+											<a class="dropdown-item text-danger" href="/userprofile"><i
+													class="fa-solid fa-user"></i> User profile</a>
+										</li>
+										<li>
+											<a class="dropdown-item text-danger" href="/cart"><i
+													class="fa-solid fa-cart-shopping"></i> Cart</a>
+										</li>
+										<% if (locals.user) { %>
+											<li>
+												<a class="dropdown-item text-danger" href="/logout"><i
+														class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+											</li>
+											<% } else { %>
+												<li>
+													<a class="dropdown-item  text-danger" href="/login"><i
+															class="fa-solid fa-right-to-bracket"></i> Login</a>
+												</li>
+												<% } %>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+
+					<!-- Icon header -->
+					<div class="wrap-icon-header flex-w flex-r-m h-full">
+
+						<div class="flex-c-m h-full p-l-18 p-r-25 bor5">
+							<div class="icon-header-item cl2 hov-cl1 trans-04 p-lr-11" data-notify="2">
+								<a href="/cart" style="text-decoration: none;color: white;"><i
+										class="zmdi zmdi-shopping-cart"></i></a>
+							</div>
+						</div>
+
+						<div class="flex-c-m h-full p-lr-19">
+							<div class="icon-header-item cl2 hov-cl1 trans-04 p-lr-11 js-show-sidebar "
+								style="text-decoration: none;color: white;">
+								<i class="zmdi zmdi-menu"></i>
+							</div>
+						</div>
+					</div>
+				</nav>
+			</div>
+		</div>
+
+		<!-- Header Mobile -->
+		<div class="wrap-header-mobile bg-dark">
+			<!-- Logo moblie -->
+			<div class="logo-mobile">
+				<a href="#" class="logo">
+					<img src="images/icons/logo-02.png" alt="IMG-LOGO" />
+				</a>
+			</div>
+
+			<!-- Icon header -->
+			<div class="wrap-icon-header flex-w flex-r-m h-full m-r-15">
 
 
-            </ol>
-        </nav>
-    </div>
+				<div class="flex-c-m h-full p-lr-10 bor5">
+					<div class="icon-header-item cl2 hov-cl1 trans-04 p-lr-11  js-show-cart" data-notify="2">
+						<a href="/cart" style="text-decoration: none;color: white;">
+							<i class="zmdi zmdi-shopping-cart"></i></a>
+					</div>
+				</div>
+			</div>
+
+			<!-- Button show menu -->
+			<div class="btn-show-menu-mobile hamburger hamburger--squeeze">
+				<span class="hamburger-box">
+					<span class="hamburger-inner"></span>
+				</span>
+			</div>
+		</div>
+
+		<!-- Menu Mobile -->
+		<div class="menu-mobile">
+			<nav class="limiter-menu-desktop bg-dark p-l-45">
+				<!-- Logo desktop -->
+
+				<!-- Menu desktop -->
+				<div class="menu-desktop ">
+					<ul class="main-menu">
+						<li>
+							<a class="menu-link text-white" href="/">Home</a>
+						</li>
+						<li>
+							<a class="menu-link text-white" href="/shop">Shop</a>
+						</li>
+						<li>
+							<a class="menu-link text-white" href="/about">About</a>
+						</li>
+
+						<li>
+							<a class="menu-link text-white" href="/contact">Contact</a>
+						</li>
+						<li>
+							<div class="dropdown d-none d-md-block  ">
+								<button class="text-white text-decoration-underline" data-bs-toggle="dropdown"
+									aria-expanded="false">
+									<%= locals.user ? user.username : "Profile" %>
+								</button>
+								<ul class="dropdown-menu bg-dark ">
+									<li>
+										<a class="dropdown-item text-danger" href="/userprofile"><i
+												class="fa-solid fa-user"></i> User profile</a>
+									</li>
+									<li>
+										<a class="dropdown-item text-danger" href="/cart"><i
+												class="fa-solid fa-cart-shopping"></i> Cart</a>
+									</li>
+									<% if (locals.user) { %>
+										<li>
+											<a class="dropdown-item text-danger" href="/logout"><i
+													class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+										</li>
+										<% } else { %>
+											<li>
+												<a class="dropdown-item " href="/login"><i
+														class="fa-solid fa-right-to-bracket"></i> Login</a>
+											</li>
+											<% } %>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</div>
+
+
+		</div>
+
+		<!-- Modal Search -->
+	
+	</header>
 
     <div class="container light-style flex-grow-1 border rounded container-p-y mt-5 w-75"
         style="background-color: rgb(250, 249, 246); box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.455);">

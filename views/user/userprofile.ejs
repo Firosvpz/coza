@@ -84,77 +84,173 @@
 </style>
 
 <body>
-    <header class="header-v3 ">
-        <!-- Header desktop -->
-        <div class="container-menu-desktop trans-03">
-            <div class="wrap-menu-desktop">
-                <nav class="limiter-menu-desktop p-l-45 " style="background-color: #212529;">
+  <!-- Header -->
+	<header class="header-v2" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+		<!-- Header desktop -->
+		<div class="container-menu-desktop trans-03">
+			<div class="wrap-menu-desktop">
+				<nav class="limiter-menu-desktop bg-dark p-l-45">
+					<!-- Logo desktop -->
+					<a href="#" class="logo">
+						<img src="images/icons/logo-02.png" alt="IMG-LOGO" />
+					</a>
+					<!-- Menu desktop -->
+					<div class="menu-desktop ">
+						<ul class="main-menu">
+							<li>
+								<a class="menu-link text-white" href="/">Home</a>
+							</li>
+							<li>
+								<a class="menu-link text-white" href="/shop">Shop</a>
+							</li>
+							<li>
+								<a class="menu-link text-white" href="/about">About</a>
+							</li>
 
-                    <!-- Logo desktop -->
-                    <a href="/home" class="logo">
-                        <img src="images/icons/logo-02.png" alt="IMG-LOGO">
-                    </a>
+							<li>
+								<a class="menu-link text-white" href="/contact">Contact</a>
+							</li>
+							<li>
+								<div class="dropdown d-none d-md-block  ">
+									<button class="text-white text-decoration-underline" data-bs-toggle="dropdown"
+										aria-expanded="false">
+										<%= locals.user ? user.username : "Profile" %>
+									</button>
+									<ul class="dropdown-menu bg-dark ">
+										<li>
+											<a class="dropdown-item text-danger" href="/userprofile"><i
+													class="fa-solid fa-user"></i> User profile</a>
+										</li>
+										<li>
+											<a class="dropdown-item text-danger" href="/cart"><i
+													class="fa-solid fa-cart-shopping"></i> Cart</a>
+										</li>
+										<% if (locals.user) { %>
+											<li>
+												<a class="dropdown-item text-danger" href="/logout"><i
+														class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+											</li>
+											<% } else { %>
+												<li>
+													<a class="dropdown-item  text-danger" href="/login"><i
+															class="fa-solid fa-right-to-bracket"></i> Login</a>
+												</li>
+												<% } %>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
 
-                    <!-- Menu desktop -->
-                    <div class="menu-desktop">
-                        <ul class="main-menu n">
-                            <li>
-                                <a href="/home" style="text-decoration: none;">Home</a>
-                            </li>
+					<!-- Icon header -->
+					<div class="wrap-icon-header flex-w flex-r-m h-full">
 
-                            <li>
-                                <a href="/shop" style="text-decoration: none;">Shop</a>
-                            </li>
+						<div class="flex-c-m h-full p-l-18 p-r-25 bor5">
+							<div class="icon-header-item cl2 hov-cl1 trans-04 p-lr-11" data-notify="2">
+								<a href="/cart" style="text-decoration: none;color: white;"><i
+										class="zmdi zmdi-shopping-cart"></i></a>
+							</div>
+						</div>
+
+						<div class="flex-c-m h-full p-lr-19">
+							<div class="icon-header-item cl2 hov-cl1 trans-04 p-lr-11 js-show-sidebar "
+								style="text-decoration: none;color: white;">
+								<i class="zmdi zmdi-menu"></i>
+							</div>
+						</div>
+					</div>
+				</nav>
+			</div>
+		</div>
+
+		<!-- Header Mobile -->
+		<div class="wrap-header-mobile bg-dark">
+			<!-- Logo moblie -->
+			<div class="logo-mobile">
+				<a href="#" class="logo">
+					<img src="images/icons/logo-02.png" alt="IMG-LOGO" />
+				</a>
+			</div>
+
+			<!-- Icon header -->
+			<div class="wrap-icon-header flex-w flex-r-m h-full m-r-15">
 
 
-                            <li>
-                                <a href="/about" style="text-decoration: none;">About</a>
-                            </li>
+				<div class="flex-c-m h-full p-lr-10 bor5">
+					<div class="icon-header-item cl2 hov-cl1 trans-04 p-lr-11  js-show-cart" data-notify="2">
+						<a href="/cart" style="text-decoration: none;color: white;">
+							<i class="zmdi zmdi-shopping-cart"></i></a>
+					</div>
+				</div>
+			</div>
 
-                            <li>
-                                <a href="/contact" style="text-decoration: none;">Contact</a>
-                            </li>
+			<!-- Button show menu -->
+			<div class="btn-show-menu-mobile hamburger hamburger--squeeze">
+				<span class="hamburger-box">
+					<span class="hamburger-inner"></span>
+				</span>
+			</div>
+		</div>
 
-                            <li>
-                                <div class="dropdown ">
-                                    <button class=" text-white  fw-bold" data-bs-toggle="dropdown" 
-                                        aria-expanded="false">
-                                        <%= locals.user ? user.username : "PROFILE" %>
-                                    </button>
-                                    <ul class="dropdown-menu ">
-                                        <li>
+		<!-- Menu Mobile -->
+		<div class="menu-mobile">
+			<nav class="limiter-menu-desktop bg-dark p-l-45">
+				<!-- Logo desktop -->
 
-                                            <a class="dropdown-item text-white" href="/userprofile"><i
-                                                    class="fa-solid fa-user"></i> User profile</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item text-white" href="/cart"><i
-                                                    class="fa-solid fa-cart-shopping"></i> Cart</a>
-                                        </li>
-                                        <% if (locals.user) { %>
-                                            <li>
-                                                <a class="dropdown-item text-white" href="/logout"><i
-                                                        class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
-                                            </li>
-                                            <% } else { %>
-                                                <li>
-                                                    <a class="dropdown-item text-white" href="/login"><i
-                                                            class="fa-solid fa-right-to-bracket"></i> Login</a>
-                                                </li>
-                                                <% } %>
+				<!-- Menu desktop -->
+				<div class="menu-desktop ">
+					<ul class="main-menu">
+						<li>
+							<a class="menu-link text-white" href="/">Home</a>
+						</li>
+						<li>
+							<a class="menu-link text-white" href="/shop">Shop</a>
+						</li>
+						<li>
+							<a class="menu-link text-white" href="/about">About</a>
+						</li>
 
-                                    </ul>
-                                </div>
+						<li>
+							<a class="menu-link text-white" href="/contact">Contact</a>
+						</li>
+						<li>
+							<div class="dropdown d-none d-md-block  ">
+								<button class="text-white text-decoration-underline" data-bs-toggle="dropdown"
+									aria-expanded="false">
+									<%= locals.user ? user.username : "Profile" %>
+								</button>
+								<ul class="dropdown-menu bg-dark ">
+									<li>
+										<a class="dropdown-item text-danger" href="/userprofile"><i
+												class="fa-solid fa-user"></i> User profile</a>
+									</li>
+									<li>
+										<a class="dropdown-item text-danger" href="/cart"><i
+												class="fa-solid fa-cart-shopping"></i> Cart</a>
+									</li>
+									<% if (locals.user) { %>
+										<li>
+											<a class="dropdown-item text-danger" href="/logout"><i
+													class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+										</li>
+										<% } else { %>
+											<li>
+												<a class="dropdown-item " href="/login"><i
+														class="fa-solid fa-right-to-bracket"></i> Login</a>
+											</li>
+											<% } %>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</div>
 
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-            </div>
-        </div>
-    </header>
 
-    <body>
+		</div>
+
+		<!-- Modal Search -->
+	
+	</header>
 
 
 
@@ -222,6 +318,19 @@
 
 
                                     </form>
+                                    <div class="card mt-4" style="border-radius: 20px;">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Referral Link</h5>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="referralLink" readonly>
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary"
+                                                        onclick="copyReferralLink()">Copy</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+        
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="account-change-password">
@@ -563,6 +672,31 @@
         <script type="text/javascript">
 
         </script>
+        <script>
+            // Function to generate and display the referral link
+            function generateReferralLink() {
+                var userReferralCode = "<%= user.referralCode %>";
+        
+                var referralLink = "localhost:4000/register?code=" + userReferralCode;
+        
+                document.getElementById("referralLink").value = referralLink;
+            }
+        
+            function copyReferralLink() {
+                var referralLinkInput = document.getElementById("referralLink");
+        
+                referralLinkInput.select();
+                referralLinkInput.setSelectionRange(0, 99999); 
+        
+                document.execCommand("copy");
+        
+                alert("Referral link copied to clipboard!");
+            }
+        
+            generateReferralLink();
+        </script>
+        
+        
     </body>
 
 </html>

@@ -83,7 +83,9 @@ const homePage = async (req, res) => {
 
 const registerUser = async (req, res) => {
     try {
-        res.render('register')
+        const { code } = req.query;
+        res.render('register', { code });
+
     } catch (error) {
         console.log(error.message);
     }
@@ -92,12 +94,17 @@ const registerUser = async (req, res) => {
 
 const verifyRegister = async (req, res) => {
     try {
-        const { username, email, mobileNumber, password, confirmPassword } = req.body
+        const { username, email, mobileNumber, password, confirmPassword,code } = req.body
+        console.log('code:',code);
+        if (code) {
+            req.session.referralCode = code;
+        }
         if (password !== confirmPassword) {
             req.flash('message', 'password do not match')
             res.redirect('/register')
         }
         const hashedPassword = await bcrypt.hash(password, 10)
+        const referralCode = generateReferralCode();
         // create new user
         const newUser = new User({
             username,
@@ -105,6 +112,7 @@ const verifyRegister = async (req, res) => {
             mobileNumber,
             password: hashedPassword,
             verified: false,
+            referralCode: referralCode
         })
         await newUser.save()
 
@@ -116,6 +124,10 @@ const verifyRegister = async (req, res) => {
         res.redirect('/register')
     }
 }
+function generateReferralCode() {
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
 //................................................................................................................................//
 
 const loginUser = async (req, res) => {
@@ -236,6 +248,37 @@ const verifyOtp = async (req, res) => {
             await userOtp.deleteOne({ email: email })
 
             req.session.user_id = userData._id
+            if (req.session.referralCode) {
+                await User.findOneAndUpdate(
+                    { referralCode: req.session.referralCode },
+                    {
+                        $inc: { wallet: 100 },
+                        $push: {
+                            wallet_history: {
+                                date: new Date(),
+                                amount: 100,
+                                description:`Referral Bonus for referring  ${userData.username}`
+                            }
+                        }
+                    }
+                );
+                await User.findOneAndUpdate(
+                    { _id: req.session.user_id },
+                    {
+                        $inc: { wallet: 50 },
+                        $push: {
+                            wallet_history: {
+                                date: new Date(),
+                                amount: 50,
+                                description: `Welcome Bonus For using referral link`
+                            }
+                        }
+                    }
+                );
+            }
+            req.session.referralCode = null;
+            req.session.user_id = null
+            
             res.redirect('/home')
         } else {
             res.render('loginOtp', { message: 'otp is incorrect' })

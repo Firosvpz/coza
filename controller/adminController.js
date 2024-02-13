@@ -620,9 +620,9 @@ const editCategory = async (req, res) => {
             res.render('edit-categ', { categories: req.body })
 
         } else {
-            await categories.findByIdAndUpdate({ _id: req.body.id }, { name: req.body.categoryName, description: req.body.description });
+            await categories.findByIdAndUpdate({ _id: req.body.id }, { categoryName: req.body.categoryName, description: req.body.description });
             res.redirect('/admin/categories');
-        }
+         }
     } catch (error) {
         console.log(error);
     }
