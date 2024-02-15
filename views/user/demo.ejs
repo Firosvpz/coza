@@ -1,80 +1,52 @@
-<div class="container">
-    <div class="flex-w flex-sb-m p-b-52">
-        <!-- Filter -->
-        <div class="flex-w flex-c-m m-tb-10">
-            <div
-                class="flex-c-m stext-106 cl6 size-104 bor4 pointer hov-btn3 trans-04 m-r-8 m-tb-4 js-show-filter">
-                <i class="icon-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-filter-list"></i>
-                <i class="icon-close-filter cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-                Filter
-            </div>
-        </div>
+const verifyPayment = async (req, res) => {
+    try {
+        const cartData = await Cart.findOne({ user_id: req.session.user_id });
+        const cartProducts = cartData.items;
+        const details = req.body;
 
-        <div class="dis-none panel-filter w-full p-t-10">
-            <div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
-                <div class="filter-col1 p-r-15 p-b-27 d-flex">
-                    <div class="mtext-102 cl2 p-b-15 mt-2">
-                        Sort By :
-                    </div>
-                   
-                        <select name="priceSort" id="priceSort" class="form-control  bg-transparent w-auto ms-2 ">
-                            <option value="">Default</option>
-                            <option value="asc">Low to High</option>
-                            <option value="desc">High to Low</option>
-                        </select>
-                    
-                </div>
+        const crypto = require("crypto");
+        // Your secret key from the environment variable
+        const secretKey = process.env.RAZORPAY_SECRET_KEY;
 
-                <div class="filter-col2 p-r-15 p-b-27 d-flex">
-                    <div class="mtext-102 cl2 p-b-15">
-                        categories:
-                    </div>
+        // Creating an HMAC with SHA-256
+        const hmac = crypto.createHmac("sha256", secretKey);
 
-                    <ul class="d-flex">
-                        <li class="p-b-6">
-                            <a href="/shop">
-                                <button
-                                    class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1"
-                                    data-filter="*">
-                                    All 
-                                </button>
-                            </a>
-                        </li>
+        // Updating the HMAC with the data
+        hmac.update(
+            details.payment.razorpay_order_id +
+            "|" +
+            details.payment.razorpay_payment_id
+        );
 
-                        <% if (categories.length> 0) { %>
-                            <% for (let i=0; i < categories.length; i++) { %>
-                                <li class="p-b-6 ">
-                                    <a href="/shop?categoryId=<%=categories[i].categoryName%>">
-                                        <button
-                                            class="stext-106  cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1"
-                                            data-filter="*">
-                                            <%=categories[i].categoryName%>
-                                        </button>
-                                    </a>
-                                </li>
-                                <% } %>
-                                    <% } else { %>
-                                        <li class="p-b-6">
-                                            <button
-                                                class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1"
-                                                data-filter="*">
-                                                There are no categories
-                                            </button>
-                                        </li>
-                                        <% } %>
-                    </ul>
-                </div>
+        // Getting the hexadecimal representation of the HMAC
+        const hmacFormat = hmac.digest("hex");
 
-            </div>
-        </div>
-    </div>
-</div>
+        if (hmacFormat == details.payment.razorpay_signature) {
+            await Order.findByIdAndUpdate(
+                { _id: details.order.receipt },
+                { $set: { paymentId: details.payment.razorpay_payment_id } }
+            );
 
-<!-- search -->
-<form action="#" class="search-form">
-    <div class="form-group mb-0">
-        <span class="icon ion-ios-search"></span>
-        <input type="text" class="form-control border-dark" id="searchInput"
-            placeholder="Search for a product" autocomplete="off">
-    </div>
-</form>
+            for (let i = 0; i < cartProducts.length; i++) {
+                let count = cartProducts[i].quantity; await products.findByIdAndUpdate({
+                    _id: cartProducts[i].product_id
+                },
+                    { $inc: { quantity: -count } });
+            }
+
+
+            await Order.findByIdAndUpdate({ _id: details.order.receipt }, { $set: { status: "placed" } });
+
+
+            const userData = await User.findOne({ _id: req.session.user_id });
+            await Cart.deleteOne({ user_id: userData._id });
+
+            res.json({ success: true, params: details.order.receipt });
+        } else {
+            await Order.findByIdAndDelete({ _id: details.order.receipt });
+            res.json({ success: false });
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+};

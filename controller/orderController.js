@@ -347,38 +347,47 @@ const verifyPayment = async (req, res) => {
         const details = req.body;
 
         const crypto = require("crypto");
+        const Razorpay = require("razorpay");
+
         // Your secret key from the environment variable
         const secretKey = process.env.RAZORPAY_SECRET_KEY;
 
-        // Creating an HMAC with SHA-256
-        const hmac = crypto.createHmac("sha256", secretKey);
+        // Creating an instance of Razorpay
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: secretKey,
+        });
 
-        // Updating the HMAC with the data
-        hmac.update(
-            details.payment.razorpay_order_id +
-            "|" +
-            details.payment.razorpay_payment_id
-        );
+        // Constructing the string to verify signature
+        const generatedSignature = crypto.createHmac("sha256", secretKey)
+            .update(details.payment.razorpay_order_id + "|" + details.payment.razorpay_payment_id)
+            .digest("hex");
 
-        // Getting the hexadecimal representation of the HMAC
-        const hmacFormat = hmac.digest("hex");
+        // Verifying the signature
+        const isSignatureValid = razorpay.utils.verifyPaymentSignature({
+            orderId: details.payment.razorpay_order_id,
+            paymentId: details.payment.razorpay_payment_id,
+            signature: details.payment.razorpay_signature,
+        });
 
-        if (hmacFormat == details.payment.razorpay_signature) {
+        if (isSignatureValid) {
             await Order.findByIdAndUpdate(
                 { _id: details.order.receipt },
                 { $set: { paymentId: details.payment.razorpay_payment_id } }
             );
 
             for (let i = 0; i < cartProducts.length; i++) {
-                let count = cartProducts[i].quantity; await products.findByIdAndUpdate({
-                    _id: cartProducts[i].product_id
-                },
-                    { $inc: { quantity: -count } });
+                const count = cartProducts[i].quantity;
+                await products.findByIdAndUpdate(
+                    { _id: cartProducts[i].product_id },
+                    { $inc: { quantity: -count } }
+                );
             }
 
-
-            await Order.findByIdAndUpdate({ _id: details.order.receipt }, { $set: { status: "placed" } });
-
+            await Order.findByIdAndUpdate(
+                { _id: details.order.receipt },
+                { $set: { status: "placed" } }
+            );
 
             const userData = await User.findOne({ _id: req.session.user_id });
             await Cart.deleteOne({ user_id: userData._id });
@@ -390,8 +399,10 @@ const verifyPayment = async (req, res) => {
         }
     } catch (error) {
         console.log(error.message);
+        res.status(500).json({ success: false, error: error.message });
     }
 };
+
 //................................................................................................................................//
 
 const orderPage = async (req, res) => {
