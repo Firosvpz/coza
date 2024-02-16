@@ -13,8 +13,8 @@ const puppeteer = require("puppeteer");
 //................................................................................................................................//
 
 var instance = new razorpay({
-    key_id: 'rzp_test_WIydJhMLrPqZTw',
-    key_secret: 'udTPHs4IWHpMEyr5Kte0iIKA',
+    key_id: process.env.RAZORPAY_ID_KEY,
+    key_secret: process.env.RAZORPAY_SECRET_KEY,
 });
 
 //................................................................................................................................//
@@ -339,6 +339,7 @@ const applyCoupon = async (req, res) => {
     }
 };
 //................................................................................................................................//
+
 const verifyPayment = async (req, res) => {
     try {
         const cartData = await Cart.findOne({ user_id: req.session.user_id });
@@ -347,7 +348,7 @@ const verifyPayment = async (req, res) => {
 
         const crypto = require("crypto");
         // Your secret key from the environment variable
-        const secretKey = RAZORPAY_SECRET_KEY;
+        const secretKey = process.env.RAZORPAY_SECRET_KEY;
 
         // Creating an HMAC with SHA-256
         const hmac = crypto.createHmac("sha256", secretKey);
