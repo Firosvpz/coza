@@ -8,7 +8,7 @@
 			<div class="slick1">
 				<% for (let i=0; i < banner.length; i++) { %>
 				<div class="item-slick1 bg-overlay1" style="background-image: url(/webimages/<%= banner[i].image[0] %>);"
-					data-thumb="/sharpimages/<%= banner[i].image[0] %>" data-caption="<%= banner[i].title %>">
+					data-thumb="/webimages/<%= banner[i].image[0] %>" data-caption="<%= banner[i].title %>">
 					<div class="container h-full">
 						<div class="flex-col-c-m h-full p-t-100 p-b-60 respon5">
 							<div class="layer-slick1 animated visible-false" data-appear="fadeInDown" data-delay="0">
@@ -27,7 +27,7 @@
 							<div class="layer-slick1 animated visible-false" data-appear="zoomIn" data-delay="1600">
 								<a href="/shop"
 									class="flex-c-m stext-101 cl0 size-101 badge-dark bor1 hov-btn2 p-lr-15 trans-04">
-									Shop N
+									Shop Now
 								</a>
 							</div>
 						</div>
@@ -121,7 +121,7 @@
 					<!-- Block2 -->
 					<div class="block2">
 						<div class="block2-pic hov-img0 label-new " data-label="New">
-							<img src="/sharpimages/<%= product.images[0] %>" alt="IMG-PRODUCT">
+							<img src="/webimages/<%= product.images[0] %>" alt="IMG-PRODUCT">
 							<a href="/productdetails?id=<%= product._id %>"
 								class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
 								Quick View
