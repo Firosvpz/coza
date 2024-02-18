@@ -177,7 +177,7 @@ const sendOtpverification = async ({ email }, res) => {
             secure: true,
             auth: {
                 user: process.env.email_user,
-                pass: 'zauj idfi rpke rskt'
+                pass: 'bnmb pjrd ikhw jkis'
             }
         })
         const otp = `${Math.floor(1000 + Math.random() * 9000)}`
