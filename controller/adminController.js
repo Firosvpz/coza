@@ -391,7 +391,7 @@ const salesReport = async (req, res) => {
             .populate("user_id")
             .populate("items.product_id")
             .sort({ date: -1 })
-
+        // console.log('sales:',salesReport);
 
         res.render('salesReport', {
             firstOrder: moment(firstOrder[0].date).format("YYYY-MM-DD"),

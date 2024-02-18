@@ -176,7 +176,7 @@ const sendOtpverification = async ({ email }, res) => {
             port: 587,
             secure: true,
             auth: {
-                user: process.env.email_user,
+                user: 'vpzfiroz@gmail.com',
                 pass: 'bnmb pjrd ikhw jkis'
             }
         })
