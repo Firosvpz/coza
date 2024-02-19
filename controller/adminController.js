@@ -391,7 +391,13 @@ const salesReport = async (req, res) => {
             .populate("user_id")
             .populate("items.product_id")
             .sort({ date: -1 })
-        // console.log('sales:',salesReport);
+            
+            salesReport.forEach(order => {
+                if (!order.user_id || !order.user_id.email) {
+                    console.log(`Order ${order.order_id} does not have user email`);
+                }
+            });
+            
 
         res.render('salesReport', {
             firstOrder: moment(firstOrder[0].date).format("YYYY-MM-DD"),
