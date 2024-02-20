@@ -475,6 +475,7 @@
 
 
         function updateOrderStatus(newStatus, orderId, itemId) {
+            console.log('data:',orderId,newStatus,itemId);
 
             // Send a request to update the order status
             fetch('/admin/update-order-status', {

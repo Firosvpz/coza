@@ -68,24 +68,38 @@ const addtoCart = async (req, res) => {
         const { user_id } = req.session;
 
         if (!user_id) {
-
-            res.redirect('/login')
+            res.redirect('/login');
         } else {
-            const product = await products.findOne({ _id: productId }).populate('offer');
+            const product = await products.findOne({ _id: productId }).populate('offer').populate('category');
+
+            let price = product.price; // Default to product price
+
+            // Check if the product has an associated offer
+            if (product.offer && product.offer.offerPrice) {
+                price = product.offer.offerPrice; // Use offer price if available
+            } else if (product.category && product.category.offer && product.category.offer.offerPrice) {
+                // Check if the category of the product has an associated offer
+                price = product.category.offer.offerPrice; // Use category offer price if available
+            }
+
             let cart = await Cart.findOne({ user_id: user_id });
+
             if (cart) {
-                // update exist product
-                const existProduct = cart.items.find((x) => x.product_id.toString() === productId)
+                // Update existing product
+                const existProduct = cart.items.find((x) => x.product_id.toString() === productId);
+
                 if (existProduct) {
-                    await Cart.findOneAndUpdate({ user_id: user_id, 'items.product_id': productId },
+                    await Cart.findOneAndUpdate(
+                        { user_id: user_id, 'items.product_id': productId },
                         {
                             $inc: {
                                 'items.$.quantity': quantity,
-                                'items.$.total_price': quantity * existProduct.price
+                                'items.$.total_price': quantity * price
                             }
-                        })
+                        }
+                    );
                 } else {
-                    // add new product to cart
+                    // Add new product to cart
                     await Cart.findOneAndUpdate(
                         { user_id: user_id },
                         {
@@ -93,28 +107,37 @@ const addtoCart = async (req, res) => {
                                 items: {
                                     product_id: productId,
                                     quantity: quantity,
+                                    price: price, // Use the determined price
+                                    total_price: price * quantity // Calculate total price based on determined price
                                 }
                             }
-                        })
+                        }
+                    );
                 }
             } else {
-                // create new cart and add the products
+                // Create new cart and add the product
                 const newcart = new Cart({
                     user_id: user_id,
                     items: [{
                         product_id: productId,
                         quantity: quantity,
+                        price: price, // Use the determined price
+                        total_price: price * quantity // Calculate total price based on determined price
                     }]
-                })
-                await newcart.save()
+                });
+
+                await newcart.save();
             }
-            res.json({ success: true })
+
+            res.json({ success: true });
         }
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, error: 'Error adding item to cart' });
     }
 };
+
+
 //................................................................................................................................//
 
 const deleteCartProduct = async (req, res) => {
@@ -200,7 +223,7 @@ const checkout = async (req, res) => {
                 );
                 return !isUserUsed;
             });
-            res.render('checkout', { cart: cartDetails, user, subTotal: originalAmts, discountAmount, coupons: filteredCoupons,categories:categData })
+            res.render('checkout', { cart: cartDetails, user, subTotal: originalAmts, discountAmount, coupons: filteredCoupons, categories: categData })
         }
     } catch (error) {
         console.log(error);

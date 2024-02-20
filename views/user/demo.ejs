@@ -1,52 +1,51 @@
-const verifyPayment = async (req, res) => {
+const orderList = async (req, res) => {
     try {
-        const cartData = await Cart.findOne({ user_id: req.session.user_id });
-        const cartProducts = cartData.items;
-        const details = req.body;
+        const id = req.session.user_id;
+        const page = parseInt(req.query.page) || 1;
+        const perPage = 3;
 
-        const crypto = require("crypto");
-        // Your secret key from the environment variable
-        const secretKey = process.env.RAZORPAY_SECRET_KEY;
+        // Count total number of orders
+        const totalOrders = await Order.countDocuments({ user_id: id });
 
-        // Creating an HMAC with SHA-256
-        const hmac = crypto.createHmac("sha256", secretKey);
+        // Calculate total pages
+        const totalPages = Math.ceil(totalOrders / perPage);
 
-        // Updating the HMAC with the data
-        hmac.update(
-            details.payment.razorpay_order_id +
-            "|" +
-            details.payment.razorpay_payment_id
-        );
-
-        // Getting the hexadecimal representation of the HMAC
-        const hmacFormat = hmac.digest("hex");
-
-        if (hmacFormat == details.payment.razorpay_signature) {
-            await Order.findByIdAndUpdate(
-                { _id: details.order.receipt },
-                { $set: { paymentId: details.payment.razorpay_payment_id } }
-            );
-
-            for (let i = 0; i < cartProducts.length; i++) {
-                let count = cartProducts[i].quantity; await products.findByIdAndUpdate({
-                    _id: cartProducts[i].product_id
-                },
-                    { $inc: { quantity: -count } });
-            }
-
-
-            await Order.findByIdAndUpdate({ _id: details.order.receipt }, { $set: { status: "placed" } });
-
-
-            const userData = await User.findOne({ _id: req.session.user_id });
-            await Cart.deleteOne({ user_id: userData._id });
-
-            res.json({ success: true, params: details.order.receipt });
-        } else {
-            await Order.findByIdAndDelete({ _id: details.order.receipt });
-            res.json({ success: false });
+        // Ensure the requested page is within valid range
+        if (page < 1 || page > totalPages) {
+            return res.status(404).render('error', { error: 'Page not found' });
         }
+
+        // Sort the orders in descending order based on the date field and paginate the results
+        const data = await Order.find({ user_id: id })
+            .sort({ date: -1 })
+            .populate('items.product_id')
+            .skip((page - 1) * perPage)
+            .limit(perPage);
+
+        const user = await User.find({ _id: id });
+
+        res.render('orderlist', { orders: data, user, moment, currentPage: page, totalPages });
     } catch (error) {
-        console.log(error.message);
+        console.log(error);
+        // Handle errors as needed
+        res.status(500).render('error', { error: 'Internal Server Error' });
     }
 };
+
+
+<div class="d-flex justify-content-center">
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <% if(totalOrders> pageSize) { %>
+                <% const totalPages=Math.ceil(totalOrders / pageSize); %>
+                    <% for(let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>">
+                                <%= i %>
+                            </a>
+                        </li>
+                        <% } %>
+                            <% } %>
+        </ul>
+    </nav>
+</div>

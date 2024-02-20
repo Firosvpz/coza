@@ -10,6 +10,7 @@ const { usersList, listCategory } = require('./adminController')
 const Order = require('../model/orderModel')
 const bannerModel = require('../model/bannerModel')
 dotenv.config()
+const session = require('express-session')
 
 //................................................................................................................................//
 
@@ -182,7 +183,7 @@ const sendOtpverification = async ({ email }, res) => {
         })
         const otp = `${Math.floor(1000 + Math.random() * 9000)}`
         const mailOptions = {
-            from: process.env.email_user,
+            from: 'vpzfiroz@gmail.com',
             to: email,
             subject: 'Verify Your Email',
 
@@ -248,6 +249,7 @@ const verifyOtp = async (req, res) => {
             await userOtp.deleteOne({ email: email })
 
             req.session.user_id = userData._id
+            // console.log('id:',req.session.user_id);
             if (req.session.referralCode) {
                 await User.findOneAndUpdate(
                     { referralCode: req.session.referralCode },
@@ -615,6 +617,7 @@ const cancelOrder = async (req, res) => {
                     }
                 }
             );
+            
             res.status(200).json({ message: 'Order cancellation requested', order: updatedOrder });
         }
         if (returnReason) {
@@ -627,6 +630,7 @@ const cancelOrder = async (req, res) => {
                     }
                 }
             );
+            
             res.status(200).json({ message: 'Order return requested', order: updatedOrder });
         }
     } catch (error) {

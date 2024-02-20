@@ -391,12 +391,7 @@ const salesReport = async (req, res) => {
             .populate("user_id")
             .populate("items.product_id")
             .sort({ date: -1 })
-            
-            salesReport.forEach(order => {
-                if (!order.user_id || !order.user_id.email) {
-                    console.log(`Order ${order.order_id} does not have user email`);
-                }
-            });
+           
             
 
         res.render('salesReport', {
@@ -476,6 +471,7 @@ const datePicker = async (req, res) => {
 
 const usersList = async (req, res) => {
     try {
+       
         const userData = await User.find({})
         res.render('userslist', { users: userData })
     } catch (error) {
@@ -486,23 +482,18 @@ const usersList = async (req, res) => {
 
 const blockUser = async (req, res) => {
     try {
-        const userId = req.params.id
-        const updateUser = await User.findByIdAndUpdate(userId, { isBlocked: true }, { new: true })
-        const data = req.session.user_id
-        console.log('userId', data);
-        if (data === userId) {
-            req.session.destroy()
-            res.redirect('/home')
-        }
+        const userId = req.params.id;
+        const updateUser = await User.findByIdAndUpdate(userId, { isBlocked: true }, { new: true });
         if (!updateUser) {
-            return res.status(404).send("user not found")
+            return res.status(404).send("User not found");
         }
-        res.json({ status: 'success', user: updateUser })
-        res.status(500).json({ status: 'error', error: 'internal server error' })
+        res.json({ status: 'success', user: updateUser });
     } catch (error) {
         console.log(error);
+        res.status(500).json({ status: 'error', error: 'Internal server error' });
     }
-}
+};
+
 //................................................................................................................................//
 
 const unBlockUser = async (req, res) => {
@@ -511,17 +502,16 @@ const unBlockUser = async (req, res) => {
         const updateUser = await User.findByIdAndUpdate(userId, { isBlocked: false }, { new: true })
 
         if (!updateUser) {
-            return res.status(404).send("user not found")
+            return res.status(404).send("User not found")
         }
 
         res.json({ status: 'success', user: updateUser })
-        res.status(500).json({ status: 'error', error: 'internal server error' })
-
-
     } catch (error) {
         console.log(error);
+        res.status(500).json({ status: 'error', error: 'Internal server error' })
     }
 }
+
 //................................................................................................................................//
 
 const loadCategory = async (req, res) => {
@@ -652,15 +642,42 @@ const deleteCategory = async (req, res) => {
 
 const loadProducts = async (req, res) => {
     try {
-        const productData = await products.find({}).populate('offer')
-        console.log('p', productData);
-        const availableOffers = await Offer.find({ expiryDate: { $gte: new Date() } })
+        const pageSize = 7; // Number of products per page
+        const currentPage = req.query.page || 1; // Current page, default to 1 if not provided
+        const searchQuery = req.query.search || ''; // Search query, default to empty string if not provided
 
-        res.render('productslist', { products: productData, offers: availableOffers, moment })
+        // Constructing MongoDB query for pagination and search filter
+        const query = {};
+        if (searchQuery) {
+            // If search query is provided, filter products by name using regular expression
+            query.name = { $regex: new RegExp(searchQuery, 'i') }; // Case-insensitive search
+        }
+
+        // Count total number of products matching the search query
+        const totalProductsCount = await products.countDocuments(query);
+
+        // Find products based on the query with pagination
+        const productData = await products.find(query)
+            .skip((currentPage - 1) * pageSize) // Skip products based on current page
+            .limit(pageSize) // Limit the number of products per page
+            .populate('offer');
+
+        const availableOffers = await Offer.find({ expiryDate: { $gte: new Date() } });
+
+        res.render('productslist', { 
+            products: productData, 
+            offers: availableOffers, 
+            moment,
+            currentPage,
+            totalPages: Math.ceil(totalProductsCount / pageSize),
+            searchQuery
+        });
     } catch (error) {
         console.log(error);
+        res.status(500).send('Internal Server Error');
     }
 }
+
 //................................................................................................................................//
 
 const loadAddProducts = async (req, res) => {
@@ -900,69 +917,68 @@ const viewOrderPage = async (req, res) => {
 
 const updateOrderStatus = async (req, res) => {
     const { orderId, itemId, newStatus } = req.body;
-    console.log('hjh:', req.body);
-
-    let update = { 'items.$.ordered_status': newStatus };
 
     try {
         const order = await Order.findById(orderId);
-        console.log('order:', order);
         const item = order.items.find((item) => item._id.toString() === itemId);
-
-        console.log('item:', item);
-
-
+       
         if (item) {
-            // If payment is RazorPay and status is 'cancelled' or 'returned'
-            if ((order.payment == 'razorPay') && (newStatus === 'cancelled' || newStatus === 'returned') || newStatus === 'returned') {
-        
+            let refundedAmount = item.total_price; // Initialize refunded amount with original price
+
+            if ((order.payment === 'razorPay' || order.payment === 'Wallet') && (newStatus === 'cancelled' || newStatus === 'returned')) {
                 const user = await User.findById(order.user_id);
                 const currentDate = new Date();
-                const walletHistoryEntry = {
-                    date: currentDate,
-                    amount: item.total_price,
-                    description: `Refund for order`,
-                };
-                // Update wallet history and wallet amount
-                user.wallet_history.push(walletHistoryEntry);
-                user.wallet += item.total_price;
-                console.log('user:', user);
-                await user.save();
 
-
-                const product = await products.findById(item.product_id);
-
-                if (product) {
-                    // Increase the product quantity by the ordered quantity
-                    const newStockQuantity = product.quantity + item.quantity;
-                    await products.findByIdAndUpdate(item.product_id, { quantity: newStockQuantity });
+                // Retrieve the product with the associated offer
+                const product = await products.findById(item.product_id).populate('offer');
+                
+                // Check if there's an offer applied to the item
+                if (product.offer && product.offer.offerPrice) {
+                    refundedAmount = product.offer.offerPrice; // Use offer price for refund
                 }
 
+                const walletHistoryEntry = {
+                    date: currentDate,
+                    amount: refundedAmount, // Use the refunded amount
+                    description: `Refund for order ${orderId}`, // Adjust description if necessary
+                };
+
+                // Ensure that the wallet amount is a valid number
+                if (!isNaN(refundedAmount)) {
+                    user.wallet_history.push(walletHistoryEntry);
+                    user.wallet += refundedAmount; // Update the wallet amount
+                }
+
+                await user.save();
+
+                const newStockQuantity = product.quantity + item.quantity;
+                await products.findByIdAndUpdate(item.product_id, { quantity: newStockQuantity });
             }
 
-            // If status is 'cancelled' or 'returned', update product stock quantity
             if (newStatus === 'cancelled') {
                 const product = await products.findById(item.product_id);
-                console.log('mot okay');
                 if (product) {
-                    // Increase the product quantity by the ordered quantity
                     const newStockQuantity = product.quantity + item.quantity;
                     await products.findByIdAndUpdate(item.product_id, { quantity: newStockQuantity });
                 }
             }
         }
 
+        const update = { 'items.$.ordered_status': newStatus };
         const updatedOrder = await Order.findOneAndUpdate(
             { _id: orderId, 'items._id': itemId },
             { $set: update },
             { new: true }
         );
+
         res.json({ success: true, updatedOrder });
     } catch (error) {
         console.error('Error updating order status:', error);
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 };
+
+
 //................................................................................................................................//
 
 const adminLogout = async (req, res) => {

@@ -1,6 +1,5 @@
 const Coupon = require('../model/couponModel');
 
-
 //................................................................................................................................//
 
 const loadCouponList = async (req, res) => {
@@ -57,7 +56,9 @@ const addCoupon = async (req, res) => {
 const loadEditCoupon = async (req, res) => {
     try {
         const id = req.query.couponid
-        const data = await Coupon.findOne({ _id: id })
+        console.log('id:',id);
+        const data = await Coupon.findById({ _id: id })
+        console.log('dd:',data);
         res.render('edit-coupon', { coupons: data })
 
     } catch (error) {
@@ -71,12 +72,13 @@ const EditCoupon = async (req, res) => {
         const couponCodeRegex = new RegExp(`^${req.body.couponCode}$`, 'i');
 
         const existingCoupon = await Coupon.findOne({ couponCode: couponCodeRegex });
-
-        if (existingCoupon && existingCoupon._id !== req.body.couponCode) {
-            req.flash("message", "coupon already exist")
+        // console.log('id:',req.body);
+        if (existingCoupon && existingCoupon.couponCode !== req.body.couponCode) {
+            req.flash("message", "Coupon code already exists")
             res.render('edit-coupon', { coupons: req.body })
         } else {
-            // Update the category since the name doesn't exist or it's the same category being edited
+            // Update the coupon since the code doesn't exist or it's the same coupon being edited
+            
             await Coupon.findByIdAndUpdate(
                 { _id: req.body.id },
                 {
@@ -94,6 +96,7 @@ const EditCoupon = async (req, res) => {
         console.log(error);
     }
 }
+
 //................................................................................................................................//
 
 const deleteCoupons = async (req, res) => {
