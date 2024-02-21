@@ -1,51 +1,51 @@
-const orderList = async (req, res) => {
-    try {
-        const id = req.session.user_id;
-        const page = parseInt(req.query.page) || 1;
-        const perPage = 3;
+<div id="imagePreviewContainer"></div><br>
+<input type="file" class="form-control-file" id="image" name="image" required multiple
+    onchange="handleImageSelection(event)"><br>
+<span id="imageError" class="text-danger"></span><br>
 
-        // Count total number of orders
-        const totalOrders = await Order.countDocuments({ user_id: id });
 
-        // Calculate total pages
-        const totalPages = Math.ceil(totalOrders / perPage);
 
-        // Ensure the requested page is within valid range
-        if (page < 1 || page > totalPages) {
-            return res.status(404).render('error', { error: 'Page not found' });
+<script>
+    function handleImageSelection(event) {
+        const imageContainer = document.getElementById('imagePreviewContainer');
+        const files = event.target.files;
+
+        if (files.length > 4) {
+            document.getElementById('imageError').innerText = 'Please select up to 4 images.';
+            event.target.value = '';
+            return;
+        } else {
+            document.getElementById('imageError').innerText = '';
         }
 
-        // Sort the orders in descending order based on the date field and paginate the results
-        const data = await Order.find({ user_id: id })
-            .sort({ date: -1 })
-            .populate('items.product_id')
-            .skip((page - 1) * perPage)
-            .limit(perPage);
+        imageContainer.innerHTML = '';
 
-        const user = await User.find({ _id: id });
+        for (let i = 0; i < files.length; i++) {
+            const reader = new FileReader();
+            const img = document.createElement('img');
+            img.className = 'img-fluid rounded';
+            img.style.width = '20%';
 
-        res.render('orderlist', { orders: data, user, moment, currentPage: page, totalPages });
-    } catch (error) {
-        console.log(error);
-        // Handle errors as needed
-        res.status(500).render('error', { error: 'Internal Server Error' });
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            };
+
+            reader.readAsDataURL(files[i]);
+
+            imageContainer.appendChild(img);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'btn btn-danger btn-sm';
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = function () {
+                imageContainer.removeChild(img);
+                imageContainer.removeChild(deleteButton);
+                event.target.value = '';
+            };
+
+            imageContainer.appendChild(deleteButton);
+        }
     }
-};
 
-
-<div class="d-flex justify-content-center">
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            <% if(totalOrders> pageSize) { %>
-                <% const totalPages=Math.ceil(totalOrders / pageSize); %>
-                    <% for(let i=1; i <=totalPages; i++) { %>
-                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                            <a class="page-link" href="?page=<%= i %>">
-                                <%= i %>
-                            </a>
-                        </li>
-                        <% } %>
-                            <% } %>
-        </ul>
-    </nav>
-</div>
+</script>

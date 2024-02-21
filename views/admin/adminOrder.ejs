@@ -126,7 +126,7 @@
                             <i class="icon-menu menu-icon"></i>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" >
                         <form class="search-bar">
                             <input type="text" class="form-control" placeholder="Enter keywords" id="name-search">
                             <a href="javascript:void();"><i class="icon-magnifier"></i></a>
@@ -394,29 +394,29 @@
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
 
-
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        
     <script>
 
-        // Search jquery
-        $(document).ready(function () {
-            // When the user types in the search box
-            $("#name-search").on("keyup", function () {
-                var searchText = $(this).val().toLowerCase();
+          $(document).ready(function () {
+        // When the user types in the search box
+        $("#name-search").on("keyup", function () {
+            var searchText = $(this).val().toLowerCase();
+           
 
-                // Loop through each table row
-                $("table tbody tr ").each(function () {
-                    var userName = $(this).find("td:eq(1)").text().toLowerCase(); // Get the user's name in lowercase
-
-                    // If the user's name contains the search text, show the row; otherwise, hide it
-                    if (userName.includes(searchText)) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
+            // Loop through each table row
+            $("table tbody tr ").each(function () {
+                var userName = $(this).find("td:eq(1)").text().toLowerCase(); // Get the user's name in lowercase
+                
+                // If the user's name contains the search text, show the row; otherwise, hide it
+                if (userName.includes(searchText)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
             });
         });
-
+    });
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.toggle-product').forEach(function (button) {
                 button.addEventListener('click', function () {

@@ -642,7 +642,7 @@ const deleteCategory = async (req, res) => {
 
 const loadProducts = async (req, res) => {
     try {
-        const pageSize = 7; // Number of products per page
+        const pageSize = 6                                                                                                     ; // Number of products per page
         const currentPage = req.query.page || 1; // Current page, default to 1 if not provided
         const searchQuery = req.query.search || ''; // Search query, default to empty string if not provided
 

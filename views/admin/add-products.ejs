@@ -236,17 +236,12 @@
 
 
 
-
                                     <div class="mb-3">
-                                        <label for="productImage" class="form-label mb-10  ">Product Image</label>
-                                        <span id="imagePreview" class="mt-2 "></span>
-
-                                        <input type="file" class="form-control bg-dark text-white" id="productImage"
-                                            name="images" multiple>
-
-                                       
+                                        <label for="productImage" class="form-label mb-10">Product Image</label>
+                                        <div id="imagePreview" class="mt-2"></div>
+                                        <input type="file" class="form-control bg-dark text-white" id="productImage" name="images" multiple>
+                                        <span id="imageError" class="text-danger"></span><br>
                                     </div>
-
                                   
                                     <div class="mb-3 form-group">
                                         <label for="exampleInputPassword1">Category</label>
@@ -374,32 +369,7 @@
         //     alert(" Successfully Added products")
         // })
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Get the file input element
-            const fileInput = document.getElementById('productImage');
-
-            // Get the image preview container
-            const imagePreviewContainer = document.getElementById('imagePreview');
-
-            // Add an event listener to the file input
-            fileInput.addEventListener('change', function () {
-                // Remove existing preview images
-                imagePreviewContainer.innerHTML = '';
-
-                // Loop through selected files and create image previews
-                for (const file of fileInput.files) {
-                    const img = document.createElement('img');
-                    img.src = URL.createObjectURL(file);
-                    img.className = 'img-sm img-thumbnail mr-2';
-                    img.alt = 'Image Preview';
-                    img.style.width = '80px';
-                    img.style.height = '80px';
-                    imagePreviewContainer.appendChild(img);
-                }
-            });
-        });
-    </script>
+   
    
    
     <script>
@@ -433,6 +403,57 @@
 });
 
     </script>
+ <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the file input element
+        const fileInput = document.getElementById('productImage');
+
+        // Get the image preview container
+        const imagePreviewContainer = document.getElementById('imagePreview');
+
+        // Add an event listener to the file input
+        fileInput.addEventListener('change', function () {
+            // Remove existing preview images
+            imagePreviewContainer.innerHTML = '';
+
+            // Loop through selected files and create image previews
+            for (const file of fileInput.files) {
+                const imgContainer = document.createElement('div');
+                imgContainer.className = 'image-container d-inline-block mr-2 mb-2';
+                
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'img-sm img-thumbnail';
+                img.alt = 'Image Preview';
+
+                // Set size for image previews
+                img.style.width = '80px'; // Set desired width
+                img.style.height = '80px'; // Set desired height
+                
+                imgContainer.appendChild(img); // Append image first
+
+                // Create delete button for each image
+                const deleteButton = document.createElement('button');
+                deleteButton.type = 'button';
+                deleteButton.className = 'btn btn-danger btn-sm delete-button mt-5 ms-1';
+                deleteButton.textContent = 'Delete';
+                deleteButton.onclick = function () {
+                    imgContainer.remove();
+                    updateFileInputValue();
+                };
+
+                imgContainer.appendChild(deleteButton); // Append delete button after the image
+                imagePreviewContainer.appendChild(imgContainer);
+            }
+        });
+    });
+
+    // Function to update file input value after deleting image
+    function updateFileInputValue() {
+        const fileInput = document.getElementById('productImage');
+        fileInput.value = '';
+    }
+</script>
 
 
 </body>
