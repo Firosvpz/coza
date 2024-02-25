@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Admin-category</title>
+    <title>Admin-productlist</title>
     <!-- loader-->
     <link href="assets/css/pace.min.css" rel="stylesheet" />
     <script src="assets/js/pace.min.js"></script>
@@ -98,14 +98,14 @@
                 </li>
                 <li>
                     <a href="/admin/offers">
-                      <i class="fa-solid fa-briefcase"></i><span>offers</span>
+                        <i class="fa-solid fa-briefcase"></i><span>offers</span>
                     </a>
-                  </li>
-                  <li>
+                </li>
+                <li>
                     <a href="/admin/banner">
-                      <i class="fa-solid fa-panorama"></i><span>banner</span>
+                        <i class="fa-solid fa-panorama"></i><span>banner</span>
                     </a>
-                  </li>
+                </li>
 
 
 
@@ -201,7 +201,8 @@
 
 
                                 <hr>
-                                <form method="post" enctype="multipart/form-data" id="productForm" action="/admin/addproducts">
+                                <form method="post" enctype="multipart/form-data" id="productForm"
+                                    action="/admin/addproducts">
                                     <div>
                                         <a href="/admin/addproducts"><button type="submit" class="btn btn-primary mb-3"
                                                 id="add">Add</button></a>
@@ -239,20 +240,23 @@
                                     <div class="mb-3">
                                         <label for="productImage" class="form-label mb-10">Product Image</label>
                                         <div id="imagePreview" class="mt-2"></div>
-                                        <input type="file" class="form-control bg-dark text-white" id="productImage" name="images" multiple>
+                                        <input type="file" class="form-control bg-dark text-white" id="productImage"
+                                            name="images" multiple required>
                                         <span id="imageError" class="text-danger"></span><br>
                                     </div>
-                                  
+
                                     <div class="mb-3 form-group">
                                         <label for="exampleInputPassword1">Category</label>
                                         <select class="form-control w-50" name="category" required>
                                             <option value="" disabled selected>Select a category</option>
-                                            <% categories.forEach(category => { %>
-                                                <option ><%= category.categoryName %></option>
-                                            <% }); %>
+                                            <% categories.forEach(category=> { %>
+                                                <option>
+                                                    <%= category.categoryName %>
+                                                </option>
+                                                <% }); %>
                                         </select>
                                     </div>
-                                    
+
 
 
 
@@ -369,91 +373,117 @@
         //     alert(" Successfully Added products")
         // })
     </script>
-   
-   
-   
+
+
+
     <script>
         document.getElementById('productForm').addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevents the form from submitting by default
+            event.preventDefault(); // Prevents the form from submitting by default
 
-    // Get the price input value
-    const priceInput = document.getElementById('priceInput');
-    const price = parseFloat(priceInput.value); // Convert to a floating-point number
+            // Get the price input value
+            const priceInput = document.getElementById('priceInput');
+            const price = parseFloat(priceInput.value); // Convert to a floating-point number
 
-    // Validate the price
-    if (isNaN(price) || price <= 0) {
-        alert('Please enter a valid price greater than one.');
-        priceInput.focus(); // Focus back on the price input
-        return; // Stop further processing as validation failed
-    }
+            // Validate the price
+            if (isNaN(price) || price <= 0) {
+                alert('Please enter a valid price greater than one.');
+                priceInput.focus(); // Focus back on the price input
+                return; // Stop further processing as validation failed
+            }
 
-    // Get the quantity input value
-    const quantityInput = document.getElementById('quantityInput');
-    const quantity = parseFloat(quantityInput.value); // Convert to a floating-point number
+            // Get the quantity input value
+            const quantityInput = document.getElementById('quantityInput');
+            const quantity = parseFloat(quantityInput.value); // Convert to a floating-point number
 
-    // Validate the quantity
-    if (isNaN(quantity) || quantity <= 0) {
-        alert('Please enter a valid quantity greater than one.');
-        quantityInput.focus(); // Focus back on the quantity input
-        return; // Stop further processing as validation failed
-    }
+            // Validate the quantity
+            if (isNaN(quantity) || quantity <= 0) {
+                alert('Please enter a valid quantity greater than one.');
+                quantityInput.focus(); // Focus back on the quantity input
+                return; // Stop further processing as validation failed
+            }
 
-    // If both price and quantity are valid, you can proceed with form submission
-    event.target.submit(); // Submit the form
-});
+            // If both price and quantity are valid, you can proceed with form submission
+            event.target.submit(); // Submit the form
+        });
 
     </script>
- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get the file input element
-        const fileInput = document.getElementById('productImage');
 
-        // Get the image preview container
-        const imagePreviewContainer = document.getElementById('imagePreview');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the file input element
+            const fileInput = document.getElementById('productImage');
 
-        // Add an event listener to the file input
-        fileInput.addEventListener('change', function () {
-            // Remove existing preview images
-            imagePreviewContainer.innerHTML = '';
+            // Get the image preview container
+            const imagePreviewContainer = document.getElementById('imagePreview');
 
-            // Loop through selected files and create image previews
-            for (const file of fileInput.files) {
-                const imgContainer = document.createElement('div');
-                imgContainer.className = 'image-container d-inline-block mr-2 mb-2';
-                
-                const img = document.createElement('img');
-                img.src = URL.createObjectURL(file);
-                img.className = 'img-sm img-thumbnail';
-                img.alt = 'Image Preview';
+            // Get the error message element
+            const imageError = document.getElementById('imageError');
 
-                // Set size for image previews
-                img.style.width = '80px'; // Set desired width
-                img.style.height = '80px'; // Set desired height
-                
-                imgContainer.appendChild(img); // Append image first
+            // Add an event listener to the file input
+            fileInput.addEventListener('change', function (event) {
+                // Remove existing preview images
+                imagePreviewContainer.innerHTML = '';
 
-                // Create delete button for each image
-                const deleteButton = document.createElement('button');
-                deleteButton.type = 'button';
-                deleteButton.className = 'btn btn-danger btn-sm delete-button mt-5 ms-1';
-                deleteButton.textContent = 'Delete';
-                deleteButton.onclick = function () {
-                    imgContainer.remove();
-                    updateFileInputValue();
-                };
+                // Get selected files
+                const files = event.target.files;
 
-                imgContainer.appendChild(deleteButton); // Append delete button after the image
-                imagePreviewContainer.appendChild(imgContainer);
-            }
+                // Check if no files are selected
+                if (files.length === 0) {
+                    imageError.innerText = 'Please select at least one image';
+                    return;
+                } else {
+                    imageError.innerText = '';
+                }
+
+                // Check if more than four files are selected
+                if (files.length > 4) {
+                    imageError.innerText = 'Please select only 4 images';
+                    event.target.value = ''; // Clear the file input
+                    return;
+                } else {
+                    imageError.innerText = '';
+                }
+
+                // Loop through selected files and create image previews
+                for (const file of files) {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'image-container d-inline-block mr-2 mb-2';
+
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.className = 'img-sm img-thumbnail';
+                    img.alt = 'Image Preview';
+
+                    // Set size for image previews
+                    img.style.width = '80px'; // Set desired width
+                    img.style.height = '80px'; // Set desired height
+
+                    imgContainer.appendChild(img); // Append image first
+
+                    // Create delete button for each image
+                    const deleteButton = document.createElement('button');
+                    deleteButton.type = 'button';
+                    deleteButton.className = 'btn btn-danger btn-sm delete-button mt-5 ms-1';
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = function () {
+                        imgContainer.remove();
+                        updateFileInputValue();
+                    };
+
+                    imgContainer.appendChild(deleteButton); // Append delete button after the image
+                    imagePreviewContainer.appendChild(imgContainer);
+                }
+            });
         });
-    });
 
-    // Function to update file input value after deleting image
-    function updateFileInputValue() {
-        const fileInput = document.getElementById('productImage');
-        fileInput.value = '';
-    }
-</script>
+        // Function to update file input value after deleting image
+        function updateFileInputValue() {
+            const fileInput = document.getElementById('productImage');
+            fileInput.value = '';
+        }
+
+
+    </script>
 
 
 </body>

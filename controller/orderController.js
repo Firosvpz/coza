@@ -8,7 +8,7 @@ const moment = require('moment')
 const razorpay = require("razorpay");
 const path = require('path')
 const ejs = require('ejs')
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
 
 //................................................................................................................................//
 
@@ -459,10 +459,12 @@ const viewOrder = async (req, res) => {
             }
         });
         const categData = await categories.find({ isListed: true }).populate('offer');
+       
+
         const user = await User.findOne({ _id: userId })
         res.render('viewOrder', { order: mainOrder, user, moment, categories: categData })
     } catch (error) {
-        console.log(error);
+        console.error(error.message);
     }
 }
 //................................................................................................................................//

@@ -706,7 +706,7 @@ const addProducts = async (req, res) => {
             const data = await categories.find({ isListed: true })
 
 
-            if (req.files.length !== 4) {
+            if (req.files.length > 4) {
                 return res.render('add-products', { message: '4 images needed', categories: data })
             }
 
@@ -801,7 +801,7 @@ const editProduct = async (req, res) => {
         if (req.files) {
             const existingImage = (await products.findById(id)).images.length;
 
-            if (existingImage + req.files.length !== 4) {
+            if (existingImage + req.files.length > 4) {
                 return res.render('edit-products', { message: 'only four images allowed', products, categories: categdata })
             }
             for (let i = 0; i < req.files.length; i++) {

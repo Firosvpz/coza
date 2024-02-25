@@ -24,7 +24,8 @@
     "path": "^0.12.7",
     "puppeteer-core": "^22.0.0",
     "razorpay": "^2.9.2",
-    "sharp": "^0.33.0"
+    "sharp": "^0.33.0",
+    "sweetalert2": "^11.10.5"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

@@ -97,14 +97,14 @@
                 </li>
                 <li>
                     <a href="/admin/offers">
-                      <i class="fa-solid fa-briefcase"></i><span>offers</span>
+                        <i class="fa-solid fa-briefcase"></i><span>offers</span>
                     </a>
-                  </li>
-                  <li>
+                </li>
+                <li>
                     <a href="/admin/banner">
-                      <i class="fa-solid fa-panorama"></i><span>banner</span>
+                        <i class="fa-solid fa-panorama"></i><span>banner</span>
                     </a>
-                  </li>
+                </li>
 
 
 
@@ -220,11 +220,13 @@
                                     </div>
                                     <div class="mb-3 form-group">
                                         <label for="exampleInputPassword1">Category</label>
-                                        <select class="form-control w-50" name="category" >
+                                        <select class="form-control w-50" name="category">
                                             <option value="" disabled selected>Select a category</option>
-                                            <% categories.forEach(category => { %>
-                                                <option ><%= category.categoryName %></option>
-                                            <% }); %>
+                                            <% categories.forEach(category=> { %>
+                                                <option>
+                                                    <%= category.categoryName %>
+                                                </option>
+                                                <% }); %>
                                         </select>
                                     </div>
                                     <div class="mb-3">
@@ -251,15 +253,14 @@
                                             </div>
                                             <% } %>
 
-                                            <div class="mb-3">
-                                                <label for="productImage" class="form-label mb-10  ">Product Image</label>
-                                                <span id="imagePreview" class="mt-2 "></span>
-        
-                                                <input type="file" class="form-control bg-dark text-white" id="productImage"
-                                                    name="images" multiple>
-        
-                                                          
-                                            </div>
+                                                <div class="mb-3">
+                                                    <label for="productImage" class="form-label mb-10">Product
+                                                        Image</label>
+                                                    <div id="imagePreview" class="mt-2"></div>
+                                                    <input type="file" class="form-control bg-dark text-white"
+                                                        id="productImage" name="images" multiple >
+                                                    <span id="imageError" class="text-danger"></span><br>
+                                                </div>
                                     </div>
 
 
@@ -437,12 +438,12 @@
         async function confirmDeleteImage(img, productid, index) {
             try {
                 const deleted = await axios.put("/admin/products/deleteimg", {
-                    
+
                     img,
                     productid
                 });
-                console.log('hy',img,productid);
-                if ( deleted.data.success) {
+                console.log('hy', img, productid);
+                if (deleted.data.success) {
                     alert("Item has been removed");
                     const imageContainer = document.getElementById(`pdtImage_${index}`);
                     if (imageContainer) {
@@ -458,7 +459,8 @@
         }
 
     </script>
-     <script>
+
+    <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Get the file input element
             const fileInput = document.getElementById('productImage');
@@ -466,25 +468,73 @@
             // Get the image preview container
             const imagePreviewContainer = document.getElementById('imagePreview');
 
+            // Get the error message element
+            const imageError = document.getElementById('imageError');
+
             // Add an event listener to the file input
-            fileInput.addEventListener('change', function () {
+            fileInput.addEventListener('change', function (event) {
                 // Remove existing preview images
                 imagePreviewContainer.innerHTML = '';
 
+                // Get selected files
+                const files = event.target.files;
+
+                // Check if no files are selected
+                if (files.length === 0) {
+                    imageError.innerText = 'Please select at least one image.';
+                    return;
+                } else {
+                    imageError.innerText = '';
+                }
+
+                // Check if more than four files are selected
+                if (files.length > 4) {
+                    imageError.innerText = 'Please select only 4 images.';
+                    event.target.value = ''; // Clear the file input
+                    return;
+                } else {
+                    imageError.innerText = '';
+                }
+
                 // Loop through selected files and create image previews
-                for (const file of fileInput.files) {
+                for (const file of files) {
+                    const imgContainer = document.createElement('div');
+                    imgContainer.className = 'image-container d-inline-block mr-2 mb-2';
+
                     const img = document.createElement('img');
                     img.src = URL.createObjectURL(file);
-                    img.className = 'img-sm img-thumbnail mr-2';
+                    img.className = 'img-sm img-thumbnail';
                     img.alt = 'Image Preview';
-                    img.style.width = '80px';
-                    img.style.height = '80px';
-                    imagePreviewContainer.appendChild(img);
+
+                    // Set size for image previews
+                    img.style.width = '80px'; // Set desired width
+                    img.style.height = '80px'; // Set desired height
+
+                    imgContainer.appendChild(img); // Append image first
+
+                    // Create delete button for each image
+                    const deleteButton = document.createElement('button');
+                    deleteButton.type = 'button';
+                    deleteButton.className = 'btn btn-danger btn-sm delete-button mt-5 ms-1';
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = function () {
+                        imgContainer.remove();
+                        updateFileInputValue();
+                    };
+
+                    imgContainer.appendChild(deleteButton); // Append delete button after the image
+                    imagePreviewContainer.appendChild(imgContainer);
                 }
             });
         });
-    </script>
 
+        // Function to update file input value after deleting image
+        function updateFileInputValue() {
+            const fileInput = document.getElementById('productImage');
+            fileInput.value = '';
+        }
+
+    </script>
 
 
 </body>

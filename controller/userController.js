@@ -472,11 +472,12 @@ const productDetails = async (req, res) => {
         }
         const id = req.query.id
         const data = await products.findOne({ _id: id }).populate('offer')
-
+         // Check if data is null (no product found)
+       
         const categories = await Categories.find({ isListed: true }).populate('offer');
         res.render('productdetails', { products: data, user, categories })
     } catch (error) {
-        console.log(error);
+        console.error(error.message);
     }
 }
 //................................................................................................................................//

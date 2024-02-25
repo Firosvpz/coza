@@ -2,6 +2,7 @@ const express = require('express')
 const path=require('path')
 const app=express()
 const session = require('express-session')
+const errorHandler=require('./middleware/errorHandler')
 require('dotenv').config()
 //database
 const connectDB=require('./database/connection') 
@@ -45,6 +46,7 @@ app.get('*', (req, res) => {
   res.status(404).render('error')
 })
     
+app.use(errorHandler.errorHandler)
 
  
 app.listen(PORT,()=>{
